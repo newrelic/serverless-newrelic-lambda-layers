@@ -7,6 +7,7 @@ import * as request from "request";
 import * as semver from "semver";
 import * as Serverless from "serverless";
 
+// shim for testing when we don't have layer-arn server yet
 const layerArns = {
   "nodejs8.10": "arn:aws:lambda:us-east-1:554407330061:layer:MainlandLayer:9",
   "nodejs10.x": "arn:aws:lambda:us-east-1:554407330061:layer:MainlandLayer:9"
@@ -33,7 +34,6 @@ export default class MainlandLayerPlugin {
   }
 
   get config() {
-    this.serverless.cli.log('getting config')
     return _.get(this.serverless, "service.custom.mainland", {});
   }
 
@@ -48,7 +48,6 @@ export default class MainlandLayerPlugin {
 
   public async run() {
     const version = this.serverless.getVersion();
-this.serverless.cli.log('in plugin run')
     if (semver.lt(version, "1.34.0")) {
       this.serverless.cli.log(
         `Serverless ${version} does not support layers. Please upgrade to >=1.34.0.`
@@ -70,16 +69,15 @@ this.serverless.cli.log('in plugin run')
     }
 
     const funcs = this.functions;
-this.serverless.cli.log(`in plugin! functions!, ${JSON.stringify(funcs)}`)
+
     Object.keys(funcs).forEach(async funcName => {
       const funcDef = funcs[funcName];
-      this.serverless.cli.log(`KEYS ${funcName}`)
       await this.addLayer(funcName, funcDef);
     });
   }
 
   public cleanup() {
-    this.removeNodeHelper();
+    // any artifacts can be removed here
   }
 
   private async addLayer(funcName: string, funcDef: any) {
@@ -92,7 +90,7 @@ this.serverless.cli.log(`in plugin! functions!, ${JSON.stringify(funcs)}`)
       );
       return;
     }
-    this.serverless.cli.log(`PLUGIN funcdef, ${JSON.stringify(funcDef)}`);
+
     const {
       environment = {},
       handler,
@@ -101,7 +99,6 @@ this.serverless.cli.log(`in plugin! functions!, ${JSON.stringify(funcs)}`)
       package: pkg = {}
     } = funcDef;
 
-    // should be able to operate without requiring env vars/tokens
     if (
       typeof runtime !== "string" ||
       [
@@ -129,7 +126,7 @@ this.serverless.cli.log(`in plugin! functions!, ${JSON.stringify(funcs)}`)
     const layerArn = this.config.layer_arn
       ? this.config.layer_arn
       : await this.getLayerArn(runtime, region);
-this.serverless.cli.log(`LAYER ARN ${layerArn}`);
+
     const mainlandLayers = layers.filter(
       layer => typeof layer === "string" && layer.match(layerArn)
     );
@@ -154,10 +151,7 @@ this.serverless.cli.log(`LAYER ARN ${layerArn}`);
         : this.config.debug || false;
     funcDef.environment = environment;
 
-    this.serverless.cli.log(`getwrap? ${this.getHandlerWrapper(runtime, handler)}`)
-//Serverless: getwrap? /opt/nodejs/node_modules/newrelic/handler.wrapper
-    //funcDef.handler = this.getHandlerWrapper(runtime, handler);
-    funcDef.handler = handler; // avoiding rewrapping?
+    funcDef.handler = handler; // avoiding rewrapping
     funcDef.package = this.updatePackageExcludes(runtime, pkg);
   }
 
@@ -168,7 +162,7 @@ this.serverless.cli.log(`LAYER ARN ${layerArn}`);
     return layerArns[runtime];
     // return util
     //   .promisify(request)(
-    //     `https://${region}.layers.iopipe.com/get-layers?CompatibleRuntime=${runtime}`
+    //     `https://${region}.layers.iopipe.com/get-mainland-layers?CompatibleRuntime=${runtime}`
     //   )
     //   .then(response => {
     //     const awsResp = JSON.parse(response.body);
@@ -177,57 +171,6 @@ this.serverless.cli.log(`LAYER ARN ${layerArn}`);
     //       "Layers[0].LatestMatchingVersion.LayerVersionArn"
     //     );
     //   });
-  }
-
-  private getHandlerWrapper(runtime: string, handler: string) {
-
-    // return handler?
-    return handler
-
-    if (
-      ["nodejs6.10", "nodejs8.10"].indexOf(runtime) !== -1 ||
-      (runtime === "nodejs10.x" &&
-        _.get(this.serverless, "enterpriseEnabled", false)) ||
-      (runtime === "nodejs12.x" &&
-        _.get(this.serverless, "enterpriseEnabled", false))
-    ) {
-      // this.addNodeHelper();
-      this.serverless.cli.log(`gethandlerwrapper 6/8 ${runtime}, ${handler}`)
-      return "newrelic/handler.wrapper";
-    }
-
-    if (runtime === "nodejs10.x" || runtime === "nodejs12.x") {
-      this.serverless.cli.log(`gethandlerwrapper 10/12 ${runtime}, ${handler}`)
-
-      return "/opt/nodejs/node_modules/newrelic/handler.wrapper";
-    }
-
-    if (runtime.match("python")) {
-      return "newrelic.handler.wrapper";
-    }
-
-    return handler;
-  }
-
-  private addNodeHelper() {
-    const helperPath = path.join(
-      this.serverless.config.servicePath,
-      "newrelic/handler.js"
-    );
-    if (!fs.existsSync(helperPath)) {
-      fs.writeFileSync(helperPath, "module.exports = require('newrelic');");
-    }
-  }
-
-  private removeNodeHelper() {
-    const helperPath = path.join(
-      this.serverless.config.servicePath,
-        "newrelic/handler.js"
-    );
-
-    if (fs.existsSync(helperPath)) {
-      fs.removeSync(helperPath);
-    }
   }
 
   private updatePackageExcludes(runtime: string, pkg: any) {
