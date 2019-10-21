@@ -1,7 +1,7 @@
 {
-  "name": "mainland-layer",
+  "name": "serverless-newrelic-layers",
   "version": "0.1.0",
-  "description": "Serverless plugin for APM layers.",
+  "description": "Serverless plugin for NewRelic APM layers.",
   "main": "dist/index.js",
   "files": [
     "dist",
@@ -14,14 +14,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/iopipe/mainland-layer.git"
+    "url": "git+https://github.com/iopipe/serverless-newrelic-layers.git"
   },
   "author": "IOpipe",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/iopipe/serverless-iopipe-layers/issues"
+    "url": "https://github.com/iopipe/serverless-newrelic-layers/issues"
   },
-  "homepage": "https://github.com/iopipe/serverless-plugin-iopipe-layers#readme",
+  "homepage": "https://github.com/iopipe/serverless-newrelic-layers#readme",
   "devDependencies": {
     "@types/fs-extra": "^5.0.5",
     "@types/lodash": "^4.14.136",

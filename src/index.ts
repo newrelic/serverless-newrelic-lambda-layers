@@ -9,11 +9,11 @@ import * as Serverless from "serverless";
 
 // shim for testing when we don't have layer-arn server yet
 const layerArns = {
-  "nodejs8.10": "arn:aws:lambda:us-east-1:554407330061:layer:MainlandLayer:9",
-  "nodejs10.x": "arn:aws:lambda:us-east-1:554407330061:layer:MainlandLayer:9"
+  "nodejs10.x": "arn:aws:lambda:us-east-1:554407330061:layer:MainlandLayer:9",
+  "nodejs8.10": "arn:aws:lambda:us-east-1:554407330061:layer:MainlandLayer:9"
 };
 
-export default class MainlandLayerPlugin {
+export default class NewRelicLayerPlugin {
   public serverless: Serverless;
   public options: Serverless.Options;
   public hooks: {
@@ -22,9 +22,7 @@ export default class MainlandLayerPlugin {
 
   constructor(serverless: Serverless, options: Serverless.Options) {
     this.serverless = serverless;
-
     this.options = options;
-
     this.hooks = {
       "after:deploy:function:packageFunction": this.cleanup.bind(this),
       "after:package:createDeploymentArtifacts": this.cleanup.bind(this),
@@ -34,7 +32,7 @@ export default class MainlandLayerPlugin {
   }
 
   get config() {
-    return _.get(this.serverless, "service.custom.mainland", {});
+    return _.get(this.serverless, "service.custom.newrelic", {});
   }
 
   get functions() {
@@ -56,20 +54,18 @@ export default class MainlandLayerPlugin {
     }
 
     const plugins = _.get(this.serverless, "service.plugins", []);
-
     this.serverless.cli.log(`Plugins: ${JSON.stringify(plugins)}`);
-
     if (
-      plugins.indexOf("serverless-webpack") > plugins.indexOf("mainland-layer")
+      plugins.indexOf("serverless-webpack") >
+      plugins.indexOf("serverless-newrelic-layers")
     ) {
       this.serverless.cli.log(
-        "mainland-layers plugin must come after serverless-webpack in serverless.yml; skipping."
+        "serverless-newrelic-layers plugin must come after serverless-webpack in serverless.yml; skipping."
       );
       return;
     }
 
     const funcs = this.functions;
-
     Object.keys(funcs).forEach(async funcName => {
       const funcDef = funcs[funcName];
       await this.addLayer(funcName, funcDef);
@@ -81,12 +77,12 @@ export default class MainlandLayerPlugin {
   }
 
   private async addLayer(funcName: string, funcDef: any) {
-    this.serverless.cli.log(`Adding Mainland layer to ${funcName}`);
+    this.serverless.cli.log(`Adding NewRelic layer to ${funcName}`);
 
     const region = _.get(this.serverless.service, "provider.region");
     if (!region) {
       this.serverless.cli.log(
-        "No AWS region specified for Mainland layer; skipping."
+        "No AWS region specified for NewRelic layer; skipping."
       );
       return;
     }
@@ -112,7 +108,7 @@ export default class MainlandLayerPlugin {
       ].indexOf(runtime) === -1
     ) {
       this.serverless.cli.log(
-        `Unsupported runtime "${runtime}" for Mainland layer; skipping.`
+        `Unsupported runtime "${runtime}" for NewRelic layer; skipping.`
       );
       return;
     }
@@ -127,13 +123,13 @@ export default class MainlandLayerPlugin {
       ? this.config.layer_arn
       : await this.getLayerArn(runtime, region);
 
-    const mainlandLayers = layers.filter(
+    const newrelicLayers = layers.filter(
       layer => typeof layer === "string" && layer.match(layerArn)
     );
 
-    if (mainlandLayers.length) {
+    if (newrelicLayers.length) {
       this.serverless.cli.log(
-        `Function "${funcName}" already specifies an Mainland layer; skipping.`
+        `Function "${funcName}" already specifies an NewRelic layer; skipping.`
       );
     } else {
       if (typeof this.config.prepend === "boolean" && this.config.prepend) {
@@ -141,13 +137,14 @@ export default class MainlandLayerPlugin {
       } else {
         layers.push(layerArn);
       }
+
       funcDef.layers = layers;
     }
 
-    environment.MAINLAND_HANDLER = handler;
-    environment.MAINLAND_DEBUG =
-      typeof environment.MAINLAND_DEBUG !== "undefined"
-        ? environment.MAINLAND_DEBUG
+    environment.NEWRELIC_HANDLER = handler;
+    environment.NEWRELIC_DEBUG =
+      typeof environment.NEWRELIC_DEBUG !== "undefined"
+        ? environment.NEWRELIC_DEBUG
         : this.config.debug || false;
     funcDef.environment = environment;
 
@@ -162,7 +159,7 @@ export default class MainlandLayerPlugin {
     return layerArns[runtime];
     // return util
     //   .promisify(request)(
-    //     `https://${region}.layers.iopipe.com/get-mainland-layers?CompatibleRuntime=${runtime}`
+    //     `https://${region}.layers.iopipe.com/get-layers?CompatibleRuntime=${runtime}`
     //   )
     //   .then(response => {
     //     const awsResp = JSON.parse(response.body);
@@ -186,4 +183,4 @@ export default class MainlandLayerPlugin {
   }
 }
 
-module.exports = MainlandLayerPlugin;
+module.exports = NewRelicLayerPlugin;
