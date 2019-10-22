@@ -32,7 +32,7 @@ export default class NewRelicLayerPlugin {
   }
 
   get config() {
-    return _.get(this.serverless, "service.custom.newrelic", {});
+    return _.get(this.serverless, "service.custom.newRelic", {});
   }
 
   get functions() {
@@ -95,12 +95,18 @@ export default class NewRelicLayerPlugin {
       package: pkg = {}
     } = funcDef;
 
+    if (!this.config.licenseKey && !environment.NEW_RELIC_LICENSE_KEY) {
+      this.serverless.cli.log(
+        `No New Relic license key specified for "${funcName}"; skipping.`
+      );
+      return;
+    }
+
     if (
       typeof runtime !== "string" ||
       [
         "nodejs12.x",
         "nodejs10.x",
-        "nodejs6.10",
         "nodejs8.10",
         "python2.7",
         "python3.6",
@@ -123,11 +129,11 @@ export default class NewRelicLayerPlugin {
       ? this.config.layer_arn
       : await this.getLayerArn(runtime, region);
 
-    const newrelicLayers = layers.filter(
+    const newRelicLayers = layers.filter(
       layer => typeof layer === "string" && layer.match(layerArn)
     );
 
-    if (newrelicLayers.length) {
+    if (newRelicLayers.length) {
       this.serverless.cli.log(
         `Function "${funcName}" already specifies an NewRelic layer; skipping.`
       );
@@ -142,32 +148,75 @@ export default class NewRelicLayerPlugin {
     }
 
     environment.NEWRELIC_HANDLER = handler;
-    environment.NEWRELIC_DEBUG =
-      typeof environment.NEWRELIC_DEBUG !== "undefined"
-        ? environment.NEWRELIC_DEBUG
-        : this.config.debug || false;
+    environment.NEW_RELIC_LOG_LEVEL = environment.NEW_RELIC_LOG_LEVEL
+      ? environment.NEW_RELIC_LOG_LEVEL
+      : this.config.debug
+      ? "debug"
+      : "info";
+    environment.NEW_RELIC_LICENSE_KEY = environment.NEW_RELIC_LICENSE_KEY
+      ? environment.NEW_RELIC_LICENSE_KEY
+      : this.config.licenseKey;
     funcDef.environment = environment;
 
-    funcDef.handler = handler; // avoiding rewrapping
+    funcDef.handler = this.getHandlerWrapper(runtime, handler);
     funcDef.package = this.updatePackageExcludes(runtime, pkg);
   }
 
   private async getLayerArn(runtime: string, region: string) {
-    if (!layerArns[runtime]) {
-      return false;
+    return util
+      .promisify(request)(
+        `https://${region}.nrlayers.iopipe.com/get-layers?CompatibleRuntime=${runtime}`
+      )
+      .then(response => {
+        const awsResp = JSON.parse(response.body);
+        return _.get(
+          awsResp,
+          "Layers[0].LatestMatchingVersion.LayerVersionArn"
+        );
+      });
+  }
+
+  private getHandlerWrapper(runtime: string, handler: string) {
+    if (
+      runtime === "nodejs8.10" ||
+      (runtime === "nodejs10.x" &&
+        _.get(this.serverless, "enterpriseEnabled", false))
+    ) {
+      this.addNodeHelper();
+      return "newrelic-lambda-wrapper-helper.handler";
     }
-    return layerArns[runtime];
-    // return util
-    //   .promisify(request)(
-    //     `https://${region}.layers.iopipe.com/get-layers?CompatibleRuntime=${runtime}`
-    //   )
-    //   .then(response => {
-    //     const awsResp = JSON.parse(response.body);
-    //     return _.get(
-    //       awsResp,
-    //       "Layers[0].LatestMatchingVersion.LayerVersionArn"
-    //     );
-    //   });
+
+    if (runtime === "nodejs10.x") {
+      return "/opt/nodejs/node_modules/newrelic-lambda-wrapper.handler";
+    }
+
+    if (runtime.match("python")) {
+      return "newrelic_lambda_wrapper.handler";
+    }
+
+    return handler;
+  }
+
+  get nodeHlperPath() {
+    return path.join(
+      this.serverless.config.servicePath,
+      "newrelic-lambda-wrapper-helper.js"
+    );
+  }
+
+  private addNodeHelper() {
+    if (!fs.existsSync(this.nodeHelperPath)) {
+      fs.writeFileSync(
+        this.nodeHelperPath,
+        "module.exports = require('newrelic-lambda-wrapper');"
+      );
+    }
+  }
+
+  private removeNodeHelper() {
+    if (fs.existsSync(this.nodeHelperPath)) {
+      fs.removeSync(this.nodeHelperPath);
+    }
   }
 
   private updatePackageExcludes(runtime: string, pkg: any) {
@@ -176,9 +225,8 @@ export default class NewRelicLayerPlugin {
     }
 
     const { exclude = [] } = pkg;
-    exclude.push("!newrelic/handler.js");
+    exclude.push("!newrelic-lambda-wrapper-helper.js");
     pkg.exclude = exclude;
-
     return pkg;
   }
 }
