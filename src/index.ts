@@ -150,7 +150,7 @@ export default class NewRelicLayerPlugin {
 
     if (mainlandLayers.length) {
       this.serverless.cli.log(
-        `Function "${funcName}" already specifies an Mainland layer; skipping.`
+        `Function "${funcName}" already specifies an NewRelic layer; skipping.`
       );
     } else {
       if (typeof this.config.prepend === "boolean" && this.config.prepend) {
@@ -161,10 +161,10 @@ export default class NewRelicLayerPlugin {
       funcDef.layers = layers;
     }
 
-    environment.NR_TARGET_HANDLER = handler;
-    environment.NR_DEBUG =
-      typeof environment.NR_DEBUG !== "undefined"
-        ? environment.NR_DEBUG
+    environment.NEW_RELIC_TARGET_HANDLER = handler;
+    environment.NEW_RELIC_DEBUG =
+      typeof environment.NEW_RELIC_DEBUG !== "undefined"
+        ? environment.NEW_RELIC_DEBUG
         : this.config.debug || false;
     funcDef.environment = environment;
 
