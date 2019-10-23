@@ -9,8 +9,8 @@ import * as Serverless from "serverless";
 
 // shim for testing when we don't have layer-arn server yet
 const layerArns = {
-  "nodejs8.10": "arn:aws:lambda:us-east-1:554407330061:layer:MainlandLayer:9",
-  "nodejs10.x": "arn:aws:lambda:us-east-1:554407330061:layer:MainlandLayer:9"
+  "nodejs8.10": "arn:aws:lambda:us-east-1:554407330061:layer:MainlandTestLayer:1",
+  "nodejs10.x": "arn:aws:lambda:us-east-1:554407330061:layer:MainlandTestLayer:1"
 };
 
 export default class MainlandLayerPlugin {
@@ -60,7 +60,7 @@ export default class MainlandLayerPlugin {
     this.serverless.cli.log(`Plugins: ${JSON.stringify(plugins)}`);
 
     if (
-      plugins.indexOf("serverless-webpack") > plugins.indexOf("mainland-layer")
+      plugins.indexOf("serverless-webpack") > plugins.indexOf("mainland-layer-plugin")
     ) {
       this.serverless.cli.log(
         "mainland-layers plugin must come after serverless-webpack in serverless.yml; skipping."
@@ -79,6 +79,28 @@ export default class MainlandLayerPlugin {
   public cleanup() {
     // any artifacts can be removed here
   }
+
+  private getHandlerWrapper(runtime: string, handler: string) {
+
+    if (
+        ["nodejs6.10", "nodejs8.10", "nodejs10.x", "nodejs12.x"].indexOf(runtime) !== -1 ||
+        (runtime === "nodejs10.x" &&
+            _.get(this.serverless, "enterpriseEnabled", false))
+    ) {
+      return "newrelic-handler-wrapper.wrapper";
+    }
+
+    // if (runtime === "nodejs10.x") {
+    //   return "/opt/nodejs/node_modules/newrelic-handler-wrapper.wrapper";
+    // }
+
+    if (runtime.match("python")) {
+      return "newrelic-handler-wrapper.wrapper";
+    }
+
+    return handler;
+  }
+
 
   private async addLayer(funcName: string, funcDef: any) {
     this.serverless.cli.log(`Adding Mainland layer to ${funcName}`);
@@ -144,14 +166,14 @@ export default class MainlandLayerPlugin {
       funcDef.layers = layers;
     }
 
-    environment.MAINLAND_HANDLER = handler;
+    environment.MAINLAND_TARGET_FN = handler;
     environment.MAINLAND_DEBUG =
       typeof environment.MAINLAND_DEBUG !== "undefined"
         ? environment.MAINLAND_DEBUG
         : this.config.debug || false;
     funcDef.environment = environment;
 
-    funcDef.handler = handler; // avoiding rewrapping
+    funcDef.handler = this.getHandlerWrapper(runtime, handler);
     funcDef.package = this.updatePackageExcludes(runtime, pkg);
   }
 
@@ -179,7 +201,7 @@ export default class MainlandLayerPlugin {
     }
 
     const { exclude = [] } = pkg;
-    exclude.push("!newrelic/handler.js");
+    exclude.push("!newrelic-handler-wrapper.wrapper");
     pkg.exclude = exclude;
 
     return pkg;
