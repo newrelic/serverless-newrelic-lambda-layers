@@ -9,8 +9,10 @@ import * as Serverless from "serverless";
 
 // shim for testing when we don't have layer-arn server yet
 const layerArns = {
-  "nodejs8.10": "arn:aws:lambda:us-east-1:554407330061:layer:MainlandTestLayer:1",
-  "nodejs10.x": "arn:aws:lambda:us-east-1:554407330061:layer:MainlandTestLayer:1"
+  "nodejs10.x":
+    "arn:aws:lambda:us-east-1:554407330061:layer:MainlandTestLayer:1",
+  "nodejs8.10":
+    "arn:aws:lambda:us-east-1:554407330061:layer:MainlandTestLayer:1"
 };
 
 export default class MainlandLayerPlugin {
@@ -60,7 +62,8 @@ export default class MainlandLayerPlugin {
     this.serverless.cli.log(`Plugins: ${JSON.stringify(plugins)}`);
 
     if (
-      plugins.indexOf("serverless-webpack") > plugins.indexOf("mainland-layer-plugin")
+      plugins.indexOf("serverless-webpack") >
+      plugins.indexOf("mainland-layer-plugin")
     ) {
       this.serverless.cli.log(
         "mainland-layers plugin must come after serverless-webpack in serverless.yml; skipping."
@@ -81,11 +84,12 @@ export default class MainlandLayerPlugin {
   }
 
   private getHandlerWrapper(runtime: string, handler: string) {
-
     if (
-        ["nodejs6.10", "nodejs8.10", "nodejs10.x", "nodejs12.x"].indexOf(runtime) !== -1 ||
-        (runtime === "nodejs10.x" &&
-            _.get(this.serverless, "enterpriseEnabled", false))
+      ["nodejs6.10", "nodejs8.10", "nodejs10.x", "nodejs12.x"].indexOf(
+        runtime
+      ) !== -1 ||
+      (runtime === "nodejs10.x" &&
+        _.get(this.serverless, "enterpriseEnabled", false))
     ) {
       return "newrelic-handler-wrapper.wrapper";
     }
@@ -100,7 +104,6 @@ export default class MainlandLayerPlugin {
 
     return handler;
   }
-
 
   private async addLayer(funcName: string, funcDef: any) {
     this.serverless.cli.log(`Adding Mainland layer to ${funcName}`);

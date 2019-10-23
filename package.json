@@ -1,5 +1,5 @@
 {
-  "name": "mainland-layer",
+  "name": "serverless-newrelic-layers",
   "version": "0.1.0",
   "description": "Serverless plugin for APM layers.",
   "main": "dist/index.js",
