@@ -10,9 +10,9 @@ import * as Serverless from "serverless";
 // shim for testing when we don't have layer-arn server yet
 const layerArns = {
   "nodejs10.x":
-    "arn:aws:lambda:us-east-1:554407330061:layer:MainlandTestLayer:10",
+    "arn:aws:lambda:us-east-1:554407330061:layer:MainlandTestLayer:12",
   "nodejs8.10":
-    "arn:aws:lambda:us-east-1:554407330061:layer:MainlandTestLayer:10"
+    "arn:aws:lambda:us-east-1:554407330061:layer:MainlandTestLayer:12"
 };
 
 export default class NewRelicLayerPlugin {
@@ -78,28 +78,8 @@ export default class NewRelicLayerPlugin {
     // any artifacts can be removed here
   }
 
-  private getHandlerWrapper(runtime: string, handler: string) {
-    if (
-      ["nodejs8.10", "nodejs10.x", "nodejs12.x"].indexOf(runtime) !== -1 ||
-      (runtime === "nodejs10.x" &&
-        _.get(this.serverless, "enterpriseEnabled", false))
-    ) {
-      return "newrelic-lambda-wrapper.handler";
-    }
-
-    // if (runtime === "nodejs10.x") {
-    //   return "/opt/nodejs/node_modules/newrelic-lambda-wrapper.handler";
-    // }
-
-    if (runtime.match("python")) {
-      return "newrelic-lambda-wrapper.handler";
-    }
-
-    return handler;
-  }
-
   private async addLayer(funcName: string, funcDef: any) {
-    this.serverless.cli.log(`Adding Mainland layer to ${funcName}`);
+    this.serverless.cli.log(`Adding NewRelic layer to ${funcName}`);
 
     const region = _.get(this.serverless.service, "provider.region");
     if (!region) {
@@ -116,6 +96,26 @@ export default class NewRelicLayerPlugin {
       layers = [],
       package: pkg = {}
     } = funcDef;
+
+    // if (!this.config.licenseKey && !environment.NEW_RELIC_LICENSE_KEY) {
+    //   this.serverless.cli.log(
+    //       `No New Relic license key specified for "${funcName}"; skipping.`
+    //   );
+    //   return;
+    // }
+
+    this.serverless.cli.log(
+      `### funcDef environment: ${JSON.stringify(environment)}`
+    );
+    this.serverless.cli.log(
+      `### NR enabled?: ${process.env.NEW_RELIC_ENABLED}`
+    );
+    this.serverless.cli.log(
+      `### NEW_RELIC_PRIMARY_APPLICATION_ID?: ${process.env.NEW_RELIC_PRIMARY_APPLICATION_ID}`
+    );
+    this.serverless.cli.log(
+      `### NEW_RELIC_LICENSE_KEY?: ${process.env.NEW_RELIC_LICENSE_KEY}`
+    );
 
     if (
       typeof runtime !== "string" ||
@@ -144,11 +144,11 @@ export default class NewRelicLayerPlugin {
       ? this.config.layer_arn
       : await this.getLayerArn(runtime, region);
 
-    const mainlandLayers = layers.filter(
+    const newRelicLayers = layers.filter(
       layer => typeof layer === "string" && layer.match(layerArn)
     );
 
-    if (mainlandLayers.length) {
+    if (newRelicLayers.length) {
       this.serverless.cli.log(
         `Function "${funcName}" already specifies an NewRelic layer; skipping.`
       );
@@ -158,14 +158,19 @@ export default class NewRelicLayerPlugin {
       } else {
         layers.push(layerArn);
       }
+
       funcDef.layers = layers;
     }
 
-    environment.NEW_RELIC_TARGET_HANDLER = handler;
-    environment.NEW_RELIC_DEBUG =
-      typeof environment.NEW_RELIC_DEBUG !== "undefined"
-        ? environment.NEW_RELIC_DEBUG
-        : this.config.debug || false;
+    environment.NEW_RELIC_HANDLER = handler;
+    environment.NEW_RELIC_LOG_LEVEL = environment.NEW_RELIC_LOG_LEVEL
+      ? environment.NEW_RELIC_LOG_LEVEL
+      : this.config.debug
+      ? "debug"
+      : "info";
+    environment.NEW_RELIC_LICENSE_KEY = environment.NEW_RELIC_LICENSE_KEY
+      ? environment.NEW_RELIC_LICENSE_KEY
+      : this.config.licenseKey;
     funcDef.environment = environment;
 
     funcDef.handler = this.getHandlerWrapper(runtime, handler);
@@ -179,7 +184,7 @@ export default class NewRelicLayerPlugin {
     return layerArns[runtime];
     // return util
     //   .promisify(request)(
-    //     `https://${region}.layers.iopipe.com/get-mainland-layers?CompatibleRuntime=${runtime}`
+    //     `https://${region}.nrlayers.iopipe.com/get-mainland-layers?CompatibleRuntime=${runtime}`
     //   )
     //   .then(response => {
     //     const awsResp = JSON.parse(response.body);
@@ -190,6 +195,26 @@ export default class NewRelicLayerPlugin {
     //   });
   }
 
+  private getHandlerWrapper(runtime: string, handler: string) {
+    if (
+        ["nodejs8.10", "nodejs10.x", "nodejs12.x"].indexOf(runtime) !== -1 ||
+        (runtime === "nodejs10.x" &&
+            _.get(this.serverless, "enterpriseEnabled", false))
+    ) {
+      return "newrelic-lambda-wrapper.handler";
+    }
+
+    // if (runtime === "nodejs10.x") {
+    //   return "/opt/nodejs/node_modules/newrelic-lambda-wrapper.handler";
+    // }
+    //
+    if (runtime.match("python")) {
+      return "newrelic-lambda-wrapper.handler";
+    }
+
+    return handler;
+  }
+
   private updatePackageExcludes(runtime: string, pkg: any) {
     if (!runtime.match("nodejs")) {
       return pkg;
@@ -198,7 +223,6 @@ export default class NewRelicLayerPlugin {
     const { exclude = [] } = pkg;
     exclude.push("!newrelic-lambda-wrapper.handler");
     pkg.exclude = exclude;
-
     return pkg;
   }
 }
