@@ -9,7 +9,7 @@
     "README.md"
   ],
   "scripts": {
-    "build": "rm -rf dist && tsc",
+    "build": "yarn lint && rm -rf dist && tsc && cp -r node_modules dist/node_modules",
     "lint": "tslint -c tslint.json 'src/**/*.ts'"
   },
   "repository": {
