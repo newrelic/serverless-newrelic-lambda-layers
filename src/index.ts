@@ -1,7 +1,4 @@
-import * as fs from "fs-extra";
-import * as path from "path";
 import * as util from "util";
-
 import * as _ from "lodash";
 import * as request from "request";
 import * as semver from "semver";
@@ -147,15 +144,17 @@ export default class NewRelicLayerPlugin {
       funcDef.layers = layers;
     }
 
-    environment.NEWRELIC_HANDLER = handler;
+    environment.NEW_RELIC_HANDLER = handler;
     environment.NEW_RELIC_LOG_LEVEL = environment.NEW_RELIC_LOG_LEVEL
       ? environment.NEW_RELIC_LOG_LEVEL
       : this.config.debug
       ? "debug"
       : "info";
+
     environment.NEW_RELIC_LICENSE_KEY = environment.NEW_RELIC_LICENSE_KEY
       ? environment.NEW_RELIC_LICENSE_KEY
       : this.config.licenseKey;
+
     funcDef.environment = environment;
 
     funcDef.handler = this.getHandlerWrapper(runtime, handler);
@@ -178,45 +177,23 @@ export default class NewRelicLayerPlugin {
 
   private getHandlerWrapper(runtime: string, handler: string) {
     if (
-      runtime === "nodejs8.10" ||
+      ["nodejs8.10", "nodejs10.x", "nodejs12.x"].indexOf(runtime) !== -1 ||
       (runtime === "nodejs10.x" &&
         _.get(this.serverless, "enterpriseEnabled", false))
     ) {
-      this.addNodeHelper();
-      return "newrelic-lambda-wrapper-helper.handler";
+      return "newrelic-lambda-wrapper.handler";
     }
 
-    if (runtime === "nodejs10.x") {
-      return "/opt/nodejs/node_modules/newrelic-lambda-wrapper.handler";
-    }
+    // if (runtime === "nodejs10.x" || runtime === "nodejs12.x") {
+    //   this.serverless.cli.log(`setting full path for wrapper`);
+    //   return "/opt/nodejs/node_modules/newrelic-lambda-wrapper.handler";
+    // }
 
     if (runtime.match("python")) {
-      return "newrelic_lambda_wrapper.handler";
+      return "newrelic-lambda-wrapper.handler";
     }
 
     return handler;
-  }
-
-  get nodeHlperPath() {
-    return path.join(
-      this.serverless.config.servicePath,
-      "newrelic-lambda-wrapper-helper.js"
-    );
-  }
-
-  private addNodeHelper() {
-    if (!fs.existsSync(this.nodeHelperPath)) {
-      fs.writeFileSync(
-        this.nodeHelperPath,
-        "module.exports = require('newrelic-lambda-wrapper');"
-      );
-    }
-  }
-
-  private removeNodeHelper() {
-    if (fs.existsSync(this.nodeHelperPath)) {
-      fs.removeSync(this.nodeHelperPath);
-    }
   }
 
   private updatePackageExcludes(runtime: string, pkg: any) {
@@ -225,7 +202,7 @@ export default class NewRelicLayerPlugin {
     }
 
     const { exclude = [] } = pkg;
-    exclude.push("!newrelic-lambda-wrapper-helper.js");
+    exclude.push("!newrelic-lambda-wrapper.handler");
     pkg.exclude = exclude;
     return pkg;
   }
