@@ -59,18 +59,37 @@ The following config options are available via the `newRelic` section of the `cu
 
 Your [New Relic ACcount ID](https://docs.newrelic.com/docs/accounts/install-new-relic/account-setup/account-id).
 
+```yaml
+custom:
+  newRelic:
+    accountId: your-account-id-here
+```
+
 #### `appName` (required)
 
-The application's name. This is how it will appear on New Relic.
+The application's name. This is how this app will appear on New Relic.
+
+```yaml
+custom:
+  newRelic:
+    appName: your-app-name-here
+```
 
 #### `trustedAccountKey` (optional)
 
 Only required if your New Relic account is a sub-account. This needs to be the account ID for the root/parent account.
 
+```yaml
+custom:
+  newRelic:
+    accountId: your-sub-account-id
+    trustedAccountKey: your-parent-account-id
+```
+
 #### `debug` (optional)
 
-Whether or not to enable debug mode. Must be a boolean value. This increases the default
-log level.
+Whether or not to enable debug mode. Must be a boolean value. This sets the log level to
+debug.
 
 ```yaml
 custom:
