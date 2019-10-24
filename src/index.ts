@@ -10,7 +10,7 @@ const layerArns = {
   "nodejs8.10": "arn:aws:lambda:us-east-1:554407330061:layer:MainlandLayer:9"
 };
 
-export default class NewRelicLayerPlugin {
+export default class NewRelicLambdaLayerPlugin {
   public serverless: Serverless;
   public options: Serverless.Options;
   public hooks: {
@@ -164,7 +164,7 @@ export default class NewRelicLayerPlugin {
   private async getLayerArn(runtime: string, region: string) {
     return util
       .promisify(request)(
-        `https://${region}.nrlayers.iopipe.com/get-layers?CompatibleRuntime=${runtime}`
+        `https://${region}.nr-layers.iopipe.com/get-layers?CompatibleRuntime=${runtime}`
       )
       .then(response => {
         const awsResp = JSON.parse(response.body);
@@ -208,4 +208,4 @@ export default class NewRelicLayerPlugin {
   }
 }
 
-module.exports = NewRelicLayerPlugin;
+module.exports = NewRelicLambdaLayerPlugin;

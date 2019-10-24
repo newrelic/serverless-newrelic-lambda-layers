@@ -1,5 +1,5 @@
 {
-  "name": "serverless-newrelic-layers",
+  "name": "serverless-newrelic-lambda-layers",
   "version": "0.1.0",
   "description": "Serverless plugin for NewRelic APM layers.",
   "main": "dist/index.js",
@@ -9,19 +9,19 @@
     "README.md"
   ],
   "scripts": {
-    "build": "yarn lint && rm -rf dist && tsc && cp -r node_modules dist/node_modules",
+    "build": "rm -rf dist && tsc",
     "lint": "tslint -c tslint.json 'src/**/*.ts'"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/iopipe/serverless-newrelic-layers.git"
+    "url": "git+https://github.com/iopipe/serverless-newrelic-lambda-layers.git"
   },
   "author": "IOpipe",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/iopipe/serverless-newrelic-layers/issues"
+    "url": "https://github.com/iopipe/serverless-newrelic-lambda-layers/issues"
   },
-  "homepage": "https://github.com/iopipe/serverless-newrelic-layers#readme",
+  "homepage": "https://github.com/iopipe/serverless-newrelic-lambda-layers#readme",
   "devDependencies": {
     "@types/fs-extra": "^5.0.5",
     "@types/lodash": "^4.14.136",

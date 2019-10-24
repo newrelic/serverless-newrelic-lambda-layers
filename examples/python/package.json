@@ -1,0 +1,19 @@
+{
+  "name": "serverless-newrelic-lambda-layers-python-example",
+  "version": "0.0.0-test",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm run clean && npm run buildPlugin && npm run buildPackage",
+    "buildPackage": "LOCAL_PLUGIN=true SLS_DEBUG=* NEW_RELIC_LICENSE_KEY='test-key' sls package",
+    "buildPlugin": "cd ../../ && npm run build && mkdir -p examples/python/.serverless_plugins && cp -rf dist examples/python/.serverless_plugins/serverless-newrelic-lambda-layers",
+    "clean": "rm -rf .serverless_plugins",
+    "deploy": "yarn build && sls deploy"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "serverless": "^1.48.2"
+  },
+  "dependencies": {}
+}

@@ -1,0 +1,42 @@
+service: newrelic-lambda-layers-python-example
+
+provider:
+  name: aws
+  stage: prod
+  region: us-east-1
+
+plugins:
+  - serverless-newrelic-lambda-layers
+
+custom:
+    newRelic:
+        debug: true
+        licenseKey: ${env:NEW_RELIC_LICENSE_KEY}
+
+functions:
+  layer-python27:
+    handler: handler.handler
+    package:
+      exclude:
+        - ./**
+      include:
+        - handler.py
+    runtime: python2.7
+
+  layer-python36:
+    handler: handler.handler
+    package:
+      exclude:
+        - ./**
+      include:
+        - handler.py
+    runtime: python3.6
+
+  layer-python37:
+    handler: handler.handler
+    package:
+      exclude:
+        - ./**
+      include:
+        - handler.py
+    runtime: python3.7
