@@ -153,6 +153,10 @@ export default class NewRelicLambdaLayerPlugin {
 
     environment.NEW_RELIC_LAMBDA_HANDLER = handler;
 
+    environment.NEW_RELIC_LOG = environment.NEW_RELIC_LOG
+      ? environment.NEW_RELIC_LOG
+      : "stdout";
+
     environment.NEW_RELIC_LOG_LEVEL = environment.NEW_RELIC_LOG_LEVEL
       ? environment.NEW_RELIC_LOG_LEVEL
       : this.config.debug
@@ -167,7 +171,6 @@ export default class NewRelicLambdaLayerPlugin {
       ? environment.NEW_RELIC_APP_NAME
       : this.config.appName;
 
-
     environment.NEW_RELIC_ACCOUNT_ID = environment.NEW_RELIC_ACCOUNT_ID
       ? environment.NEW_RELIC_ACCOUNT_ID
       : this.config.accountId;
@@ -177,6 +180,12 @@ export default class NewRelicLambdaLayerPlugin {
       : environment.NEW_RELIC_ACCOUNT_ID
       ? environment.NEW_RELIC_ACCOUNT_ID
       : this.config.trustedAccountKey;
+
+    environment.NEW_RELIC_SERVERLESS_MODE_ENABLED = "true"
+      ? environment.NEW_RELIC_SERVERLESS_MODE_ENABLED
+      : "true"
+      ? this.config.serverlessModeEnabled
+      : "false";
 
     funcDef.environment = environment;
 
