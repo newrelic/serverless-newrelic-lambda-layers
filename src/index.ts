@@ -144,7 +144,7 @@ export default class NewRelicLayerPlugin {
       funcDef.layers = layers;
     }
 
-    environment.NEW_RELIC_HANDLER = handler;
+    environment.NEW_RELIC_LAMBDA_HANDLER = handler;
     environment.NEW_RELIC_LOG_LEVEL = environment.NEW_RELIC_LOG_LEVEL
       ? environment.NEW_RELIC_LOG_LEVEL
       : this.config.debug
