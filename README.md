@@ -63,9 +63,14 @@ Your [New Relic ACcount ID](https://docs.newrelic.com/docs/accounts/install-new-
 
 The application's name. This is how it will appear on New Relic.
 
+#### `trustedAccountKey` (optional)
+
+Only required if your New Relic account is a sub-account. This needs to be the account ID for the root/parent account.
+
 #### `debug` (optional)
 
-Whether or not to enable debug mode. Must be a boolean value.
+Whether or not to enable debug mode. Must be a boolean value. This increases the default
+log level.
 
 ```yaml
 custom:
