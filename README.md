@@ -1,4 +1,4 @@
-# serverless-newrelic-layers
+# serverless-newrelic-lambda-layers
 
 A [Serverless](https://serverless.com) plugin to add [New Relic](https://www.newrelic.com)
 observability using [AWS Lambda Layers](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html) without requiring a code change.
@@ -63,16 +63,6 @@ Your [New Relic ACcount ID](https://docs.newrelic.com/docs/accounts/install-new-
 custom:
   newRelic:
     accountId: your-account-id-here
-```
-
-#### `appName` (required)
-
-The application's name. This is how this app will appear on New Relic.
-
-```yaml
-custom:
-  newRelic:
-    appName: your-app-name-here
 ```
 
 #### `trustedAccountKey` (optional)

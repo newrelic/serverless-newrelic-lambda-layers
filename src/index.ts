@@ -92,13 +92,6 @@ export default class NewRelicLambdaLayerPlugin {
       package: pkg = {}
     } = funcDef;
 
-    if (!this.config.appName && !environment.NEW_RELIC_APP_NAME) {
-      this.serverless.cli.log(
-        `No New Relic App Name specified for "${funcName}"; skipping.`
-      );
-      return;
-    }
-
     if (!this.config.accountId && !environment.NEW_RELIC_ACCOUNT_ID) {
       this.serverless.cli.log(
         `No New Relic Account ID specified for "${funcName}"; skipping.`
@@ -169,7 +162,7 @@ export default class NewRelicLambdaLayerPlugin {
 
     environment.NEW_RELIC_APP_NAME = environment.NEW_RELIC_APP_NAME
       ? environment.NEW_RELIC_APP_NAME
-      : this.config.appName;
+      : funcName;
 
     environment.NEW_RELIC_ACCOUNT_ID = environment.NEW_RELIC_ACCOUNT_ID
       ? environment.NEW_RELIC_ACCOUNT_ID
