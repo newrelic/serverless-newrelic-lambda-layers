@@ -5,7 +5,8 @@ observability using [AWS Lambda Layers](https://docs.aws.amazon.com/lambda/lates
 
 ## Requirements
 
-* serverless >= 1.34.0
+* [serverless](https://github.com/serverless/serverless) >= 1.34.0
+* Install [New Relic AWS Integration](https://docs.newrelic.com/docs/serverless-function-monitoring/aws-lambda-monitoring/get-started/enable-new-relic-monitoring-aws-lambda#enable-process)
 
 ## Features
 
@@ -31,15 +32,15 @@ Add the plugin to your `serverless.yml`:
 
 ```yaml
 plugins:
-  - serverless-newrelic-layers
+  - serverless-newrelic-lambda-layers
 ```
 
-Get a [New Relic license key](https://dashboard.iopipe.com/install) and plug it into your `serverless.yml`:
+Get your [New Relic Account ID](https://docs.newrelic.com/docs/accounts/install-new-relic/account-setup/account-id) and plug it into your `serverless.yml`:
 
 ```yaml
 custom:
   newRelic:
-      licenseKey: your-new-relic-license-key-here
+      accountId: your-new-relic-account-id-here
 ```
 
 Deploy and you're all set.
@@ -54,9 +55,13 @@ do it for you automatically.
 
 The following config options are available via the `newRelic` section of the `custom` section of your `serverless.yml`:
 
-#### `licenseKey` (required)
+#### `accountId` (required)
 
-The New Relic license key to use.
+Your [New Relic ACcount ID](https://docs.newrelic.com/docs/accounts/install-new-relic/account-setup/account-id).
+
+#### `appName` (required)
+
+The application's name. This is how it will appear on New Relic.
 
 #### `debug` (optional)
 

@@ -1,8 +1,8 @@
-import * as util from "util";
 import * as _ from "lodash";
 import * as request from "request";
 import * as semver from "semver";
 import * as Serverless from "serverless";
+import * as util from "util";
 
 // shim for testing when we don't have layer-arn server yet
 const layerArns = {
@@ -92,9 +92,16 @@ export default class NewRelicLambdaLayerPlugin {
       package: pkg = {}
     } = funcDef;
 
-    if (!this.config.licenseKey && !environment.NEW_RELIC_LICENSE_KEY) {
+    if (!this.config.appName && !environment.NEW_RELIC_APP_NAME) {
       this.serverless.cli.log(
-        `No New Relic license key specified for "${funcName}"; skipping.`
+        `No New Relic App Name specified for "${funcName}"; skipping.`
+      );
+      return;
+    }
+
+    if (!this.config.accountId && !environment.NEW_RELIC_ACCOUNT_ID) {
+      this.serverless.cli.log(
+        `No New Relic Account ID specified for "${funcName}"; skipping.`
       );
       return;
     }
@@ -145,15 +152,31 @@ export default class NewRelicLambdaLayerPlugin {
     }
 
     environment.NEW_RELIC_LAMBDA_HANDLER = handler;
+
     environment.NEW_RELIC_LOG_LEVEL = environment.NEW_RELIC_LOG_LEVEL
       ? environment.NEW_RELIC_LOG_LEVEL
       : this.config.debug
       ? "debug"
       : "info";
 
-    environment.NEW_RELIC_LICENSE_KEY = environment.NEW_RELIC_LICENSE_KEY
-      ? environment.NEW_RELIC_LICENSE_KEY
-      : this.config.licenseKey;
+    environment.NEW_RELIC_NO_CONFIG_FILE = environment.NEW_RELIC_NO_CONFIG_FILE
+      ? environment.NEW_RELIC_NO_CONFIG_FILE
+      : "true";
+
+    environment.NEW_RELIC_APP_NAME = environment.NEW_RELIC_APP_NAME
+      ? environment.NEW_RELIC_APP_NAME
+      : this.config.appName;
+
+
+    environment.NEW_RELIC_ACCOUNT_ID = environment.NEW_RELIC_ACCOUNT_ID
+      ? environment.NEW_RELIC_ACCOUNT_ID
+      : this.config.accountId;
+
+    environment.NEW_RELIC_TRUSTED_ACCOUNT_KEY = environment.NEW_RELIC_TRUSTED_ACCOUNT_KEY
+      ? environment.NEW_RELIC_TRUSTED_ACCOUNT_KEY
+      : environment.NEW_RELIC_ACCOUNT_ID
+      ? environment.NEW_RELIC_ACCOUNT_ID
+      : this.config.trustedAccountKey;
 
     funcDef.environment = environment;
 
