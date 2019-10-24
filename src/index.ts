@@ -85,6 +85,7 @@ export default class NewRelicLambdaLayerPlugin {
     }
 
     const {
+      name,
       environment = {},
       handler,
       runtime = _.get(this.serverless.service, "provider.runtime"),
@@ -122,8 +123,8 @@ export default class NewRelicLambdaLayerPlugin {
       return;
     }
 
-    const layerArn = this.config.layer_arn
-      ? this.config.layer_arn
+    const layerArn = this.config.layerArn
+      ? this.config.layerArn
       : await this.getLayerArn(runtime, region);
 
     const newRelicLayers = layers.filter(
@@ -162,7 +163,7 @@ export default class NewRelicLambdaLayerPlugin {
 
     environment.NEW_RELIC_APP_NAME = environment.NEW_RELIC_APP_NAME
       ? environment.NEW_RELIC_APP_NAME
-      : funcName;
+      : name || funcName;
 
     environment.NEW_RELIC_ACCOUNT_ID = environment.NEW_RELIC_ACCOUNT_ID
       ? environment.NEW_RELIC_ACCOUNT_ID

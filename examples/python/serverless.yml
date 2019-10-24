@@ -9,9 +9,9 @@ plugins:
   - serverless-newrelic-lambda-layers
 
 custom:
-    newRelic:
-        debug: true
-        licenseKey: ${env:NEW_RELIC_LICENSE_KEY}
+  newRelic:
+    accountId: "123456"
+    debug: true
 
 functions:
   layer-python27:

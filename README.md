@@ -99,9 +99,9 @@ custom:
       - another-excluded-func
 ```
 
-#### `layer_arn` (optional)
+#### `layerArn` (optional)
 
-Pin to a specific layer version. The latest layer ARN is automatically fetched from the [New Relic Layers API](https://nrlayers.iopipe.com)
+Pin to a specific layer version. The latest layer ARN is automatically fetched from the [New Relic Layers API](https://nr-layers.iopipe.com)
 
 #### `prepend` (optional)
 
