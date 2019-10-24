@@ -6,10 +6,8 @@ import * as Serverless from "serverless";
 
 // shim for testing when we don't have layer-arn server yet
 const layerArns = {
-  "nodejs10.x":
-    "arn:aws:lambda:us-east-1:554407330061:layer:MainlandTestLayer:13",
-  "nodejs8.10":
-    "arn:aws:lambda:us-east-1:554407330061:layer:MainlandTestLayer:13"
+  "nodejs10.x": "arn:aws:lambda:us-east-1:554407330061:layer:MainlandLayer:9",
+  "nodejs8.10": "arn:aws:lambda:us-east-1:554407330061:layer:MainlandLayer:9"
 };
 
 export default class NewRelicLayerPlugin {
@@ -166,7 +164,7 @@ export default class NewRelicLayerPlugin {
   private async getLayerArn(runtime: string, region: string) {
     return util
       .promisify(request)(
-        `https://${region}.nrlayers.iopipe.com/get-mainland-layers?CompatibleRuntime=${runtime}`
+        `https://${region}.nrlayers.iopipe.com/get-layers?CompatibleRuntime=${runtime}`
       )
       .then(response => {
         const awsResp = JSON.parse(response.body);
@@ -186,10 +184,10 @@ export default class NewRelicLayerPlugin {
       return "newrelic-lambda-wrapper.handler";
     }
 
-    if (runtime === "nodejs10.x" || runtime === "nodejs12.x") {
-      this.serverless.cli.log(`setting full path for wrapper`);
-      return "/opt/nodejs/node_modules/newrelic-lambda-wrapper.handler";
-    }
+    // if (runtime === "nodejs10.x" || runtime === "nodejs12.x") {
+    //   this.serverless.cli.log(`setting full path for wrapper`);
+    //   return "/opt/nodejs/node_modules/newrelic-lambda-wrapper.handler";
+    // }
 
     if (runtime.match("python")) {
       return "newrelic-lambda-wrapper.handler";
