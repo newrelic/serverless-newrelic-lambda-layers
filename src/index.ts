@@ -216,7 +216,7 @@ export default class NewRelicLambdaLayerPlugin {
     // }
 
     if (runtime.match("python")) {
-      return "newrelic-lambda-wrapper.handler";
+      return "newrelic_lambda_wrapper.handler";
     }
 
     return handler;
