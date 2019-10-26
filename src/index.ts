@@ -85,7 +85,7 @@ export default class NewRelicLambdaLayerPlugin {
       }
 
       this.serverless.cli.log(
-        `Configuring New Relic log stream filter for ${funcName}`
+        `Configuring New Relic log subscription for ${funcName}`
       );
 
       const funcDef = funcs[funcName];
@@ -287,6 +287,12 @@ export default class NewRelicLambdaLayerPlugin {
         return this.describeSubscriptionFilters(funcName, destinationArn);
       })
       .catch(err => {
+        this.serverless.cli.log(
+          "Could not find a `newrelic-log-ingestion` function installed."
+        );
+        this.serverless.cli.log(
+          "Please follow the setup instructions here: https://docs.newrelic.com/docs/serverless-function-monitoring/aws-lambda-monitoring/get-started/enable-new-relic-monitoring-aws-lambda#enable-process"
+        );
         if (err.providerError) {
           this.serverless.cli.log(err.providerError.message);
         }
@@ -307,6 +313,9 @@ export default class NewRelicLambdaLayerPlugin {
         );
 
         if (existingFilters.length) {
+          this.serverless.cli.log(
+            `Found log subscription for ${funcName}, verifying configuration`
+          );
           return Promise.all(
             existingFilters
               .filter(filter => filter.filterPattern !== "NR_LAMBDA_MONITORING")
@@ -316,6 +325,9 @@ export default class NewRelicLambdaLayerPlugin {
               )
           );
         } else {
+          this.serverless.cli.log(
+            `ADding New Relic log subscription to ${funcName}`
+          );
           return this.addSubscriptionFilter(funcName, destinationArn);
         }
       })
