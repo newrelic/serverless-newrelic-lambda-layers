@@ -11,6 +11,18 @@ const layerArns = {
 };
 
 export default class NewRelicLambdaLayerPlugin {
+  get config() {
+    return _.get(this.serverless, "service.custom.newRelic", {});
+  }
+
+  get functions() {
+    return Object.assign.apply(
+      null,
+      this.serverless.service
+        .getAllFunctions()
+        .map(func => ({ [func]: this.serverless.service.getFunction(func) }))
+    );
+  }
   public serverless: Serverless;
   public options: Serverless.Options;
   public awsProvider: any;
@@ -23,24 +35,13 @@ export default class NewRelicLambdaLayerPlugin {
     this.options = options;
     this.awsProvider = this.serverless.getProvider("aws") as any;
     this.hooks = {
+      "after:deploy:deploy": this.addLogStreamFilters.bind(this),
       "after:deploy:function:packageFunction": this.cleanup.bind(this),
       "after:package:createDeploymentArtifacts": this.cleanup.bind(this),
       "before:deploy:function:packageFunction": this.run.bind(this),
-      "before:package:createDeploymentArtifacts": this.run.bind(this)
+      "before:package:createDeploymentArtifacts": this.run.bind(this),
+      "before:remove:remove": this.removeLogStreamFilters.bind(this)
     };
-  }
-
-  get config() {
-    return _.get(this.serverless, "service.custom.newRelic", {});
-  }
-
-  get functions() {
-    return Object.assign.apply(
-      null,
-      this.serverless.service
-        .getAllFunctions()
-        .map(func => ({ [func]: this.serverless.service.getFunction(func) }))
-    );
   }
 
   public async run() {
@@ -73,6 +74,33 @@ export default class NewRelicLambdaLayerPlugin {
 
   public cleanup() {
     // any artifacts can be removed here
+  }
+
+  public async addLogStreamFilters() {
+    const funcs = this.functions;
+    Object.keys(funcs).forEach(async funcName => {
+      const { exclude = [] } = this.config;
+      if (_.isArray(exclude) && exclude.indexOf(funcName) !== -1) {
+        return;
+      }
+
+      const { name } = funcs[funcName];
+      this.serverless.cli.log(
+        `Configuring New Relic log stream filter for ${name}`
+      );
+      await this.ensureLogStreamFilter(name);
+    });
+  }
+
+  public async removeLogStreamFilters() {
+    const funcs = this.functions;
+    Object.keys(funcs).forEach(async funcName => {
+      const { name } = funcs[funcName];
+      this.serverless.cli.log(
+        `Removing New Relic log stream filter for ${funcName}`
+      );
+      await this.removeSubscriptionFilter(name);
+    });
   }
 
   private async addLayer(funcName: string, funcDef: any) {
@@ -239,11 +267,10 @@ export default class NewRelicLambdaLayerPlugin {
     return this.awsProvider
       .request("Lambda", "getFunction", { FunctionName: funcName })
       .then(res => {
-        this.serverless.cli.log(JSON.stringify(res));
         return this.getDestinationArn(funcName);
       })
       .catch(err => {
-        this.serverless.cli.log(JSON.stringify(err));
+        this.serverless.cli.log(err.providerError.message);
       });
   }
 
@@ -253,13 +280,11 @@ export default class NewRelicLambdaLayerPlugin {
         FunctionName: "newrelic-log-ingestion"
       })
       .then(res => {
-        this.serverless.cli.log(JSON.stringify(res));
-
         const destinationArn = res.Configuration.FunctionArn;
         return this.describeSubscriptionFilters(funcName, destinationArn);
       })
       .catch(err => {
-        this.serverless.cli.log(JSON.stringify(err));
+        this.serverless.cli.log(err.providerError.message);
       });
   }
 
@@ -272,22 +297,23 @@ export default class NewRelicLambdaLayerPlugin {
         logGroupName: `/aws/lambda/${funcName}`
       })
       .then(res => {
-        this.serverless.cli.log(JSON.stringify(res));
-
         const existingFilters = res.filter(
           filter => filter.filterName === "NewRelicLogStreaming"
         );
 
         if (existingFilters.length) {
           existingFilters
-            .filter(filter => filter.filterPattern === "")
-            .map(async filter => this.removeSubscriptionFilter(funcName));
+            .filter(filter => filter.filterPattern !== "NR_LAMBDA_MONITORING")
+            .map(async filter => this.removeSubscriptionFilter(funcName))
+            .map(async filter =>
+              this.addSubscriptionFilter(funcName, destinationArn)
+            );
         } else {
           return this.addSubscriptionFilter(funcName, destinationArn);
         }
       })
       .catch(err => {
-        this.serverless.cli.log(JSON.stringify(err));
+        this.serverless.cli.log(err.providerError.message);
       });
   }
 
@@ -302,11 +328,8 @@ export default class NewRelicLambdaLayerPlugin {
         filterPattern: "NR_LAMBDA_MONITORING",
         logGroupName: `/aws/lambda/${funcName}`
       })
-      .then(res => {
-        this.serverless.cli.log(JSON.stringify(res));
-      })
       .catch(err => {
-        this.serverless.cli.log(JSON.stringify(err));
+        this.serverless.cli.log(err.providerError.message);
       });
   }
 
@@ -316,11 +339,8 @@ export default class NewRelicLambdaLayerPlugin {
         filterName: "NewRelicLogStreaming",
         logGroupName: `/aws/lambda/${funcName}`
       })
-      .then(res => {
-        this.serverless.cli.log(JSON.stringify(res));
-      })
       .catch(err => {
-        this.serverless.cli.log(JSON.stringify(err));
+        this.serverless.cli.log(err.providerError.message);
       });
   }
 }

@@ -10,7 +10,7 @@ plugins:
 
 custom:
   newRelic:
-    accountId: "123456"
+    accountId: ${env:NEW_RELIC_ACCOUNT_ID}
     debug: true
 
 functions:
