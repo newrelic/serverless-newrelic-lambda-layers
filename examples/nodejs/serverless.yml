@@ -1,4 +1,4 @@
-service: newrelic-lambda-layers-python-example
+service: newrelic-lambda-layers-nodejs-example
 
 provider:
   name: aws
@@ -14,7 +14,7 @@ custom:
     debug: true
 
 functions:
-  layer-python27:
+  layer-nodejs810:
     events:
       - schedule: rate(5 minutes)
     handler: handler.handler
@@ -22,10 +22,10 @@ functions:
       exclude:
         - ./**
       include:
-        - handler.py
-    runtime: python2.7
+        - handler.js
+    runtime: nodejs8.10
 
-  layer-python36:
+  layer-nodejs10x:
     events:
       - schedule: rate(5 minutes)
     handler: handler.handler
@@ -33,16 +33,5 @@ functions:
       exclude:
         - ./**
       include:
-        - handler.py
-    runtime: python3.6
-
-  layer-python37:
-    events:
-      - schedule: rate(5 minutes)
-    handler: handler.handler
-    package:
-      exclude:
-        - ./**
-      include:
-        - handler.py
-    runtime: python3.7
+        - handler.js
+    runtime: nodejs10.x

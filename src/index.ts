@@ -265,16 +265,73 @@ export default class NewRelicLambdaLayerPlugin {
   }
 
   private async ensureLogSubscription(funcName: string) {
-    return this.awsProvider
-      .request("Lambda", "getFunction", { FunctionName: funcName })
-      .then(res => {
-        return this.getDestinationArn(funcName);
-      })
-      .catch(err => {
-        if (err.providerError) {
-          this.serverless.cli.log(err.providerError.message);
-        }
+    try {
+      await this.awsProvider.request("Lambda", "getFunction", {
+        FunctionName: funcName
       });
+    } catch (err) {
+      if (err.providerError) {
+        this.serverless.cli.log(err.providerError.message);
+      }
+
+      return;
+    }
+
+    let destinationArn;
+
+    try {
+      destinationArn = await this.getDestinationArn(funcName);
+    } catch (err) {
+      this.serverless.cli.log(
+        "Could not find a `newrelic-log-ingestion` function installed."
+      );
+      this.serverless.cli.log(
+        "Please follow the setup instructions here: https://docs.newrelic.com/docs/serverless-function-monitoring/aws-lambda-monitoring/get-started/enable-new-relic-monitoring-aws-lambda#enable-process"
+      );
+
+      if (err.providerError) {
+        this.serverless.cli.log(err.providerError.message);
+      }
+
+      return;
+    }
+
+    let subscriptionFilters;
+
+    try {
+      subscriptionFilters = await this.describeSubscriptionFilters(funcName);
+    } catch (err) {
+      if (err.providerError) {
+        this.serverless.cli.log(err.providerError.message);
+      }
+
+      return;
+    }
+
+    const existingFilters = subscriptionFilters.filter(
+      filter => filter.filterName === "NewRelicLogStreaming"
+    );
+
+    if (existingFilters.length) {
+      this.serverless.cli.log(
+        `Found log subscription for ${funcName}, verifying configuration`
+      );
+
+      await Promise.all(
+        existingFilters
+          .filter(filter => filter.filterPattern !== "NR_LAMBDA_MONITORING")
+          .map(async filter => this.removeSubscriptionFilter(funcName))
+          .map(async filter =>
+            this.addSubscriptionFilter(funcName, destinationArn)
+          )
+      );
+    } else {
+      this.serverless.cli.log(
+        `ADding New Relic log subscription to ${funcName}`
+      );
+
+      await this.addSubscriptionFilter(funcName, destinationArn);
+    }
   }
 
   private async getDestinationArn(funcName: string) {
@@ -282,60 +339,15 @@ export default class NewRelicLambdaLayerPlugin {
       .request("Lambda", "getFunction", {
         FunctionName: "newrelic-log-ingestion"
       })
-      .then(res => {
-        const destinationArn = res.Configuration.FunctionArn;
-        return this.describeSubscriptionFilters(funcName, destinationArn);
-      })
-      .catch(err => {
-        this.serverless.cli.log(
-          "Could not find a `newrelic-log-ingestion` function installed."
-        );
-        this.serverless.cli.log(
-          "Please follow the setup instructions here: https://docs.newrelic.com/docs/serverless-function-monitoring/aws-lambda-monitoring/get-started/enable-new-relic-monitoring-aws-lambda#enable-process"
-        );
-        if (err.providerError) {
-          this.serverless.cli.log(err.providerError.message);
-        }
-      });
+      .then(res => res.Configuration.FunctionArn);
   }
 
-  private async describeSubscriptionFilters(
-    funcName: string,
-    destinationArn: string
-  ) {
+  private async describeSubscriptionFilters(funcName: string) {
     return this.awsProvider
-      .request("CloudWatchLogs", "describe-SubscriptionFilters", {
+      .request("CloudWatchLogs", "describeSubscriptionFilters", {
         logGroupName: `/aws/lambda/${funcName}`
       })
-      .then(res => {
-        const existingFilters = res.filter(
-          filter => filter.filterName === "NewRelicLogStreaming"
-        );
-
-        if (existingFilters.length) {
-          this.serverless.cli.log(
-            `Found log subscription for ${funcName}, verifying configuration`
-          );
-          return Promise.all(
-            existingFilters
-              .filter(filter => filter.filterPattern !== "NR_LAMBDA_MONITORING")
-              .map(async filter => this.removeSubscriptionFilter(funcName))
-              .map(async filter =>
-                this.addSubscriptionFilter(funcName, destinationArn)
-              )
-          );
-        } else {
-          this.serverless.cli.log(
-            `ADding New Relic log subscription to ${funcName}`
-          );
-          return this.addSubscriptionFilter(funcName, destinationArn);
-        }
-      })
-      .catch(err => {
-        if (err.providerError) {
-          this.serverless.cli.log(err.providerError.message);
-        }
-      });
+      .then(res => res.subscriptionFilters);
   }
 
   private async addSubscriptionFilter(
@@ -349,7 +361,6 @@ export default class NewRelicLambdaLayerPlugin {
         filterPattern: "NR_LAMBDA_MONITORING",
         logGroupName: `/aws/lambda/${funcName}`
       })
-      .then(res => res)
       .catch(err => {
         if (err.providerError) {
           this.serverless.cli.log(err.providerError.message);
@@ -363,7 +374,6 @@ export default class NewRelicLambdaLayerPlugin {
         filterName: "NewRelicLogStreaming",
         logGroupName: `/aws/lambda/${funcName}`
       })
-      .then(res => res)
       .catch(err => {
         if (err.providerError) {
           this.serverless.cli.log(err.providerError.message);
