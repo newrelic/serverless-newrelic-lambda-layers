@@ -35,12 +35,12 @@ export default class NewRelicLambdaLayerPlugin {
     this.options = options;
     this.awsProvider = this.serverless.getProvider("aws") as any;
     this.hooks = {
-      "after:deploy:deploy": this.addLogStreamFilters.bind(this),
+      "after:deploy:deploy": this.addLogSubscriptions.bind(this),
       "after:deploy:function:packageFunction": this.cleanup.bind(this),
       "after:package:createDeploymentArtifacts": this.cleanup.bind(this),
       "before:deploy:function:packageFunction": this.run.bind(this),
       "before:package:createDeploymentArtifacts": this.run.bind(this),
-      "before:remove:remove": this.removeLogStreamFilters.bind(this)
+      "before:remove:remove": this.removeLogSubscriptions.bind(this)
     };
   }
 
@@ -76,7 +76,7 @@ export default class NewRelicLambdaLayerPlugin {
     // any artifacts can be removed here
   }
 
-  public async addLogStreamFilters() {
+  public async addLogSubscriptions() {
     const funcs = this.functions;
     Object.keys(funcs).forEach(async funcName => {
       const { exclude = [] } = this.config;
@@ -89,16 +89,16 @@ export default class NewRelicLambdaLayerPlugin {
       );
 
       const funcDef = funcs[funcName];
-      await this.ensureLogStreamFilter(funcDef.name);
+      await this.ensureLogSubscription(funcDef.name);
     });
   }
 
-  public async removeLogStreamFilters() {
+  public async removeLogSubscriptions() {
     const funcs = this.functions;
     Object.keys(funcs).forEach(async funcName => {
       const { name } = funcs[funcName];
       this.serverless.cli.log(
-        `Removing New Relic log stream filter for ${funcName}`
+        `Removing New Relic log subscription for ${funcName}`
       );
       await this.removeSubscriptionFilter(name);
     });
@@ -264,7 +264,7 @@ export default class NewRelicLambdaLayerPlugin {
     return pkg;
   }
 
-  private async ensureLogStreamFilter(funcName: string) {
+  private async ensureLogSubscription(funcName: string) {
     return this.awsProvider
       .request("Lambda", "getFunction", { FunctionName: funcName })
       .then(res => {
