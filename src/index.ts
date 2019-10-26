@@ -84,11 +84,12 @@ export default class NewRelicLambdaLayerPlugin {
         return;
       }
 
-      const { name } = funcs[funcName];
       this.serverless.cli.log(
-        `Configuring New Relic log stream filter for ${name}`
+        `Configuring New Relic log stream filter for ${funcName}`
       );
-      await this.ensureLogStreamFilter(name);
+
+      const funcDef = funcs[funcName];
+      await this.ensureLogStreamFilter(funcDef.name);
     });
   }
 
@@ -270,7 +271,9 @@ export default class NewRelicLambdaLayerPlugin {
         return this.getDestinationArn(funcName);
       })
       .catch(err => {
-        this.serverless.cli.log(err.providerError.message);
+        if (err.providerError) {
+          this.serverless.cli.log(err.providerError.message);
+        }
       });
   }
 
@@ -284,7 +287,9 @@ export default class NewRelicLambdaLayerPlugin {
         return this.describeSubscriptionFilters(funcName, destinationArn);
       })
       .catch(err => {
-        this.serverless.cli.log(err.providerError.message);
+        if (err.providerError) {
+          this.serverless.cli.log(err.providerError.message);
+        }
       });
   }
 
@@ -302,18 +307,22 @@ export default class NewRelicLambdaLayerPlugin {
         );
 
         if (existingFilters.length) {
-          existingFilters
-            .filter(filter => filter.filterPattern !== "NR_LAMBDA_MONITORING")
-            .map(async filter => this.removeSubscriptionFilter(funcName))
-            .map(async filter =>
-              this.addSubscriptionFilter(funcName, destinationArn)
-            );
+          return Promise.all(
+            existingFilters
+              .filter(filter => filter.filterPattern !== "NR_LAMBDA_MONITORING")
+              .map(async filter => this.removeSubscriptionFilter(funcName))
+              .map(async filter =>
+                this.addSubscriptionFilter(funcName, destinationArn)
+              )
+          );
         } else {
           return this.addSubscriptionFilter(funcName, destinationArn);
         }
       })
       .catch(err => {
-        this.serverless.cli.log(err.providerError.message);
+        if (err.providerError) {
+          this.serverless.cli.log(err.providerError.message);
+        }
       });
   }
 
@@ -328,8 +337,11 @@ export default class NewRelicLambdaLayerPlugin {
         filterPattern: "NR_LAMBDA_MONITORING",
         logGroupName: `/aws/lambda/${funcName}`
       })
+      .then(res => res)
       .catch(err => {
-        this.serverless.cli.log(err.providerError.message);
+        if (err.providerError) {
+          this.serverless.cli.log(err.providerError.message);
+        }
       });
   }
 
@@ -339,8 +351,11 @@ export default class NewRelicLambdaLayerPlugin {
         filterName: "NewRelicLogStreaming",
         logGroupName: `/aws/lambda/${funcName}`
       })
+      .then(res => res)
       .catch(err => {
-        this.serverless.cli.log(err.providerError.message);
+        if (err.providerError) {
+          this.serverless.cli.log(err.providerError.message);
+        }
       });
   }
 }
