@@ -206,14 +206,11 @@ export default class NewRelicLambdaLayerPlugin {
       ? environment.NEW_RELIC_ACCOUNT_ID
       : this.config.trustedAccountKey;
 
-    environment.NEW_RELIC_SERVERLESS_MODE_ENABLED = "true"
-      ? environment.NEW_RELIC_SERVERLESS_MODE_ENABLED
-      : "true"
-      ? this.config.serverlessModeEnabled
-      : "false";
+    if (runtime.match("python")) {
+      environment.NEW_RELIC_SERVERLESS_MODE_ENABLED = "true";
+    }
 
     funcDef.environment = environment;
-
     funcDef.handler = this.getHandlerWrapper(runtime, handler);
     funcDef.package = this.updatePackageExcludes(runtime, pkg);
   }
