@@ -23,6 +23,7 @@ jobs:
       - checkout
       - restore_cache:
           key: npm-cache-{{ .Branch }}-{{ checksum "package-lock.json" }}
+      - run: npm run l
       - run: npm run lint
       - run: npm run build
 
@@ -34,6 +35,7 @@ jobs:
           keys:
             - npm-cache-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run: cp .npmrc-ci .npmrc
+      - run: npm install
       - run: npm run build
       - run: npm publish --access public
 
