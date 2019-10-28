@@ -242,7 +242,7 @@ export default class NewRelicLambdaLayerPlugin {
       this.serverless.cli.log(`NODE_PATH ${process.env.NODE_PATH}`);
       this.addNodeHelper();
 
-      return "newrelic-wrapper-helper";
+      return "newrelic-wrapper-helper.handler";
     }
 
     if (runtime.match("python")) {
@@ -260,7 +260,7 @@ export default class NewRelicLambdaLayerPlugin {
     if (!fs.existsSync(helperPath)) {
       fs.writeFileSync(
           helperPath,
-          "module.exports.handler = require('newrelic-lambda-wrapper');"
+          "module.exports = require('/opt/nodejs/node_modules/newrelic-lambda-wrapper');"
       );
     }
   }
