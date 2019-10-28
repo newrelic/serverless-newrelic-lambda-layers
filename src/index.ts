@@ -3,11 +3,13 @@ import * as request from "request";
 import * as semver from "semver";
 import * as Serverless from "serverless";
 import * as util from "util";
+import * as fs from "fs-extra";
+import * as path from "path";
 
 // shim for testing when we don't have layer-arn server yet
 const layerArns = {
-  "nodejs10.x": "arn:aws:lambda:us-east-1:554407330061:layer:MainlandLayer:9",
-  "nodejs8.10": "arn:aws:lambda:us-east-1:554407330061:layer:MainlandLayer:9"
+  "nodejs10.x": "arn:aws:lambda:us-east-1:554407330061:layer:MainlandTestLayer:23",
+  "nodejs8.10": "arn:aws:lambda:us-east-1:554407330061:layer:MainlandTestLayer:23"
 };
 
 export default class NewRelicLambdaLayerPlugin {
@@ -73,7 +75,7 @@ export default class NewRelicLambdaLayerPlugin {
   }
 
   public cleanup() {
-    // any artifacts can be removed here
+    this.removeNodeHelper();
   }
 
   public async addLogSubscriptions() {
@@ -134,7 +136,6 @@ export default class NewRelicLambdaLayerPlugin {
     if (
       typeof runtime !== "string" ||
       [
-        "nodejs12.x",
         "nodejs10.x",
         "nodejs8.10",
         "python2.7",
@@ -230,24 +231,49 @@ export default class NewRelicLambdaLayerPlugin {
   }
 
   private getHandlerWrapper(runtime: string, handler: string) {
-    if (
-      ["nodejs8.10", "nodejs10.x", "nodejs12.x"].indexOf(runtime) !== -1 ||
-      (runtime === "nodejs10.x" &&
-        _.get(this.serverless, "enterpriseEnabled", false))
-    ) {
+    if (runtime === "nodejs10.x") {
       return "newrelic-lambda-wrapper.handler";
     }
 
-    // if (runtime === "nodejs10.x" || runtime === "nodejs12.x") {
-    //   this.serverless.cli.log(`setting full path for wrapper`);
-    //   return "/opt/nodejs/node_modules/newrelic-lambda-wrapper.handler";
-    // }
+    if (runtime === "nodejs8.10") {
+      this.serverless.cli.log(`setting full path for wrapper`);
+      this.serverless.cli.log(`LAMBDA_TASK_ROOT ${process.env.LAMBDA_TASK_ROOT}`);
+      this.serverless.cli.log(`LAMBDA_RUNTIME_DIR ${process.env.LAMBDA_RUNTIME_DIR}`);
+      this.serverless.cli.log(`NODE_PATH ${process.env.NODE_PATH}`);
+      this.addNodeHelper();
+
+      return "newrelic-wrapper-helper";
+    }
 
     if (runtime.match("python")) {
       return "newrelic_lambda_wrapper.handler";
     }
 
     return handler;
+  }
+
+  private addNodeHelper() {
+    const helperPath = path.join(
+        this.serverless.config.servicePath,
+        "newrelic-wrapper-helper.js"
+    );
+    if (!fs.existsSync(helperPath)) {
+      fs.writeFileSync(
+          helperPath,
+          "module.exports.handler = require('newrelic-lambda-wrapper');"
+      );
+    }
+  }
+
+  private removeNodeHelper() {
+    const helperPath = path.join(
+        this.serverless.config.servicePath,
+        "newrelic-wrapper-helper.js"
+    );
+
+    if (fs.existsSync(helperPath)) {
+      fs.removeSync(helperPath);
+    }
   }
 
   private updatePackageExcludes(runtime: string, pkg: any) {
@@ -257,6 +283,7 @@ export default class NewRelicLambdaLayerPlugin {
 
     const { exclude = [] } = pkg;
     exclude.push("!newrelic-lambda-wrapper.handler");
+    exclude.push("!newrelic-wrapper-helper.js");
     pkg.exclude = exclude;
     return pkg;
   }
