@@ -23,13 +23,13 @@ observability using [AWS Lambda Layers](https://docs.aws.amazon.com/lambda/lates
 With NPM:
 
 ```bash
-npm install --save-dev serverless-newrelic-layers
+npm install --save-dev serverless-newrelic-lambda-layers
 ```
 
 With yarn:
 
 ```bash
-yarn add --dev serverless-newrelic-layers
+yarn add --dev serverless-newrelic-lambda-layers
 ```
 
 Add the plugin to your `serverless.yml`:

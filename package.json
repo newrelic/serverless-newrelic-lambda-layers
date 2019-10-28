@@ -1,7 +1,7 @@
 {
   "name": "serverless-newrelic-lambda-layers",
   "version": "0.1.0",
-  "description": "Serverless plugin for NewRelic APM layers.",
+  "description": "Serverless plugin for NewRelic APM AWS Lambda layers.",
   "main": "dist/index.js",
   "files": [
     "dist",

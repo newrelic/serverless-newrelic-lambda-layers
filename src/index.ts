@@ -7,18 +7,6 @@ import * as Serverless from "serverless";
 import * as util from "util";
 
 export default class NewRelicLambdaLayerPlugin {
-  get config() {
-    return _.get(this.serverless, "service.custom.newRelic", {});
-  }
-
-  get functions() {
-    return Object.assign.apply(
-      null,
-      this.serverless.service
-        .getAllFunctions()
-        .map(func => ({ [func]: this.serverless.service.getFunction(func) }))
-    );
-  }
   public serverless: Serverless;
   public options: Serverless.Options;
   public awsProvider: any;
@@ -38,6 +26,19 @@ export default class NewRelicLambdaLayerPlugin {
       "before:package:createDeploymentArtifacts": this.run.bind(this),
       "before:remove:remove": this.removeLogSubscriptions.bind(this)
     };
+  }
+
+  get config() {
+    return _.get(this.serverless, "service.custom.newRelic", {});
+  }
+
+  get functions() {
+    return Object.assign.apply(
+      null,
+      this.serverless.service
+        .getAllFunctions()
+        .map(func => ({ [func]: this.serverless.service.getFunction(func) }))
+    );
   }
 
   public async run() {
