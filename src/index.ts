@@ -6,14 +6,6 @@ import * as semver from "semver";
 import * as Serverless from "serverless";
 import * as util from "util";
 
-// shim for testing when we don't have layer-arn server yet
-const layerArns = {
-  "nodejs10.x":
-    "arn:aws:lambda:us-east-1:554407330061:layer:MainlandTestLayer:23",
-  "nodejs8.10":
-    "arn:aws:lambda:us-east-1:554407330061:layer:MainlandTestLayer:23"
-};
-
 export default class NewRelicLambdaLayerPlugin {
   get config() {
     return _.get(this.serverless, "service.custom.newRelic", {});
@@ -238,16 +230,7 @@ export default class NewRelicLambdaLayerPlugin {
     }
 
     if (runtime === "nodejs8.10") {
-      this.serverless.cli.log(`setting full path for wrapper`);
-      this.serverless.cli.log(
-        `LAMBDA_TASK_ROOT ${process.env.LAMBDA_TASK_ROOT}`
-      );
-      this.serverless.cli.log(
-        `LAMBDA_RUNTIME_DIR ${process.env.LAMBDA_RUNTIME_DIR}`
-      );
-      this.serverless.cli.log(`NODE_PATH ${process.env.NODE_PATH}`);
       this.addNodeHelper();
-
       return "newrelic-wrapper-helper.handler";
     }
 
