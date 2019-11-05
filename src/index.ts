@@ -340,7 +340,7 @@ export default class NewRelicLambdaLayerPlugin {
       );
     } else {
       this.serverless.cli.log(
-        `ADding New Relic log subscription to ${funcName}`
+        `Adding New Relic log subscription to ${funcName}`
       );
 
       await this.addSubscriptionFilter(funcName, destinationArn);
