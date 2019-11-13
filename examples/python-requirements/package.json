@@ -1,0 +1,20 @@
+{
+  "name": "serverless-newrelic-lambda-layers-python-requirements",
+  "version": "0.0.0-test",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm run clean && npm run buildPlugin && npm run buildPackage",
+    "buildPackage": "LOCAL_PLUGIN=true SLS_DEBUG=* sls package",
+    "buildPlugin": "cd ../../ && npm run build && mkdir -p examples/python-requirements/.serverless_plugins && cp -rf dist examples/python-requirements/.serverless_plugins/serverless-newrelic-lambda-layers",
+    "clean": "rm -rf .serverless_plugins",
+    "deploy": "yarn build && sls deploy"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "serverless": "^1.55.1",
+    "serverless-python-requirements": "^5.0.1"
+  },
+  "dependencies": {}
+}

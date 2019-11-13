@@ -1,0 +1,30 @@
+service: newrelic-lambda-layers-python-reqs
+
+provider:
+  name: aws
+  stage: test
+  region: us-east-1
+  runtime: python3.6
+
+plugins:
+  - serverless-python-requirements
+  - serverless-newrelic-lambda-layers
+
+custom:
+  newRelic:
+    accountId: ${env:NEW_RELIC_ACCOUNT_ID}
+    debug: true
+  pythonRequirements:
+    dockerizePip: true
+    layer: true
+
+functions:
+  layer-python36:
+    events:
+      - schedule: rate(5 minutes)
+    handler: sample_app.handlers.handler
+    package:
+      exclude:
+        - ./**
+      include:
+        - ./sample_app/**
