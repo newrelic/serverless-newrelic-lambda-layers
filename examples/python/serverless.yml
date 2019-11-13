@@ -4,6 +4,14 @@ provider:
   name: aws
   stage: prod
   region: us-east-1
+  stackTags:
+    environment: us-testing
+    owning_team: LAMBDA
+    product: aws-lambda
+  tags:
+    environment: us-testing
+    owning_team: LAMBDA
+    product: aws-lambda
 
 plugins:
   - serverless-newrelic-lambda-layers
