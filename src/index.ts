@@ -132,6 +132,7 @@ export default class NewRelicLambdaLayerPlugin {
       typeof runtime !== "string" ||
       [
         "nodejs10.x",
+        "nodejs12.x",
         "nodejs8.10",
         "python2.7",
         "python3.6",
@@ -226,7 +227,7 @@ export default class NewRelicLambdaLayerPlugin {
   }
 
   private getHandlerWrapper(runtime: string, handler: string) {
-    if (runtime === "nodejs10.x") {
+    if (["nodejs10.x", "nodejs12.x"].indexOf(runtime) !== -1) {
       return "newrelic-lambda-wrapper.handler";
     }
 
