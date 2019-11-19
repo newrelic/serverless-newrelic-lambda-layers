@@ -77,14 +77,12 @@ export default class NewRelicLambdaLayerPlugin {
     const funcs = this.functions;
     let { cloudWatchFilter = [ "NR_LAMBDA_MONITORING" ] } = this.config;
     
-    if(cloudWatchFilter.length == 1 && cloudWatchFilter[0] == "*") {
-        delete cloudWatchFilter[0];
-    }
-    else if(cloudWatchFilter.length > 1) {
+    let cloudWatchFilterString = ""
+    if(!cloudWatchFilter.find( filter => filter == "*")) {
         cloudWatchFilter = cloudWatchFilter.map(el => `?\"${el}\"`);
+        cloudWatchFilterString = cloudWatchFilter.join(" ");
     }
-      
-    const cloudWatchFilterString = cloudWatchFilter.join(" ");
+    
     this.serverless.cli.log(`log filter: ${cloudWatchFilterString}`);
     
     Object.keys(funcs).forEach(async funcName => {
