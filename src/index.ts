@@ -75,6 +75,18 @@ export default class NewRelicLambdaLayerPlugin {
 
   public async addLogSubscriptions() {
     const funcs = this.functions;
+    let { cloudWatchFilter = [ "NR_LAMBDA_MONITORING" ] } = this.config;
+    
+    if(cloudWatchFilter.length == 1 && cloudWatchFilter[0] == "*") {
+        delete cloudWatchFilter[0];
+    }
+    else if(cloudWatchFilter.length > 1) {
+        cloudWatchFilter = cloudWatchFilter.map(el => `?\"${el}\"`);
+    }
+      
+    const cloudWatchFilterString = cloudWatchFilter.join(" ");
+    this.serverless.cli.log(`log filter: ${cloudWatchFilterString}`);
+    
     Object.keys(funcs).forEach(async funcName => {
       const { exclude = [] } = this.config;
       if (_.isArray(exclude) && exclude.indexOf(funcName) !== -1) {
@@ -86,7 +98,7 @@ export default class NewRelicLambdaLayerPlugin {
       );
 
       const funcDef = funcs[funcName];
-      await this.ensureLogSubscription(funcDef.name);
+      await this.ensureLogSubscription(funcDef.name, cloudWatchFilterString);
     });
   }
 
@@ -277,7 +289,7 @@ export default class NewRelicLambdaLayerPlugin {
     return pkg;
   }
 
-  private async ensureLogSubscription(funcName: string) {
+  private async ensureLogSubscription(funcName: string, cloudWatchFilterString: string) {
     try {
       await this.awsProvider.request("Lambda", "getFunction", {
         FunctionName: funcName
@@ -321,18 +333,7 @@ export default class NewRelicLambdaLayerPlugin {
       return;
     }
 
-    let { cloudWatchFilter = [ "NR_LAMBDA_MONITORING" ] } = this.config;
-    
-    if(cloudWatchFilter.length == 1 && cloudWatchFilter[0] == "*") {
-        delete cloudWatchFilter[0];
-    }
-    else if(cloudWatchFilter.length > 1) {
-        cloudWatchFilter = cloudWatchFilter.map(el => `?\"${el}\"`);
-    }
-      
-    const cloudWatchFilterString = cloudWatchFilter.join(" ");
-    this.serverless.cli.log(cloudWatchFilterString);
-    
+   
       
     const existingFilters = subscriptionFilters.filter(
       filter => filter.filterName === "NewRelicLogStreaming"
