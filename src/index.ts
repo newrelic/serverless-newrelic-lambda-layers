@@ -321,6 +321,19 @@ export default class NewRelicLambdaLayerPlugin {
       return;
     }
 
+    let { cloudWatchFilter = [ "NR_LAMBDA_MONITORING" ] } = this.config;
+    
+    if(cloudWatchFilter.length == 1 && cloudWatchFilter[0] == "*") {
+        delete cloudWatchFilter[0];
+    }
+    else if(cloudWatchFilter.length > 1) {
+        cloudWatchFilter = cloudWatchFilter.map(el => `?\"${el}\"`);
+    }
+      
+    const cloudWatchFilterString = cloudWatchFilter.join(" ");
+    this.serverless.cli.log(cloudWatchFilterString);
+    
+      
     const existingFilters = subscriptionFilters.filter(
       filter => filter.filterName === "NewRelicLogStreaming"
     );
@@ -332,10 +345,10 @@ export default class NewRelicLambdaLayerPlugin {
 
       await Promise.all(
         existingFilters
-          .filter(filter => filter.filterPattern !== "NR_LAMBDA_MONITORING")
+          .filter(filter => filter.filterPattern !== cloudWatchFilterString)
           .map(async filter => this.removeSubscriptionFilter(funcName))
           .map(async filter =>
-            this.addSubscriptionFilter(funcName, destinationArn)
+            this.addSubscriptionFilter(funcName, destinationArn, cloudWatchFilterString)
           )
       );
     } else {
@@ -343,7 +356,7 @@ export default class NewRelicLambdaLayerPlugin {
         `Adding New Relic log subscription to ${funcName}`
       );
 
-      await this.addSubscriptionFilter(funcName, destinationArn);
+      await this.addSubscriptionFilter(funcName, destinationArn, cloudWatchFilterString);
     }
   }
 
@@ -365,13 +378,17 @@ export default class NewRelicLambdaLayerPlugin {
 
   private async addSubscriptionFilter(
     funcName: string,
-    destinationArn: string
+    destinationArn: string,
+    cloudWatchFilterString: string
   ) {
+      
+    
+      
     return this.awsProvider
       .request("CloudWatchLogs", "putSubscriptionFilter", {
         destinationArn,
         filterName: "NewRelicLogStreaming",
-        filterPattern: "NR_LAMBDA_MONITORING",
+        filterPattern: cloudWatchFilterString,
         logGroupName: `/aws/lambda/${funcName}`
       })
       .catch(err => {

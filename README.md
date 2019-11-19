@@ -127,6 +127,19 @@ custom:
     layerArn: arn:aws:lambda:us-east-1:451483290750:layer:NewRelicPython37:2
 ```
 
+#### `cloudWatchFilter` (optional)
+
+Provide a list of quoted filter terms for the CloudWatch log subscription to the newrelic-log-ingestion Lambda. Combines all terms into an OR filter. Defaults to "NR_LAMBDA_MONITORING" if not set. Use "*" to capture all logs
+
+```yaml
+custom:
+  newRelic:
+    cloudWatchFilter:
+    - "NR_LAMBDA_MONITORING"
+    - "trace this"
+    - "ERROR"
+```
+
 #### `prepend` (optional)
 
 Whether or not to prepend the IOpipe layer. Defaults to `false` which appends the layer.
