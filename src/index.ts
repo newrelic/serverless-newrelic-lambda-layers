@@ -75,16 +75,16 @@ export default class NewRelicLambdaLayerPlugin {
 
   public async addLogSubscriptions() {
     const funcs = this.functions;
-    let { cloudWatchFilter = [ "NR_LAMBDA_MONITORING" ] } = this.config;
-    
-    let cloudWatchFilterString = ""
-    if(!cloudWatchFilter.find( filter => filter == "*")) {
-        cloudWatchFilter = cloudWatchFilter.map(el => `?\"${el}\"`);
-        cloudWatchFilterString = cloudWatchFilter.join(" ");
+    let { cloudWatchFilter = ["NR_LAMBDA_MONITORING"] } = this.config;
+
+    let cloudWatchFilterString = "";
+    if (!cloudWatchFilter.find(filter => filter === "*")) {
+      cloudWatchFilter = cloudWatchFilter.map(el => `?\"${el}\"`);
+      cloudWatchFilterString = cloudWatchFilter.join(" ");
     }
-    
+
     this.serverless.cli.log(`log filter: ${cloudWatchFilterString}`);
-    
+
     Object.keys(funcs).forEach(async funcName => {
       const { exclude = [] } = this.config;
       if (_.isArray(exclude) && exclude.indexOf(funcName) !== -1) {
@@ -288,7 +288,10 @@ export default class NewRelicLambdaLayerPlugin {
     return pkg;
   }
 
-  private async ensureLogSubscription(funcName: string, cloudWatchFilterString: string) {
+  private async ensureLogSubscription(
+    funcName: string,
+    cloudWatchFilterString: string
+  ) {
     try {
       await this.awsProvider.request("Lambda", "getFunction", {
         FunctionName: funcName
@@ -332,8 +335,6 @@ export default class NewRelicLambdaLayerPlugin {
       return;
     }
 
-   
-      
     const existingFilters = subscriptionFilters.filter(
       filter => filter.filterName === "NewRelicLogStreaming"
     );
@@ -348,7 +349,11 @@ export default class NewRelicLambdaLayerPlugin {
           .filter(filter => filter.filterPattern !== cloudWatchFilterString)
           .map(async filter => this.removeSubscriptionFilter(funcName))
           .map(async filter =>
-            this.addSubscriptionFilter(funcName, destinationArn, cloudWatchFilterString)
+            this.addSubscriptionFilter(
+              funcName,
+              destinationArn,
+              cloudWatchFilterString
+            )
           )
       );
     } else {
@@ -356,7 +361,11 @@ export default class NewRelicLambdaLayerPlugin {
         `Adding New Relic log subscription to ${funcName}`
       );
 
-      await this.addSubscriptionFilter(funcName, destinationArn, cloudWatchFilterString);
+      await this.addSubscriptionFilter(
+        funcName,
+        destinationArn,
+        cloudWatchFilterString
+      );
     }
   }
 
@@ -381,9 +390,6 @@ export default class NewRelicLambdaLayerPlugin {
     destinationArn: string,
     cloudWatchFilterString: string
   ) {
-      
-    
-      
     return this.awsProvider
       .request("CloudWatchLogs", "putSubscriptionFilter", {
         destinationArn,
