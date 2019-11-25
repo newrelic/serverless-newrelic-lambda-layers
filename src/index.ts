@@ -54,10 +54,10 @@ export default class NewRelicLambdaLayerPlugin {
     this.serverless.cli.log(`Plugins: ${JSON.stringify(plugins)}`);
     if (
       plugins.indexOf("serverless-webpack") >
-      plugins.indexOf("serverless-newrelic-layers")
+      plugins.indexOf("serverless-newrelic-lambda-layers")
     ) {
       this.serverless.cli.log(
-        "serverless-newrelic-layers plugin must come after serverless-webpack in serverless.yml; skipping."
+        "serverless-newrelic-lambda-layers plugin must come after serverless-webpack in serverless.yml; skipping."
       );
       return;
     }
