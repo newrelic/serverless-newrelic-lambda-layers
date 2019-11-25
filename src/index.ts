@@ -146,7 +146,8 @@ export default class NewRelicLambdaLayerPlugin {
         "nodejs8.10",
         "python2.7",
         "python3.6",
-        "python3.7"
+        "python3.7",
+        "python3.8"
       ].indexOf(runtime) === -1
     ) {
       this.serverless.cli.log(
