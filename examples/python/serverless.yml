@@ -54,3 +54,14 @@ functions:
       include:
         - handler.py
     runtime: python3.7
+
+  layer-python38:
+    events:
+      - schedule: rate(5 minutes)
+    handler: handler.handler
+    package:
+      exclude:
+        - ./**
+      include:
+        - handler.py
+    runtime: python3.8
