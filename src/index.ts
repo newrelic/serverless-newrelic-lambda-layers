@@ -78,7 +78,10 @@ export default class NewRelicLambdaLayerPlugin {
     let { cloudWatchFilter = ["NR_LAMBDA_MONITORING"] } = this.config;
 
     let cloudWatchFilterString = "";
-    if (typeof cloudWatchFilter === "object" && cloudWatchFilter.indexOf("*") === -1) {
+    if (
+      typeof cloudWatchFilter === "object" &&
+      cloudWatchFilter.indexOf("*") === -1
+    ) {
       cloudWatchFilter = cloudWatchFilter.map(el => `?\"${el}\"`);
       cloudWatchFilterString = cloudWatchFilter.join(" ");
     } else if (cloudWatchFilter.indexOf("*") === -1) {
