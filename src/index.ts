@@ -63,10 +63,10 @@ export default class NewRelicLambdaLayerPlugin {
     }
 
     const funcs = this.functions;
-    Object.keys(funcs).forEach(async funcName => {
+    for (const funcName of Object.keys(funcs)) {
       const funcDef = funcs[funcName];
       await this.addLayer(funcName, funcDef);
-    });
+    }
   }
 
   public cleanup() {
