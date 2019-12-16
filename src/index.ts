@@ -32,6 +32,14 @@ export default class NewRelicLambdaLayerPlugin {
     return _.get(this.serverless, "service.custom.newRelic", {});
   }
 
+  get prependLayer() {
+    return typeof this.config.prepend === "boolean" && this.config.prepend
+  }
+
+  get autoSubscriptionDisabled() {
+    return typeof this.config.disableAutoSubscription === "boolean" && this.config.disableAutoSubscription
+  }
+
   get functions() {
     return Object.assign.apply(
       null,
@@ -74,6 +82,10 @@ export default class NewRelicLambdaLayerPlugin {
   }
 
   public async addLogSubscriptions() {
+    if (this.autoSubscriptionDisabled) {
+      this.serverless.cli.log("Skipping adding log subscription. Explicitly disabled")
+      return
+    }
     const funcs = this.functions;
     let { cloudWatchFilter = ["NR_LAMBDA_MONITORING"] } = this.config;
 
@@ -90,7 +102,7 @@ export default class NewRelicLambdaLayerPlugin {
 
     this.serverless.cli.log(`log filter: ${cloudWatchFilterString}`);
 
-    Object.keys(funcs).forEach(async funcName => {
+    for (const funcName of Object.keys(funcs)) {
       const { exclude = [] } = this.config;
       if (_.isArray(exclude) && exclude.indexOf(funcName) !== -1) {
         return;
@@ -102,18 +114,22 @@ export default class NewRelicLambdaLayerPlugin {
 
       const funcDef = funcs[funcName];
       await this.ensureLogSubscription(funcDef.name, cloudWatchFilterString);
-    });
+    }
   }
 
   public async removeLogSubscriptions() {
+    if (this.autoSubscriptionDisabled) {
+      this.serverless.cli.log("Skipping removing log subscription. Explicitly disabled")
+      return
+    }
     const funcs = this.functions;
-    Object.keys(funcs).forEach(async funcName => {
+    for (const funcName of Object.keys(funcs)) {
       const { name } = funcs[funcName];
       this.serverless.cli.log(
         `Removing New Relic log subscription for ${funcName}`
       );
       await this.removeSubscriptionFilter(name);
-    });
+    }
   }
 
   private async addLayer(funcName: string, funcDef: any) {
@@ -180,7 +196,7 @@ export default class NewRelicLambdaLayerPlugin {
         `Function "${funcName}" already specifies an NewRelic layer; skipping.`
       );
     } else {
-      if (typeof this.config.prepend === "boolean" && this.config.prepend) {
+      if (this.prependLayer) {
         layers.unshift(layerArn);
       } else {
         layers.push(layerArn);
@@ -198,8 +214,8 @@ export default class NewRelicLambdaLayerPlugin {
     environment.NEW_RELIC_LOG_LEVEL = environment.NEW_RELIC_LOG_LEVEL
       ? environment.NEW_RELIC_LOG_LEVEL
       : this.config.debug
-      ? "debug"
-      : "info";
+        ? "debug"
+        : "info";
 
     environment.NEW_RELIC_NO_CONFIG_FILE = environment.NEW_RELIC_NO_CONFIG_FILE
       ? environment.NEW_RELIC_NO_CONFIG_FILE
@@ -216,8 +232,8 @@ export default class NewRelicLambdaLayerPlugin {
     environment.NEW_RELIC_TRUSTED_ACCOUNT_KEY = environment.NEW_RELIC_TRUSTED_ACCOUNT_KEY
       ? environment.NEW_RELIC_TRUSTED_ACCOUNT_KEY
       : environment.NEW_RELIC_ACCOUNT_ID
-      ? environment.NEW_RELIC_ACCOUNT_ID
-      : this.config.trustedAccountKey;
+        ? environment.NEW_RELIC_ACCOUNT_ID
+        : this.config.trustedAccountKey;
 
     if (runtime.match("python")) {
       environment.NEW_RELIC_SERVERLESS_MODE_ENABLED = "true";
@@ -312,11 +328,12 @@ export default class NewRelicLambdaLayerPlugin {
 
     let destinationArn;
 
+    const { logIngestionFunctionName = "newrelic-log-ingestion" } = this.config;
     try {
-      destinationArn = await this.getDestinationArn(funcName);
+      destinationArn = await this.getDestinationArn(logIngestionFunctionName);
     } catch (err) {
       this.serverless.cli.log(
-        "Could not find a `newrelic-log-ingestion` function installed."
+        `Could not find a \`${logIngestionFunctionName}\` function installed.`
       );
       this.serverless.cli.log(
         "Please follow the setup instructions here: https://docs.newrelic.com/docs/serverless-function-monitoring/aws-lambda-monitoring/get-started/enable-new-relic-monitoring-aws-lambda#enable-process"
@@ -375,10 +392,10 @@ export default class NewRelicLambdaLayerPlugin {
     }
   }
 
-  private async getDestinationArn(funcName: string) {
+  private async getDestinationArn(logIngestionFunctionName: string) {
     return this.awsProvider
       .request("Lambda", "getFunction", {
-        FunctionName: "newrelic-log-ingestion"
+        FunctionName: logIngestionFunctionName
       })
       .then(res => res.Configuration.FunctionArn);
   }
