@@ -3,12 +3,10 @@
 A [Serverless](https://serverless.com) plugin to add [New Relic](https://www.newrelic.com)
 observability using [AWS Lambda Layers](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html) without requiring a code change.
 
-
 ## Requirements
 
 * [serverless](https://github.com/serverless/serverless) >= 1.34.0
 * Set up the [New Relic AWS Integration](https://docs.newrelic.com/docs/serverless-function-monitoring/aws-lambda-monitoring/get-started/enable-new-relic-monitoring-aws-lambda#enable-process) (only the `set-up-lambda-integration` step is required)
-
 
 ## Features
 
@@ -16,7 +14,6 @@ observability using [AWS Lambda Layers](https://docs.aws.amazon.com/lambda/lates
 * No code change required to enable New Relic
 * Bundles New Relic's agent in a single layer
 * Configures CloudWatch subscription filters automatically
-
 
 ## Install
 
@@ -58,7 +55,6 @@ sls deploy
 
 And you're all set.
 
-
 ## Usage
 
 This plugin wraps your handlers without requiring a code change. If you're currently
@@ -67,7 +63,6 @@ do it for you automatically.
 
 * [Node.js Instrumentation Guide](https://docs.newrelic.com/docs/agents/nodejs-agent/getting-started/introduction-new-relic-nodejs#extend-instrumentation)
 * [Python Instrumentation Guide](https://docs.newrelic.com/docs/agents/python-agent/custom-instrumentation/python-custom-instrumentation)
-
 
 ## Config
 
@@ -135,9 +130,9 @@ Provide a list of quoted filter terms for the CloudWatch log subscription to the
 custom:
   newRelic:
     cloudWatchFilter:
-    - "NR_LAMBDA_MONITORING"
-    - "trace this"
-    - "ERROR"
+      - "NR_LAMBDA_MONITORING"
+      - "trace this"
+      - "ERROR"
 ```
 
 #### `prepend` (optional)
@@ -150,6 +145,25 @@ custom:
     prepend: true
 ```
 
+#### `logIngestionFunctionName` (optional)
+
+Only required if your New Relic log ingestion function name is different from `newrelic-log-ingestion`.
+
+```yaml
+custom:
+  newRelic:
+    logIngestionFunctionName: log-ingestion-service
+```
+
+#### `disableAutoSubscription` (optional)
+
+Only required if you want to disable auto subscription.
+
+```yaml
+custom:
+  newRelic:
+    disableAutoSubscription: true
+```
 
 ## Supported Runtimes
 
