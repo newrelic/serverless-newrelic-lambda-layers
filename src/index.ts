@@ -33,11 +33,14 @@ export default class NewRelicLambdaLayerPlugin {
   }
 
   get prependLayer() {
-    return typeof this.config.prepend === "boolean" && this.config.prepend
+    return typeof this.config.prepend === "boolean" && this.config.prepend;
   }
 
   get autoSubscriptionDisabled() {
-    return typeof this.config.disableAutoSubscription === "boolean" && this.config.disableAutoSubscription
+    return (
+      typeof this.config.disableAutoSubscription === "boolean" &&
+      this.config.disableAutoSubscription
+    );
   }
 
   get functions() {
@@ -83,8 +86,10 @@ export default class NewRelicLambdaLayerPlugin {
 
   public async addLogSubscriptions() {
     if (this.autoSubscriptionDisabled) {
-      this.serverless.cli.log("Skipping adding log subscription. Explicitly disabled")
-      return
+      this.serverless.cli.log(
+        "Skipping adding log subscription. Explicitly disabled"
+      );
+      return;
     }
     const funcs = this.functions;
     let { cloudWatchFilter = ["NR_LAMBDA_MONITORING"] } = this.config;
@@ -119,8 +124,10 @@ export default class NewRelicLambdaLayerPlugin {
 
   public async removeLogSubscriptions() {
     if (this.autoSubscriptionDisabled) {
-      this.serverless.cli.log("Skipping removing log subscription. Explicitly disabled")
-      return
+      this.serverless.cli.log(
+        "Skipping removing log subscription. Explicitly disabled"
+      );
+      return;
     }
     const funcs = this.functions;
     for (const funcName of Object.keys(funcs)) {
@@ -214,8 +221,8 @@ export default class NewRelicLambdaLayerPlugin {
     environment.NEW_RELIC_LOG_LEVEL = environment.NEW_RELIC_LOG_LEVEL
       ? environment.NEW_RELIC_LOG_LEVEL
       : this.config.debug
-        ? "debug"
-        : "info";
+      ? "debug"
+      : "info";
 
     environment.NEW_RELIC_NO_CONFIG_FILE = environment.NEW_RELIC_NO_CONFIG_FILE
       ? environment.NEW_RELIC_NO_CONFIG_FILE
@@ -232,8 +239,8 @@ export default class NewRelicLambdaLayerPlugin {
     environment.NEW_RELIC_TRUSTED_ACCOUNT_KEY = environment.NEW_RELIC_TRUSTED_ACCOUNT_KEY
       ? environment.NEW_RELIC_TRUSTED_ACCOUNT_KEY
       : environment.NEW_RELIC_ACCOUNT_ID
-        ? environment.NEW_RELIC_ACCOUNT_ID
-        : this.config.trustedAccountKey;
+      ? environment.NEW_RELIC_ACCOUNT_ID
+      : this.config.trustedAccountKey;
 
     if (runtime.match("python")) {
       environment.NEW_RELIC_SERVERLESS_MODE_ENABLED = "true";
