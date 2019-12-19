@@ -365,6 +365,16 @@ export default class NewRelicLambdaLayerPlugin {
       return;
     }
 
+    const competingFilters = subscriptionFilters.filter(
+      filter => filter.filterName !== "NewRelicLogStreaming"
+    );
+
+    if (competingFilters.length) {
+      this.serverless.cli.log(
+        "WARNING: Found a log subscription filter that was not installed by New Relic. This may prevent the New Relic log subscription filter from being installed. If you know you don't need this log subscription filter, you should first remove it and rerun this command. If your organization requires this log subscription filter, please contact New Relic at serverless@newrelic.com for assistance with getting the AWS log subscription filter limit increased."
+      );
+    }
+
     const existingFilters = subscriptionFilters.filter(
       filter => filter.filterName === "NewRelicLogStreaming"
     );
