@@ -6,7 +6,7 @@ observability using [AWS Lambda Layers](https://docs.aws.amazon.com/lambda/lates
 ## Requirements
 
 * [serverless](https://github.com/serverless/serverless) >= 1.34.0
-* Set up the [New Relic AWS Integration](https://docs.newrelic.com/docs/serverless-function-monitoring/aws-lambda-monitoring/get-started/enable-new-relic-monitoring-aws-lambda#enable-process) (only the `set-up-lambda-integration` step is required)
+* Set up the [New Relic AWS Integration](https://docs.newrelic.com/docs/serverless-function-monitoring/aws-lambda-monitoring/get-started/enable-new-relic-monitoring-aws-lambda#enable-process) (only the `newrelic-lambda integrations install` step is required)
 
 ## Features
 
