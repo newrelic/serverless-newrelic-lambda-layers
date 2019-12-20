@@ -61,7 +61,10 @@ export default class NewRelicLambdaLayerPlugin {
       return;
     }
 
-    const plugins = _.get(this.serverless, "service.plugins", []);
+    let plugins = _.get(this.serverless, "service.plugins", []);
+    if (!_.isArray(plugins) && plugins.modules) {
+      plugins = plugins.modules;
+    }
     this.serverless.cli.log(`Plugins: ${JSON.stringify(plugins)}`);
     if (
       plugins.indexOf("serverless-webpack") >
