@@ -6,8 +6,11 @@ import * as semver from "semver";
 import * as Serverless from "serverless";
 import * as util from "util";
 
-const DEFAULT_FILTER_PATTERN =
-  '?REPORT ?NR_LAMBDA_MONITORING ?\\"Task timed out\\"';
+const DEFAULT_FILTER_PATTERNS = [
+  "REPORT",
+  "NR_LAMBDA_MONITORING",
+  "Task timed out"
+];
 
 export default class NewRelicLambdaLayerPlugin {
   public serverless: Serverless;
@@ -98,7 +101,7 @@ export default class NewRelicLambdaLayerPlugin {
       return;
     }
     const funcs = this.functions;
-    let { cloudWatchFilter = [DEFAULT_FILTER_PATTERN] } = this.config;
+    let { cloudWatchFilter = [...DEFAULT_FILTER_PATTERNS] } = this.config;
 
     let cloudWatchFilterString = "";
     if (
