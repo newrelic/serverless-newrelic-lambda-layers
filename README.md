@@ -135,6 +135,17 @@ custom:
       - "ERROR"
 ```
 
+If you want to collect all logs:
+
+```yaml
+custom:
+  newRelic:
+    cloudWatchFilter: "*"
+```
+
+Be sure to set the `LOGGING_ENABLED` environment variable to `true` in your log
+ingestion function. See the [aws-log-ingestion documentation](https://github.com/newrelic/aws-log-ingestion) for details.
+
 #### `prepend` (optional)
 
 Whether or not to prepend the IOpipe layer. Defaults to `false` which appends the layer.
