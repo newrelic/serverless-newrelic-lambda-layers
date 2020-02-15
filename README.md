@@ -5,15 +5,15 @@ observability using [AWS Lambda Layers](https://docs.aws.amazon.com/lambda/lates
 
 ## Requirements
 
-* [serverless](https://github.com/serverless/serverless) >= 1.34.0
-* Set up the [New Relic AWS Integration](https://docs.newrelic.com/docs/serverless-function-monitoring/aws-lambda-monitoring/get-started/enable-new-relic-monitoring-aws-lambda#enable-process) (only the `newrelic-lambda integrations install` step is required)
+- [serverless](https://github.com/serverless/serverless) >= 1.34.0
+- Set up the [New Relic AWS Integration](https://docs.newrelic.com/docs/serverless-function-monitoring/aws-lambda-monitoring/get-started/enable-new-relic-monitoring-aws-lambda#enable-process) (only the `newrelic-lambda integrations install` step is required)
 
 ## Features
 
-* Supports Node.js and Python runtimes (more runtimes to come)
-* No code change required to enable New Relic
-* Bundles New Relic's agent in a single layer
-* Configures CloudWatch subscription filters automatically
+- Supports Node.js and Python runtimes (more runtimes to come)
+- No code change required to enable New Relic
+- Bundles New Relic's agent in a single layer
+- Configures CloudWatch subscription filters automatically
 
 ## Install
 
@@ -61,8 +61,8 @@ This plugin wraps your handlers without requiring a code change. If you're curre
 using a New Relic agent, you can remove the wrapping code you currently have and this plugin will
 do it for you automatically.
 
-* [Node.js Instrumentation Guide](https://docs.newrelic.com/docs/agents/nodejs-agent/getting-started/introduction-new-relic-nodejs#extend-instrumentation)
-* [Python Instrumentation Guide](https://docs.newrelic.com/docs/agents/python-agent/custom-instrumentation/python-custom-instrumentation)
+- [Node.js Instrumentation Guide](https://docs.newrelic.com/docs/agents/nodejs-agent/getting-started/introduction-new-relic-nodejs#extend-instrumentation)
+- [Python Instrumentation Guide](https://docs.newrelic.com/docs/agents/python-agent/custom-instrumentation/python-custom-instrumentation)
 
 ## Config
 
@@ -100,6 +100,18 @@ custom:
     debug: true
 ```
 
+#### `logLevel` (optional)
+
+Sets a log level on all the function. Possible values: `'fatal'`, `'error'`, `'warn'`, `'info'`, `'debug'`, `'trace'` or `'silent'`. Defaults to `'info'`
+
+You can still override log level per function basis by configuring environment variable `NEW_RELIC_LOG_LEVEL`.
+
+```yaml
+custom:
+  newRelic:
+    logLevel: debug
+```
+
 #### `exclude` (optional)
 
 An array of functions to exclude from automatic wrapping.
@@ -124,7 +136,7 @@ custom:
 
 #### `cloudWatchFilter` (optional)
 
-Provide a list of quoted filter terms for the CloudWatch log subscription to the newrelic-log-ingestion Lambda. Combines all terms into an OR filter. Defaults to "NR_LAMBDA_MONITORING" if not set. Use "*" to capture all logs
+Provide a list of quoted filter terms for the CloudWatch log subscription to the newrelic-log-ingestion Lambda. Combines all terms into an OR filter. Defaults to "NR_LAMBDA_MONITORING" if not set. Use "\*" to capture all logs
 
 ```yaml
 custom:
@@ -180,10 +192,23 @@ custom:
 
 This plugin currently supports the following AWS runtimes:
 
-* nodejs8.10
-* nodejs10.x
-* nodejs12.x
-* python2.7
-* python3.6
-* python3.7
-* python3.8
+- nodejs8.10
+- nodejs10.x
+- nodejs12.x
+- python2.7
+- python3.6
+- python3.7
+- python3.8
+
+## Contributing
+
+### Testing
+
+1. Install (yamljs)[https://www.npmjs.com/package/yamljs] to allow conversion between yaml and json format
+
+```shell
+npm install -g yamljs
+yaml2json examples/nodejs/serverless.yml > tests/fixtures/<test_name>.service.input.json
+# example
+yaml2json examples/nodejs/serverless.yml > tests/fixtures/log-level.service.input.json
+```

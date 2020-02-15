@@ -19,7 +19,7 @@ plugins:
 custom:
   newRelic:
     accountId: ${env:NEW_RELIC_ACCOUNT_ID}
-    debug: true
+    logLevel: debug
 
 functions:
   layer-nodejs810:
