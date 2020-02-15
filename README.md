@@ -112,6 +112,13 @@ custom:
     logLevel: debug
 ```
 
+Logging configuration is considered in the following order:
+
+- function `NEW_RELIC_LOG_LEVEL` environment
+- provider `NEW_RELIC_LOG_LEVEL` environment
+- custom newRelic `logLevel` property
+- custom newRelic `debug` flag
+
 #### `exclude` (optional)
 
 An array of functions to exclude from automatic wrapping.

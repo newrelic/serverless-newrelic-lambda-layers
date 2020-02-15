@@ -34,7 +34,7 @@ describe('NewRelicLambdaLayerPlugin', () => {
         )
 
         this.testCases.forEach(({ caseName, input, output }) => {
-            it(`generates the correct CloudFormation templates: test case ${caseName}`, async () => {
+            it(`generates the correct service configuration: test case ${caseName}`, async () => {
                 const serverless = new Serverless(options)
                 Object.assign(serverless.service, input)
                 serverless.cli = new CLI(serverless)

@@ -13,13 +13,16 @@
       "environment": "us-testing",
       "owning_team": "LAMBDA",
       "product": "aws-lambda"
+    },
+    "environment": {
+      "NEW_RELIC_LOG_LEVEL": "error"
     }
   },
   "plugins": ["serverless-newrelic-lambda-layers"],
   "custom": {
     "newRelic": {
       "accountId": "${env:NEW_RELIC_ACCOUNT_ID}",
-      "logLevel": "error"
+      "logLevel": "trace"
     }
   },
   "functions": {

@@ -19,7 +19,7 @@
   "custom": {
     "newRelic": {
       "accountId": "${env:NEW_RELIC_ACCOUNT_ID}",
-      "logLevel": "error"
+      "debug": true
     }
   },
   "functions": {
@@ -39,7 +39,7 @@
         "NEW_RELIC_APP_NAME": "layer-nodejs810",
         "NEW_RELIC_LAMBDA_HANDLER": "handler.handler",
         "NEW_RELIC_LOG": "stdout",
-        "NEW_RELIC_LOG_LEVEL": "debug",
+        "NEW_RELIC_LOG_LEVEL": "error",
         "NEW_RELIC_NO_CONFIG_FILE": "true",
         "NEW_RELIC_TRUSTED_ACCOUNT_KEY": "${env:NEW_RELIC_ACCOUNT_ID}"
       }
@@ -60,7 +60,7 @@
         "NEW_RELIC_APP_NAME": "layer-nodejs10x",
         "NEW_RELIC_LAMBDA_HANDLER": "handler.handler",
         "NEW_RELIC_LOG": "stdout",
-        "NEW_RELIC_LOG_LEVEL": "error",
+        "NEW_RELIC_LOG_LEVEL": "debug",
         "NEW_RELIC_NO_CONFIG_FILE": "true",
         "NEW_RELIC_TRUSTED_ACCOUNT_KEY": "${env:NEW_RELIC_ACCOUNT_ID}"
       }
@@ -81,7 +81,7 @@
         "NEW_RELIC_APP_NAME": "layer-nodejs12x",
         "NEW_RELIC_LAMBDA_HANDLER": "handler.handler",
         "NEW_RELIC_LOG": "stdout",
-        "NEW_RELIC_LOG_LEVEL": "error",
+        "NEW_RELIC_LOG_LEVEL": "debug",
         "NEW_RELIC_NO_CONFIG_FILE": "true",
         "NEW_RELIC_TRUSTED_ACCOUNT_KEY": "${env:NEW_RELIC_ACCOUNT_ID}"
       }

@@ -227,11 +227,7 @@ export default class NewRelicLambdaLayerPlugin {
       ? environment.NEW_RELIC_LOG
       : "stdout";
 
-    environment.NEW_RELIC_LOG_LEVEL = environment.NEW_RELIC_LOG_LEVEL
-      ? environment.NEW_RELIC_LOG_LEVEL
-      : this.config.debug
-        ? "debug"
-        : "info";
+    environment.NEW_RELIC_LOG_LEVEL = this.logLevel(environment)
 
     environment.NEW_RELIC_NO_CONFIG_FILE = environment.NEW_RELIC_NO_CONFIG_FILE
       ? environment.NEW_RELIC_NO_CONFIG_FILE
@@ -258,6 +254,23 @@ export default class NewRelicLambdaLayerPlugin {
     funcDef.environment = environment;
     funcDef.handler = this.getHandlerWrapper(runtime, handler);
     funcDef.package = this.updatePackageExcludes(runtime, pkg);
+  }
+
+  private logLevel(environment) {
+    if (environment.NEW_RELIC_LOG_LEVEL) {
+      return environment.NEW_RELIC_LOG_LEVEL
+    }
+
+    const globalNewRelicLogLevel = _.get(this.serverless.service, "provider.environment.NEW_RELIC_LOG_LEVEL");
+    if (globalNewRelicLogLevel) {
+      return globalNewRelicLogLevel
+    }
+
+    if (this.config.logLevel) {
+      return this.config.logLevel
+    }
+
+    return this.config.debug ? "debug" : "info"
   }
 
   private async getLayerArn(runtime: string, region: string) {
