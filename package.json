@@ -42,7 +42,6 @@
   },
   "dependencies": {
     "fs-extra": "^7.0.1",
-    "global": "^4.4.0",
     "lodash": "^4.17.15",
     "path": "^0.12.7",
     "request": "^2.88.0",
