@@ -211,11 +211,19 @@ This plugin currently supports the following AWS runtimes:
 
 ### Testing
 
-1. Install (yamljs)[https://www.npmjs.com/package/yamljs] to allow conversion between yaml and json format
+1. Make changes to `examples/nodejs/serverless.yml` based on what you are planning to test
+2. Generate a test case by executing script `generate:test:case`
 
 ```shell
-npm install -g yamljs
-yaml2json examples/nodejs/serverless.yml > tests/fixtures/<test_name>.service.input.json
-# example
-yaml2json examples/nodejs/serverless.yml > tests/fixtures/log-level.service.input.json
+# Example
+npm run generate:test:case
+```
+
+3. Rename generated file `tests/fixtures/example.service.input.json` to test case e.g. `tests/fixtures/log-level.service.input.json`
+4. Create expected output file `tests/fixtures/example.service.output.json` for test case e.g. `tests/fixtures/log-level.service.output.json`
+5. Run tests
+
+```shell
+# Example
+npm run test
 ```
