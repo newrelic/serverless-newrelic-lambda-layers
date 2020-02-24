@@ -3,8 +3,9 @@ import * as _ from "lodash";
 import * as path from "path";
 import * as request from "request";
 import * as semver from "semver";
-import * as Serverless from "serverless";
 import * as util from "util";
+// tslint:disable-next-line
+import * as Serverless from "serverless";
 
 const DEFAULT_FILTER_PATTERNS = [
   "REPORT",
@@ -223,7 +224,9 @@ export default class NewRelicLambdaLayerPlugin {
 
     environment.NEW_RELIC_LAMBDA_HANDLER = handler;
 
-    if (this.config.logEnabled === true) this.logLevel(environment);
+    if (this.config.logEnabled === true) {
+      this.logLevel(environment);
+    }
 
     environment.NEW_RELIC_NO_CONFIG_FILE = environment.NEW_RELIC_NO_CONFIG_FILE
       ? environment.NEW_RELIC_NO_CONFIG_FILE
