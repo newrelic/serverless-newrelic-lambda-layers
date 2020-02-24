@@ -69,3 +69,4 @@ dist/
 /.idea/vcs.xml
 
 .DS_Store
+example.service.input.json

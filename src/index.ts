@@ -223,15 +223,7 @@ export default class NewRelicLambdaLayerPlugin {
 
     environment.NEW_RELIC_LAMBDA_HANDLER = handler;
 
-    environment.NEW_RELIC_LOG = environment.NEW_RELIC_LOG
-      ? environment.NEW_RELIC_LOG
-      : "stdout";
-
-    environment.NEW_RELIC_LOG_LEVEL = environment.NEW_RELIC_LOG_LEVEL
-      ? environment.NEW_RELIC_LOG_LEVEL
-      : this.config.debug
-      ? "debug"
-      : "info";
+    if (this.config.logEnabled === true) this.logLevel(environment);
 
     environment.NEW_RELIC_NO_CONFIG_FILE = environment.NEW_RELIC_NO_CONFIG_FILE
       ? environment.NEW_RELIC_NO_CONFIG_FILE
@@ -258,6 +250,30 @@ export default class NewRelicLambdaLayerPlugin {
     funcDef.environment = environment;
     funcDef.handler = this.getHandlerWrapper(runtime, handler);
     funcDef.package = this.updatePackageExcludes(runtime, pkg);
+  }
+
+  private logLevel(environment) {
+    environment.NEW_RELIC_LOG_ENABLED = "true";
+    environment.NEW_RELIC_LOG = environment.NEW_RELIC_LOG
+      ? environment.NEW_RELIC_LOG
+      : "stdout";
+
+    if (!environment.NEW_RELIC_LOG_LEVEL) {
+      const globalNewRelicLogLevel = _.get(
+        this.serverless.service,
+        "provider.environment.NEW_RELIC_LOG_LEVEL"
+      );
+
+      if (globalNewRelicLogLevel) {
+        environment.NEW_RELIC_LOG_LEVEL = globalNewRelicLogLevel;
+      } else if (this.config.logLevel) {
+        environment.NEW_RELIC_LOG_LEVEL = this.config.logLevel;
+      } else if (this.config.debug) {
+        environment.NEW_RELIC_LOG_LEVEL = "debug";
+      } else {
+        environment.NEW_RELIC_LOG_LEVEL = "error";
+      }
+    }
   }
 
   private async getLayerArn(runtime: string, region: string) {
