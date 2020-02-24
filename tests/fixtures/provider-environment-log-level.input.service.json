@@ -22,7 +22,8 @@
   "custom": {
     "newRelic": {
       "accountId": "${env:NEW_RELIC_ACCOUNT_ID}",
-      "logLevel": "trace"
+      "logLevel": "trace",
+      "logEnabled": true
     }
   },
   "functions": {

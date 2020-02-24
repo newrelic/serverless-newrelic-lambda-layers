@@ -20,7 +20,8 @@
     "newRelic": {
       "accountId": "${env:NEW_RELIC_ACCOUNT_ID}",
       "logLevel": "error",
-      "debug": true
+      "debug": true,
+      "logEnabled": true
     }
   },
   "functions": {

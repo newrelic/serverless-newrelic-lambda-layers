@@ -19,7 +19,8 @@
   "custom": {
     "newRelic": {
       "accountId": "${env:NEW_RELIC_ACCOUNT_ID}",
-      "logLevel": "error"
+      "logLevel": "error",
+      "logEnabled": true
     }
   },
   "functions": {

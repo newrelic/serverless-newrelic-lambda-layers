@@ -70,4 +70,3 @@ dist/
 
 .DS_Store
 example.service.input.json
-yarn.lock

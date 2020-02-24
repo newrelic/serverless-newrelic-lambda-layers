@@ -223,11 +223,7 @@ export default class NewRelicLambdaLayerPlugin {
 
     environment.NEW_RELIC_LAMBDA_HANDLER = handler;
 
-    environment.NEW_RELIC_LOG = environment.NEW_RELIC_LOG
-      ? environment.NEW_RELIC_LOG
-      : "stdout";
-
-    environment.NEW_RELIC_LOG_LEVEL = this.logLevel(environment)
+    if (this.config.logEnabled === true) this.logLevel(environment);
 
     environment.NEW_RELIC_NO_CONFIG_FILE = environment.NEW_RELIC_NO_CONFIG_FILE
       ? environment.NEW_RELIC_NO_CONFIG_FILE
@@ -244,8 +240,8 @@ export default class NewRelicLambdaLayerPlugin {
     environment.NEW_RELIC_TRUSTED_ACCOUNT_KEY = environment.NEW_RELIC_TRUSTED_ACCOUNT_KEY
       ? environment.NEW_RELIC_TRUSTED_ACCOUNT_KEY
       : environment.NEW_RELIC_ACCOUNT_ID
-        ? environment.NEW_RELIC_ACCOUNT_ID
-        : this.config.trustedAccountKey;
+      ? environment.NEW_RELIC_ACCOUNT_ID
+      : this.config.trustedAccountKey;
 
     if (runtime.match("python")) {
       environment.NEW_RELIC_SERVERLESS_MODE_ENABLED = "true";
@@ -257,20 +253,27 @@ export default class NewRelicLambdaLayerPlugin {
   }
 
   private logLevel(environment) {
-    if (environment.NEW_RELIC_LOG_LEVEL) {
-      return environment.NEW_RELIC_LOG_LEVEL
-    }
+    environment.NEW_RELIC_LOG_ENABLED = "true";
+    environment.NEW_RELIC_LOG = environment.NEW_RELIC_LOG
+      ? environment.NEW_RELIC_LOG
+      : "stdout";
 
-    const globalNewRelicLogLevel = _.get(this.serverless.service, "provider.environment.NEW_RELIC_LOG_LEVEL");
-    if (globalNewRelicLogLevel) {
-      return globalNewRelicLogLevel
-    }
+    if (!environment.NEW_RELIC_LOG_LEVEL) {
+      const globalNewRelicLogLevel = _.get(
+        this.serverless.service,
+        "provider.environment.NEW_RELIC_LOG_LEVEL"
+      );
 
-    if (this.config.logLevel) {
-      return this.config.logLevel
+      if (globalNewRelicLogLevel) {
+        environment.NEW_RELIC_LOG_LEVEL = globalNewRelicLogLevel;
+      } else if (this.config.logLevel) {
+        environment.NEW_RELIC_LOG_LEVEL = this.config.logLevel;
+      } else if (this.config.debug) {
+        environment.NEW_RELIC_LOG_LEVEL = "debug";
+      } else {
+        environment.NEW_RELIC_LOG_LEVEL = "error";
+      }
     }
-
-    return this.config.debug ? "debug" : "info"
   }
 
   private async getLayerArn(runtime: string, region: string) {

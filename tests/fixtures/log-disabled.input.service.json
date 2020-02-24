@@ -19,8 +19,8 @@
   "custom": {
     "newRelic": {
       "accountId": "${env:NEW_RELIC_ACCOUNT_ID}",
-      "debug": true,
-      "logEnabled": true
+      "logLevel": "error",
+      "debug": true
     }
   },
   "functions": {
@@ -28,10 +28,7 @@
       "events": [{ "schedule": "rate(5 minutes)" }],
       "handler": "handler.handler",
       "package": { "exclude": ["./**"], "include": ["handler.js"] },
-      "runtime": "nodejs8.10",
-      "environment": {
-        "NEW_RELIC_LOG_LEVEL": "error"
-      }
+      "runtime": "nodejs8.10"
     },
     "layer-nodejs10x": {
       "events": [{ "schedule": "rate(5 minutes)" }],

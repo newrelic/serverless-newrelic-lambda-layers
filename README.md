@@ -100,11 +100,15 @@ custom:
     debug: true
 ```
 
+#### `logEnabled` (optional)
+
+Enables logging. Defaults to `false`
+
 #### `logLevel` (optional)
 
-Sets a log level on all the function. Possible values: `'fatal'`, `'error'`, `'warn'`, `'info'`, `'debug'`, `'trace'` or `'silent'`. Defaults to `'info'`
+Sets a log level on all functions. Possible values: `'fatal'`, `'error'`, `'warn'`, `'info'`, `'debug'`, `'trace'` or `'silent'`. Defaults to `'error'`
 
-You can still override log level per function basis by configuring environment variable `NEW_RELIC_LOG_LEVEL`.
+You can still override log level on a per function basis by configuring environment variable `NEW_RELIC_LOG_LEVEL`.
 
 ```yaml
 custom:
@@ -114,10 +118,10 @@ custom:
 
 Logging configuration is considered in the following order:
 
-- function `NEW_RELIC_LOG_LEVEL` environment
-- provider `NEW_RELIC_LOG_LEVEL` environment
-- custom newRelic `logLevel` property
-- custom newRelic `debug` flag
+1. function `NEW_RELIC_LOG_LEVEL` environment
+2. provider `NEW_RELIC_LOG_LEVEL` environment
+3. custom newRelic `logLevel` property
+4. custom newRelic `debug` flag
 
 #### `exclude` (optional)
 
