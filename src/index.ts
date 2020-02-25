@@ -133,7 +133,7 @@ export default class NewRelicLambdaLayerPlugin {
         include.indexOf(funcName) === -1
       ) {
         this.serverless.cli.log(
-          `Excluded function ${funcName}; is not part of include skipping`
+          `Function ${funcName} is not included for instrumentation; skipping.`
         );
         return;
       }
