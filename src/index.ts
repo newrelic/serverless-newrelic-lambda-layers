@@ -126,6 +126,18 @@ export default class NewRelicLambdaLayerPlugin {
     this.serverless.cli.log(`log filter: ${cloudWatchFilterString}`);
 
     for (const funcName of Object.keys(funcs)) {
+      const { include = [] } = this.config;
+      if (
+        !_.isEmpty(include) &&
+        _.isArray(include) &&
+        include.indexOf(funcName) === -1
+      ) {
+        this.serverless.cli.log(
+          `Excluded function ${funcName}; is not part of include skipping`
+        );
+        return;
+      }
+
       const { exclude = [] } = this.config;
       if (_.isArray(exclude) && exclude.indexOf(funcName) !== -1) {
         return;
