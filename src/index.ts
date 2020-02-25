@@ -83,9 +83,8 @@ export default class NewRelicLambdaLayerPlugin {
       return;
     }
 
-    const { exclude = [] } = this.config;
-    const { include } = this.config;
-    if (!_.isEmpty(exclude) && !_.isUndefined(include)) {
+    const { exclude = [], include = [] } = this.config;
+    if (!_.isEmpty(exclude) && !_.isEmpty(include)) {
       this.serverless.cli.log(
         "exclude and include options are mutually exclusive; skipping."
       );
@@ -203,10 +202,9 @@ export default class NewRelicLambdaLayerPlugin {
       return;
     }
 
-    // const { exclude = [] } = this.config;
-    const { include } = this.config;
+    const { include = [] } = this.config;
     if (
-      !_.isUndefined(include) &&
+      !_.isEmpty(include) &&
       _.isArray(include) &&
       include.indexOf(funcName) === -1
     ) {
