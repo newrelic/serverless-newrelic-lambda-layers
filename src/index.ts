@@ -83,6 +83,15 @@ export default class NewRelicLambdaLayerPlugin {
       return;
     }
 
+    const { exclude = [] } = this.config;
+    const { include } = this.config;
+    if (!_.isEmpty(exclude) && !_.isUndefined(include)) {
+      this.serverless.cli.log(
+        "exclude and include options are mutually exclusive; skipping."
+      );
+      return;
+    }
+
     const funcs = this.functions;
     for (const funcName of Object.keys(funcs)) {
       const funcDef = funcs[funcName];
@@ -190,6 +199,19 @@ export default class NewRelicLambdaLayerPlugin {
     ) {
       this.serverless.cli.log(
         `Unsupported runtime "${runtime}" for NewRelic layer; skipping.`
+      );
+      return;
+    }
+
+    // const { exclude = [] } = this.config;
+    const { include } = this.config;
+    if (
+      !_.isUndefined(include) &&
+      _.isArray(include) &&
+      include.indexOf(funcName) === -1
+    ) {
+      this.serverless.cli.log(
+        `Excluded function ${funcName}; is not part of include skipping`
       );
       return;
     }
