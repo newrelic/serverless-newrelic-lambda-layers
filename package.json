@@ -1,6 +1,6 @@
 {
   "name": "serverless-newrelic-lambda-layers",
-  "version": "0.1.14",
+  "version": "0.1.15",
   "description": "Serverless plugin for NewRelic APM AWS Lambda layers.",
   "main": "dist/index.js",
   "files": [
@@ -13,13 +13,18 @@
     "test": "jest",
     "test:watch": "jest --watchAll",
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
-    "generate:test:case": "yaml2json examples/nodejs/serverless.yml > tests/fixtures/example.service.input.json"
+    "generate:test:case": "yaml2json examples/nodejs/serverless.yml > tests/fixnpmtures/example.service.input.json"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint"
+    }
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/iopipe/serverless-newrelic-lambda-layers.git"
   },
-  "author": "IOpipe",
+  "author": "New Relic",
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/iopipe/serverless-newrelic-lambda-layers/issues"
@@ -33,6 +38,7 @@
     "@types/ramda": "^0.26.41",
     "@types/serverless": "^1.18.2",
     "get-installed-path": "^4.0.8",
+    "husky": "^4.2.3",
     "jest": "^25.1.0",
     "prettier": "^1.16.4",
     "ramda": "^0.27.0",
@@ -41,8 +47,8 @@
     "tslint": "^5.13.1",
     "tslint-config-prettier": "^1.18.0",
     "tslint-plugin-prettier": "^2.0.1",
-    "yamljs": "^0.3.0",
-    "typescript": "^3.3.3333"
+    "typescript": "^3.3.3333",
+    "yamljs": "^0.3.0"
   },
   "dependencies": {
     "fs-extra": "^7.0.1",
