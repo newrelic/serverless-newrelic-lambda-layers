@@ -126,21 +126,9 @@ export default class NewRelicLambdaLayerPlugin {
     this.serverless.cli.log(`log filter: ${cloudWatchFilterString}`);
 
     for (const funcName of Object.keys(funcs)) {
-      const { include = [] } = this.config;
-      if (
-        !_.isEmpty(include) &&
-        _.isArray(include) &&
-        include.indexOf(funcName) === -1
-      ) {
-        this.serverless.cli.log(
-          `Function ${funcName} is not included for instrumentation; skipping.`
-        );
-        return;
-      }
 
-      const { exclude = [] } = this.config;
-      if (_.isArray(exclude) && exclude.indexOf(funcName) !== -1) {
-        return;
+      if (this.shouldSkip(funcName)) {
+        return
       }
 
       this.serverless.cli.log(
@@ -214,22 +202,8 @@ export default class NewRelicLambdaLayerPlugin {
       return;
     }
 
-    const { include = [] } = this.config;
-    if (
-      !_.isEmpty(include) &&
-      _.isArray(include) &&
-      include.indexOf(funcName) === -1
-    ) {
-      this.serverless.cli.log(
-        `Excluded function ${funcName}; is not part of include skipping`
-      );
-      return;
-    }
-
-    const { exclude = [] } = this.config;
-    if (_.isArray(exclude) && exclude.indexOf(funcName) !== -1) {
-      this.serverless.cli.log(`Excluded function ${funcName}; skipping`);
-      return;
+    if (this.shouldSkip(funcName)) {
+      return
     }
 
     const layerArn = this.config.layerArn
@@ -275,8 +249,8 @@ export default class NewRelicLambdaLayerPlugin {
     environment.NEW_RELIC_TRUSTED_ACCOUNT_KEY = environment.NEW_RELIC_TRUSTED_ACCOUNT_KEY
       ? environment.NEW_RELIC_TRUSTED_ACCOUNT_KEY
       : environment.NEW_RELIC_ACCOUNT_ID
-      ? environment.NEW_RELIC_ACCOUNT_ID
-      : this.config.trustedAccountKey;
+        ? environment.NEW_RELIC_ACCOUNT_ID
+        : this.config.trustedAccountKey;
 
     if (runtime.match("python")) {
       environment.NEW_RELIC_SERVERLESS_MODE_ENABLED = "true";
@@ -285,6 +259,28 @@ export default class NewRelicLambdaLayerPlugin {
     funcDef.environment = environment;
     funcDef.handler = this.getHandlerWrapper(runtime, handler);
     funcDef.package = this.updatePackageExcludes(runtime, pkg);
+  }
+
+  private shouldSkip(funcName) {
+    const { include = [], exclude = [] } = this.config;
+
+    if (
+      !_.isEmpty(include) &&
+      _.isArray(include) &&
+      include.indexOf(funcName) === -1
+    ) {
+      this.serverless.cli.log(
+        `Excluded function ${funcName}; is not part of include skipping`
+      );
+      return true;
+    }
+
+    if (_.isArray(exclude) && exclude.indexOf(funcName) !== -1) {
+      this.serverless.cli.log(`Excluded function ${funcName}; skipping`);
+      return true;
+    }
+
+    return false
   }
 
   private logLevel(environment) {
