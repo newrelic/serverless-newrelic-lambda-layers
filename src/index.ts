@@ -83,6 +83,14 @@ export default class NewRelicLambdaLayerPlugin {
       return;
     }
 
+    const { exclude = [], include = [] } = this.config;
+    if (!_.isEmpty(exclude) && !_.isEmpty(include)) {
+      this.serverless.cli.log(
+        "exclude and include options are mutually exclusive; skipping."
+      );
+      return;
+    }
+
     const funcs = this.functions;
     for (const funcName of Object.keys(funcs)) {
       const funcDef = funcs[funcName];
@@ -118,8 +126,7 @@ export default class NewRelicLambdaLayerPlugin {
     this.serverless.cli.log(`log filter: ${cloudWatchFilterString}`);
 
     for (const funcName of Object.keys(funcs)) {
-      const { exclude = [] } = this.config;
-      if (_.isArray(exclude) && exclude.indexOf(funcName) !== -1) {
+      if (this.shouldSkip(funcName)) {
         return;
       }
 
@@ -194,9 +201,7 @@ export default class NewRelicLambdaLayerPlugin {
       return;
     }
 
-    const { exclude = [] } = this.config;
-    if (_.isArray(exclude) && exclude.indexOf(funcName) !== -1) {
-      this.serverless.cli.log(`Excluded function ${funcName}; skipping`);
+    if (this.shouldSkip(funcName)) {
       return;
     }
 
@@ -253,6 +258,28 @@ export default class NewRelicLambdaLayerPlugin {
     funcDef.environment = environment;
     funcDef.handler = this.getHandlerWrapper(runtime, handler);
     funcDef.package = this.updatePackageExcludes(runtime, pkg);
+  }
+
+  private shouldSkip(funcName) {
+    const { include = [], exclude = [] } = this.config;
+
+    if (
+      !_.isEmpty(include) &&
+      _.isArray(include) &&
+      include.indexOf(funcName) === -1
+    ) {
+      this.serverless.cli.log(
+        `Excluded function ${funcName}; is not part of include skipping`
+      );
+      return true;
+    }
+
+    if (_.isArray(exclude) && exclude.indexOf(funcName) !== -1) {
+      this.serverless.cli.log(`Excluded function ${funcName}; skipping`);
+      return true;
+    }
+
+    return false;
   }
 
   private logLevel(environment) {

@@ -123,6 +123,19 @@ Logging configuration is considered in the following order:
 3. custom newRelic `logLevel` property
 4. custom newRelic `debug` flag
 
+=======
+
+#### `include` (optional)
+
+An array of functions to include for wrapping. When set it will only include defined functions.
+
+```yaml
+custom:
+  newRelic:
+    include:
+      - include-only-func
+```
+
 #### `exclude` (optional)
 
 An array of functions to exclude from automatic wrapping.

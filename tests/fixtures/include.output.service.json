@@ -1,0 +1,58 @@
+{
+  "service": "newrelic-lambda-layers-nodejs-example",
+  "provider": {
+    "name": "aws",
+    "stage": "prod",
+    "region": "us-east-1",
+    "stackTags": {
+      "environment": "us-testing",
+      "owning_team": "LAMBDA",
+      "product": "aws-lambda"
+    },
+    "tags": {
+      "environment": "us-testing",
+      "owning_team": "LAMBDA",
+      "product": "aws-lambda"
+    }
+  },
+  "plugins": ["serverless-newrelic-lambda-layers"],
+  "custom": {
+    "newRelic": {
+      "accountId": "${env:NEW_RELIC_ACCOUNT_ID}",
+      "include": ["layer-nodejs810"]
+    }
+  },
+  "functions": {
+    "layer-nodejs810": {
+      "events": [{ "schedule": "rate(5 minutes)" }],
+      "handler": "newrelic-wrapper-helper.handler",
+      "layers": [
+        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS810:8"
+      ],
+      "package": {
+        "exclude": ["./**", "!newrelic-wrapper-helper.js"],
+        "include": ["handler.js"]
+      },
+      "runtime": "nodejs8.10",
+      "environment": {
+        "NEW_RELIC_ACCOUNT_ID": "${env:NEW_RELIC_ACCOUNT_ID}",
+        "NEW_RELIC_APP_NAME": "layer-nodejs810",
+        "NEW_RELIC_LAMBDA_HANDLER": "handler.handler",
+        "NEW_RELIC_NO_CONFIG_FILE": "true",
+        "NEW_RELIC_TRUSTED_ACCOUNT_KEY": "${env:NEW_RELIC_ACCOUNT_ID}"
+      }
+    },
+    "layer-nodejs10x": {
+      "events": [{ "schedule": "rate(5 minutes)" }],
+      "handler": "handler.handler",
+      "package": { "exclude": ["./**"], "include": ["handler.js"] },
+      "runtime": "nodejs10.x"
+    },
+    "layer-nodejs12x": {
+      "events": [{ "schedule": "rate(5 minutes)" }],
+      "handler": "handler.handler",
+      "package": { "exclude": ["./**"], "include": ["handler.js"] },
+      "runtime": "nodejs12.x"
+    }
+  }
+}
