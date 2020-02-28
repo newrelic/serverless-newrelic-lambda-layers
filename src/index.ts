@@ -126,9 +126,8 @@ export default class NewRelicLambdaLayerPlugin {
     this.serverless.cli.log(`log filter: ${cloudWatchFilterString}`);
 
     for (const funcName of Object.keys(funcs)) {
-
       if (this.shouldSkip(funcName)) {
-        return
+        return;
       }
 
       this.serverless.cli.log(
@@ -203,7 +202,7 @@ export default class NewRelicLambdaLayerPlugin {
     }
 
     if (this.shouldSkip(funcName)) {
-      return
+      return;
     }
 
     const layerArn = this.config.layerArn
@@ -249,8 +248,8 @@ export default class NewRelicLambdaLayerPlugin {
     environment.NEW_RELIC_TRUSTED_ACCOUNT_KEY = environment.NEW_RELIC_TRUSTED_ACCOUNT_KEY
       ? environment.NEW_RELIC_TRUSTED_ACCOUNT_KEY
       : environment.NEW_RELIC_ACCOUNT_ID
-        ? environment.NEW_RELIC_ACCOUNT_ID
-        : this.config.trustedAccountKey;
+      ? environment.NEW_RELIC_ACCOUNT_ID
+      : this.config.trustedAccountKey;
 
     if (runtime.match("python")) {
       environment.NEW_RELIC_SERVERLESS_MODE_ENABLED = "true";
@@ -280,7 +279,7 @@ export default class NewRelicLambdaLayerPlugin {
       return true;
     }
 
-    return false
+    return false;
   }
 
   private logLevel(environment) {
