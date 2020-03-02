@@ -70,7 +70,7 @@ The following config options are available via the `newRelic` section of the `cu
 
 #### `accountId` (required)
 
-Your [New Relic ACcount ID](https://docs.newrelic.com/docs/accounts/install-new-relic/account-setup/account-id).
+Your [New Relic Account ID](https://docs.newrelic.com/docs/accounts/install-new-relic/account-setup/account-id).
 
 ```yaml
 custom:
@@ -123,22 +123,21 @@ Logging configuration is considered in the following order:
 3. custom newRelic `logLevel` property
 4. custom newRelic `debug` flag
 
-=======
-
 #### `include` (optional)
 
-An array of functions to include for wrapping. When set it will only include defined functions.
+An array of functions to include for automatic wrapping. (You can set `include` or `exclude` options, but not both.)
 
 ```yaml
 custom:
   newRelic:
     include:
       - include-only-func
+      - another-included-func
 ```
 
 #### `exclude` (optional)
 
-An array of functions to exclude from automatic wrapping.
+An array of functions to exclude from automatic wrapping. (You can set `include` or `exclude` options, but not both.)
 
 ```yaml
 custom:
