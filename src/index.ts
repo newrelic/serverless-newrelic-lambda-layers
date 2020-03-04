@@ -10,7 +10,8 @@ import * as Serverless from "serverless";
 const DEFAULT_FILTER_PATTERNS = [
   "REPORT",
   "NR_LAMBDA_MONITORING",
-  "Task timed out"
+  "Task timed out",
+  "RequestId"
 ];
 
 export default class NewRelicLambdaLayerPlugin {
