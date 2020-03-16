@@ -93,10 +93,14 @@ export default class NewRelicLambdaLayerPlugin {
     }
 
     const funcs = this.functions;
+    const promises = [];
+
     for (const funcName of Object.keys(funcs)) {
       const funcDef = funcs[funcName];
-      await this.addLayer(funcName, funcDef);
+      promises.push(this.addLayer(funcName, funcDef));
     }
+
+    await Promise.all(promises);
   }
 
   public cleanup() {
@@ -110,6 +114,7 @@ export default class NewRelicLambdaLayerPlugin {
       );
       return;
     }
+
     const funcs = this.functions;
     let { cloudWatchFilter = [...DEFAULT_FILTER_PATTERNS] } = this.config;
 
@@ -126,6 +131,8 @@ export default class NewRelicLambdaLayerPlugin {
 
     this.serverless.cli.log(`log filter: ${cloudWatchFilterString}`);
 
+    const promises = [];
+
     for (const funcName of Object.keys(funcs)) {
       if (this.shouldSkip(funcName)) {
         return;
@@ -136,8 +143,12 @@ export default class NewRelicLambdaLayerPlugin {
       );
 
       const funcDef = funcs[funcName];
-      await this.ensureLogSubscription(funcDef.name, cloudWatchFilterString);
+      promises.push(
+        this.ensureLogSubscription(funcDef.name, cloudWatchFilterString)
+      );
     }
+
+    await Promise.all(promises);
   }
 
   public async removeLogSubscriptions() {
@@ -148,13 +159,17 @@ export default class NewRelicLambdaLayerPlugin {
       return;
     }
     const funcs = this.functions;
+    const promises = [];
+
     for (const funcName of Object.keys(funcs)) {
       const { name } = funcs[funcName];
       this.serverless.cli.log(
         `Removing New Relic log subscription for ${funcName}`
       );
-      await this.removeSubscriptionFilter(name);
+      promises.push(this.removeSubscriptionFilter(name));
     }
+
+    await Promise.all(promises);
   }
 
   private async addLayer(funcName: string, funcDef: any) {
@@ -214,6 +229,7 @@ export default class NewRelicLambdaLayerPlugin {
       layer => typeof layer === "string" && layer.match(layerArn)
     );
 
+    // Note: This is if the user specifies a layer in their serverless.yml
     if (newRelicLayers.length) {
       this.serverless.cli.log(
         `Function "${funcName}" already specifies an NewRelic layer; skipping.`
