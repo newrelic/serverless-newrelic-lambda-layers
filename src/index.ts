@@ -326,7 +326,7 @@ export default class NewRelicLambdaLayerPlugin {
   private async getLayerArn(runtime: string, region: string) {
     return util
       .promisify(request)(
-        `https://${region}.nr-layers.iopipe.com/get-layers?CompatibleRuntime=${runtime}`
+        `https://${region}.layers.newrelic-external.com/get-layers?CompatibleRuntime=${runtime}`
       )
       .then(response => {
         const awsResp = JSON.parse(response.body);
