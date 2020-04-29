@@ -149,7 +149,7 @@ custom:
 
 #### `layerArn` (optional)
 
-Pin to a specific layer version. The latest layer ARN is automatically fetched from the [New Relic Layers API](https://nr-layers.iopipe.com)
+Pin to a specific layer version. The latest layer ARN is automatically fetched from the [New Relic Layers API](https://layers.newrelic-external.com)
 
 ```yaml
 custom:
