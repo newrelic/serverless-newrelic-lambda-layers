@@ -78,6 +78,16 @@ custom:
     accountId: your-account-id-here
 ```
 
+#### `licenseKey` (required)
+
+Your [New Relic License Key](https://docs.newrelic.com/docs/accounts/accounts-billing/account-setup/new-relic-license-key).
+
+```yaml
+custom:
+  newRelic:
+    licenseKey: your-license-key-here
+```
+
 #### `trustedAccountKey` (optional)
 
 Only required if your New Relic account is a sub-account. This needs to be the account ID for the root/parent account.
@@ -85,7 +95,6 @@ Only required if your New Relic account is a sub-account. This needs to be the a
 ```yaml
 custom:
   newRelic:
-    accountId: your-sub-account-id
     trustedAccountKey: your-parent-account-id
 ```
 
