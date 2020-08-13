@@ -125,7 +125,7 @@ Logging configuration is considered in the following order:
 
 #### `stages` (optional)
 
-An array of stages to include the plugin. Defaults to all stages if not set.
+An array of stages that the plugin will be included for. If this key is not specified then all stages will be included.
 
 ```yaml
 custom:
