@@ -123,6 +123,17 @@ Logging configuration is considered in the following order:
 3. custom newRelic `logLevel` property
 4. custom newRelic `debug` flag
 
+#### `stages` (optional)
+
+An array of stages to include the plugin. Defaults to all stages if not set.
+
+```yaml
+custom:
+  newRelic:
+    stages:
+      - prod
+```
+
 #### `include` (optional)
 
 An array of functions to include for automatic wrapping. (You can set `include` or `exclude` options, but not both.)
