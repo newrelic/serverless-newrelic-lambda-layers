@@ -40,6 +40,14 @@ export default class NewRelicLambdaLayerPlugin {
     return _.get(this.serverless, "service.custom.newRelic", {});
   }
 
+  get stage() {
+    return (
+      (this.options && this.options.stage) ||
+      (this.serverless.service.provider &&
+        this.serverless.service.provider.stage)
+    );
+  }
+
   get prependLayer() {
     return typeof this.config.prepend === "boolean" && this.config.prepend;
   }
@@ -61,6 +69,13 @@ export default class NewRelicLambdaLayerPlugin {
   }
 
   public async run() {
+    if (this.shouldSkipPlugin()) {
+      this.serverless.cli.log(
+        `Skipping plugin serverless-newrelic-lambda-layers for stage ${this.stage}`
+      );
+      return;
+    }
+
     const version = this.serverless.getVersion();
     if (semver.lt(version, "1.34.0")) {
       this.serverless.cli.log(
@@ -104,10 +119,18 @@ export default class NewRelicLambdaLayerPlugin {
   }
 
   public cleanup() {
+    if (this.shouldSkipPlugin()) {
+      return;
+    }
+
     this.removeNodeHelper();
   }
 
   public async addLogSubscriptions() {
+    if (this.shouldSkipPlugin()) {
+      return;
+    }
+
     if (this.autoSubscriptionDisabled) {
       this.serverless.cli.log(
         "Skipping adding log subscription. Explicitly disabled"
@@ -134,7 +157,7 @@ export default class NewRelicLambdaLayerPlugin {
     const promises = [];
 
     for (const funcName of Object.keys(funcs)) {
-      if (this.shouldSkip(funcName)) {
+      if (this.shouldSkipFunction(funcName)) {
         return;
       }
 
@@ -152,6 +175,10 @@ export default class NewRelicLambdaLayerPlugin {
   }
 
   public async removeLogSubscriptions() {
+    if (this.shouldSkipPlugin()) {
+      return;
+    }
+
     if (this.autoSubscriptionDisabled) {
       this.serverless.cli.log(
         "Skipping removing log subscription. Explicitly disabled"
@@ -217,7 +244,7 @@ export default class NewRelicLambdaLayerPlugin {
       return;
     }
 
-    if (this.shouldSkip(funcName)) {
+    if (this.shouldSkipFunction(funcName)) {
       return;
     }
 
@@ -277,7 +304,17 @@ export default class NewRelicLambdaLayerPlugin {
     funcDef.package = this.updatePackageExcludes(runtime, pkg);
   }
 
-  private shouldSkip(funcName) {
+  private shouldSkipPlugin() {
+    if (
+      !this.config.stages ||
+      (this.config.stages && this.config.stages.includes(this.stage))
+    ) {
+      return false;
+    }
+    return true;
+  }
+
+  private shouldSkipFunction(funcName) {
     const { include = [], exclude = [] } = this.config;
 
     if (
