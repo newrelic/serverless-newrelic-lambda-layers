@@ -132,6 +132,17 @@ Logging configuration is considered in the following order:
 3. custom newRelic `logLevel` property
 4. custom newRelic `debug` flag
 
+
+#### `customRolePolicy` (optional)
+
+Specify an alternative IAM role policy ARN for this integration here if you do not want to use the default role policy.
+
+```yaml
+custom:
+  newRelic:
+    customRolePolicy: your-custom-role-policy
+```
+
 #### `include` (optional)
 
 An array of functions to include for automatic wrapping. (You can set `include` or `exclude` options, but not both.)
