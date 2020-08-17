@@ -1,4 +1,3 @@
-import AWS = require("aws-sdk");
 import * as fs from "fs-extra";
 import * as _ from "lodash";
 import * as path from "path";
@@ -20,9 +19,6 @@ export default class NewRelicLambdaLayerPlugin {
   public options: Serverless.Options;
   public awsProvider: any;
   public region: string;
-  public cloudformation: any;
-  public iam: any;
-  public sar: any;
   public hooks: {
     [event: string]: Promise<any>;
   };
@@ -36,9 +32,6 @@ export default class NewRelicLambdaLayerPlugin {
       "provider.region",
       "us-east-1"
     );
-    this.cloudformation = new AWS.CloudFormation({ region: this.region });
-    this.iam = new AWS.IAM();
-    this.sar = new AWS.ServerlessApplicationRepository({ region: this.region });
     this.hooks = {
       "after:deploy:deploy": this.addLogSubscriptions.bind(this),
       "after:deploy:function:packageFunction": this.cleanup.bind(this),
@@ -117,25 +110,26 @@ export default class NewRelicLambdaLayerPlugin {
     await Promise.all(promises);
   }
 
-  public checkIntegrationRole() {
-    const nrAccountId = _.get(this.config, "accountId", undefined);
-    if (!nrAccountId) {
+  public async checkIntegrationRole() {
+    const { accountId } = this.config;
+    if (!accountId) {
       this.serverless.cli.log(
-        "No newRelic accountId specified; Cannot create NewRelicLambdaIntegrationRole CF Stack."
+        "No newRelic accountId specified; Cannot check for required NewRelicLambdaIntegrationRole."
       );
       return;
     }
-    const params = {
-      RoleName: `NewRelicLambdaIntegrationRole_${nrAccountId}`
-    };
-    this.iam.getRole(params, err => {
-      if (err) {
-        this.serverless.cli.log(
-          "The required NewRelicLambdaIntegrationRole cannot be found; Creating CF Stack with NewRelicLambdaIntegrationRole."
-        );
-        this.createCFStack(nrAccountId);
-      }
-    });
+
+    try {
+      const params = {
+        RoleName: `NewRelicLambdaIntegrationRole_${accountId}`
+      };
+      await this.awsProvider.request("IAM", "getRole", params);
+    } catch (err) {
+      this.serverless.cli.log(
+        "The required NewRelicLambdaIntegrationRole cannot be found; Creating Stack with NewRelicLambdaIntegrationRole."
+      );
+      this.createCFStack(accountId);
+    }
   }
 
   public cleanup() {
@@ -207,43 +201,49 @@ export default class NewRelicLambdaLayerPlugin {
     await Promise.all(promises);
   }
 
-  private async createCFStack(nrAccountId) {
-    const stackName = `NewRelicLambdaIntegrationRole-${nrAccountId}`;
-    const policyName = _.get(this.config, "customRolePolicy", "");
+  private async createCFStack(accountId) {
+    const stackName = `NewRelicLambdaIntegrationRole-${accountId}`;
+    const { customRolePolicy = "" } = this.config;
+
     const policy = await fs.readFile(
-      path.resolve(`${__dirname}/../templates/nr-lambda-integration-role.yaml`),
+      path.resolve(
+        __dirname,
+        "..",
+        "templates",
+        "nr-lambda-integration-role.yaml"
+      ),
       "utf-8"
     );
-    const params = {
-      Capabilities: ["CAPABILITY_NAMED_IAM"],
-      Parameters: [
-        {
-          ParameterKey: "NewRelicAccountNumber",
-          ParameterValue: nrAccountId.toString()
-        },
-        { ParameterKey: "PolicyName", ParameterValue: policyName }
-      ],
-      StackName: stackName,
-      TemplateBody: policy
-    };
-    this.cloudformation.createStack(params, err => {
-      if (err) {
-        this.serverless.cli.log(
-          "Something went wrong while creating NewRelicLambdaIntegrationRole."
-        );
-        return;
-      }
+
+    try {
+      const params = {
+        Capabilities: ["CAPABILITY_NAMED_IAM"],
+        Parameters: [
+          {
+            ParameterKey: "NewRelicAccountNumber",
+            ParameterValue: accountId.toString()
+          },
+          { ParameterKey: "PolicyName", ParameterValue: customRolePolicy }
+        ],
+        StackName: stackName,
+        TemplateBody: policy
+      };
+
+      await this.awsProvider.request("CloudFormation", "createStack", params);
       this.serverless.cli.log(
         "NewRelicLambdaIntegrationRole stack successfully created."
       );
-    });
+    } catch (err) {
+      this.serverless.cli.log(
+        "Something went wrong while creating NewRelicLambdaIntegrationRole."
+      );
+    }
   }
 
   private async addLayer(funcName: string, funcDef: any) {
     this.serverless.cli.log(`Adding NewRelic layer to ${funcName}`);
 
-    const region = _.get(this.serverless.service, "provider.region");
-    if (!region) {
+    if (!this.region) {
       this.serverless.cli.log(
         "No AWS region specified for NewRelic layer; skipping."
       );
@@ -290,7 +290,7 @@ export default class NewRelicLambdaLayerPlugin {
 
     const layerArn = this.config.layerArn
       ? this.config.layerArn
-      : await this.getLayerArn(runtime, region);
+      : await this.getLayerArn(runtime);
 
     const newRelicLayers = layers.filter(
       layer => typeof layer === "string" && layer.match(layerArn)
@@ -390,10 +390,10 @@ export default class NewRelicLambdaLayerPlugin {
     }
   }
 
-  private async getLayerArn(runtime: string, region: string) {
+  private async getLayerArn(runtime: string) {
     return util
       .promisify(request)(
-        `https://${region}.layers.newrelic-external.com/get-layers?CompatibleRuntime=${runtime}`
+        `https://${this.region}.layers.newrelic-external.com/get-layers?CompatibleRuntime=${runtime}`
       )
       .then(response => {
         const awsResp = JSON.parse(response.body);
@@ -468,13 +468,16 @@ export default class NewRelicLambdaLayerPlugin {
       if (err.providerError) {
         this.serverless.cli.log(err.providerError.message);
       }
-
       return;
     }
 
     let destinationArn;
 
-    const { logIngestionFunctionName = "newrelic-log-ingestion" } = this.config;
+    const {
+      logIngestionFunctionName = "newrelic-log-ingestion",
+      licenseKey
+    } = this.config;
+
     try {
       destinationArn = await this.getDestinationArn(logIngestionFunctionName);
     } catch (err) {
@@ -487,6 +490,14 @@ export default class NewRelicLambdaLayerPlugin {
       if (err.providerError) {
         this.serverless.cli.log(err.providerError.message);
       }
+      if (!licenseKey) {
+        this.serverless.cli.log(
+          "Unable to create newrelic-log-ingestion because necessary licenseKey env var is not available. " +
+            "Please add licenseKey to your env vars or install the newrelic-log-ingestion function manually or using the newrelic lambda CLI."
+        );
+        return;
+      }
+
       this.serverless.cli.log(
         `creating required newrelic-log-ingestion function in region ${this.region}`
       );
@@ -502,7 +513,6 @@ export default class NewRelicLambdaLayerPlugin {
       if (err.providerError) {
         this.serverless.cli.log(err.providerError.message);
       }
-
       return;
     }
 
@@ -559,127 +569,144 @@ export default class NewRelicLambdaLayerPlugin {
   }
 
   private async addLogIngestionFunction() {
-    const parameters = this.formatFunctionVariables();
-    if (!parameters.some(p => p.ParameterKey === "NRLicenseKey")) {
+    const templateUrl = await this.getSarTemplate();
+    if (!templateUrl) {
       this.serverless.cli.log(
-        "Unable to create newrelic-log-ingestion function. Please check that the licenseKey has been included as an env var."
+        "Unable to create newRelic-log-ingestion without sar template."
       );
       return;
     }
-    const mode = "CREATE";
-    const stackName = "NewRelic-log-ingestion";
-    const changeSetName = `${stackName}-${mode}-${Date.now()}`;
-    const templateUrl = await this.getSarTemplate();
-    const changeSetParams = {
-      Capabilities: ["CAPABILITY_IAM"],
-      ChangeSetName: changeSetName,
-      ChangeSetType: mode,
-      Parameters: parameters,
-      StackName: stackName,
-      TemplateURL: templateUrl
-    };
-    this.cloudformation.createChangeSet(changeSetParams, (err, data) => {
-      if (err) {
-        this.serverless.cli.log(
-          "Unable to create newrelic-log-ingestion function. Please verify that required environment variables have been set."
-        );
-        return;
-      }
-      const { Id: changeSetId, StackId } = data;
+
+    try {
+      const mode = "CREATE";
+      const stackName = "NewRelic-log-ingestion";
+      const changeSetName = `${stackName}-${mode}-${Date.now()}`;
+      const parameters = this.formatFunctionVariables();
+
+      const params = {
+        Capabilities: ["CAPABILITY_IAM"],
+        ChangeSetName: changeSetName,
+        ChangeSetType: mode,
+        Parameters: parameters,
+        StackName: stackName,
+        TemplateURL: templateUrl
+      };
+
+      const { Id, StackId } = await this.awsProvider.request(
+        "CloudFormation",
+        "createChangeSet",
+        params
+      );
+
       this.serverless.cli.log(
         "Waiting for change set creation to complete, this may take a minute..."
       );
-      this.cloudformation.waitFor(
-        "changeSetCreateComplete",
-        { ChangeSetName: changeSetId },
-        (waitErr, csData) => {
-          if (waitErr) {
-            this.serverless.cli.log(
-              "Change set unable to create resources, newrelic-log-ingestion was not created."
-            );
-            return;
-          }
-          const { Status } = csData;
-          if (Status === "CREATE_COMPLETE") {
-            this.executeChangeSet(changeSetId, StackId);
-          }
-        }
+
+      this.waitForStatus({
+        awsMethod: "describeChangeSet",
+        callbackMethod: () => this.executeChangeSet(Id, StackId),
+        methodParams: { ChangeSetName: Id },
+        statusPath: "Status"
+      });
+    } catch (err) {
+      this.serverless.cli.log(
+        "Unable to create newrelic-log-ingestion function. Please verify that required environment variables have been set."
       );
-    });
+    }
+  }
+
+  private async waitForStatus(requestParams, retryCount: number = 0) {
+    const {
+      awsMethod,
+      callbackMethod,
+      methodParams,
+      statusPath
+    } = requestParams;
+
+    try {
+      const resourceStatus = await this.awsProvider.request(
+        "CloudFormation",
+        awsMethod,
+        methodParams
+      );
+
+      const status = _.get(resourceStatus, statusPath);
+
+      if (status.includes("FAILED") || retryCount > 120) {
+        throw new Error();
+      } else if (status === "CREATE_COMPLETE") {
+        this.serverless.cli.log("Resource successfully created.");
+        callbackMethod();
+        return;
+      }
+
+      setTimeout(
+        () => this.waitForStatus(requestParams, retryCount + 1),
+        30000
+      );
+    } catch (stackErr) {
+      this.serverless.cli.log(
+        "Something went wrong while creating aws resource."
+      );
+    }
   }
 
   private formatFunctionVariables() {
-    const funcVars = this.config || {};
-    const { logEnabled, licenseKey } = funcVars;
+    const { logEnabled, licenseKey } = this.config || {};
     const loggingVar = logEnabled ? "True" : "False";
     const parameters = [
       {
         ParameterKey: "NRLoggingEnabled",
         ParameterValue: `${loggingVar}`
-      }
-    ];
-    if (licenseKey) {
-      parameters.push({
+      },
+      {
         ParameterKey: "NRLicenseKey",
         ParameterValue: `${licenseKey}`
-      });
-    }
+      }
+    ];
     return parameters;
   }
 
-  private getSarTemplate() {
-    return new Promise((resolve, reject) => {
-      this.sar.createCloudFormationTemplate(
+  private async getSarTemplate() {
+    try {
+      const data = await this.awsProvider.request(
+        "ServerlessApplicationRepository",
+        "createCloudFormationTemplate",
         {
           ApplicationId:
             "arn:aws:serverlessrepo:us-east-1:463657938898:applications/NewRelic-log-ingestion"
-        },
-        (err, data) => {
-          if (err) {
-            this.serverless.cli.log(
-              "Something went wrong while fetching the sar template."
-            );
-            reject(err);
-          } else {
-            const { TemplateUrl } = data;
-            resolve(TemplateUrl);
-          }
         }
       );
-    });
+
+      const { TemplateUrl } = data;
+      return TemplateUrl;
+    } catch (err) {
+      this.serverless.cli.log(
+        "Something went wrong while fetching the sar template."
+      );
+    }
   }
 
-  private executeChangeSet(changeSetName, stackId) {
-    this.cloudformation.executeChangeSet(
-      { ChangeSetName: changeSetName },
-      csErr => {
-        if (csErr) {
-          this.serverless.cli.log(
-            "Something went wrong while executing the change set."
-          );
-          return;
-        }
-        this.serverless.cli.log(
-          "Waiting for newrelic-log-ingestion install to complete, this may take a minute..."
-        );
-        this.cloudformation.waitFor(
-          "stackCreateComplete",
-          { StackName: stackId },
-          waitErr => {
-            if (waitErr) {
-              this.serverless.cli.log(
-                "Something went wrong while creating newrelic-log-ingestion function."
-              );
-              return;
-            }
-            this.serverless.cli.log(
-              "newrelic-log-ingestion function successfully created."
-            );
-            this.addLogSubscriptions();
-          }
-        );
-      }
-    );
+  private async executeChangeSet(changeSetName: string, stackId: string) {
+    try {
+      await this.awsProvider.request("CloudFormation", "executeChangeSet", {
+        ChangeSetName: changeSetName
+      });
+      this.serverless.cli.log(
+        "Waiting for newrelic-log-ingestion install to complete, this may take a minute..."
+      );
+
+      this.waitForStatus({
+        awsMethod: "describeStacks",
+        callbackMethod: () => this.addLogSubscriptions(),
+        methodParams: { StackName: stackId },
+        statusPath: "Stacks[0].StackStatus"
+      });
+    } catch (changeSetErr) {
+      this.serverless.cli.log(
+        "Something went wrong while executing the change set."
+      );
+    }
   }
 
   private async describeSubscriptionFilters(funcName: string) {

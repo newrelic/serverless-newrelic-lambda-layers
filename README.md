@@ -78,9 +78,10 @@ custom:
     accountId: your-account-id-here
 ```
 
-#### `licenseKey` (required)
+#### `licenseKey`
 
 Your [New Relic License Key](https://docs.newrelic.com/docs/accounts/accounts-billing/account-setup/new-relic-license-key).
+Required for installing the `newrelic-log-ingestion` lambda via the Serverless plugin.
 
 ```yaml
 custom:
