@@ -2,7 +2,7 @@
   "service": "newrelic-lambda-layers-nodejs-example",
   "provider": {
     "name": "aws",
-    "stage": "prod",
+    "stage": "dev",
     "region": "us-east-1",
     "stackTags": {
       "environment": "us-testing",
@@ -19,8 +19,7 @@
   "custom": {
     "newRelic": {
       "accountId": "${env:NEW_RELIC_ACCOUNT_ID}",
-      "logLevel": "error",
-      "debug": true
+      "stages": ["dev", "prod"]
     }
   },
   "functions": {
