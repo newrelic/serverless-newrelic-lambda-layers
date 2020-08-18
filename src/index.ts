@@ -235,7 +235,7 @@ export default class NewRelicLambdaLayerPlugin {
       );
     } catch (err) {
       this.serverless.cli.log(
-        "Something went wrong while creating NewRelicLambdaIntegrationRole."
+        `Something went wrong while creating NewRelicLambdaIntegrationRole: ${err}`
       );
     }
   }
@@ -646,7 +646,7 @@ export default class NewRelicLambdaLayerPlugin {
       );
     } catch (stackErr) {
       this.serverless.cli.log(
-        "Something went wrong while creating aws resource."
+        `Something went wrong while creating aws resource: ${stackErr}`
       );
     }
   }
@@ -682,7 +682,7 @@ export default class NewRelicLambdaLayerPlugin {
       return TemplateUrl;
     } catch (err) {
       this.serverless.cli.log(
-        "Something went wrong while fetching the sar template."
+        `Something went wrong while fetching the sar template: ${err}`
       );
     }
   }
@@ -704,7 +704,7 @@ export default class NewRelicLambdaLayerPlugin {
       });
     } catch (changeSetErr) {
       this.serverless.cli.log(
-        "Something went wrong while executing the change set."
+        `Something went wrong while executing the change set: ${changeSetErr}`
       );
     }
   }
