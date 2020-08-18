@@ -133,7 +133,6 @@ Logging configuration is considered in the following order:
 3. custom newRelic `logLevel` property
 4. custom newRelic `debug` flag
 
-
 #### `customRolePolicy` (optional)
 
 Specify an alternative IAM role policy ARN for this integration here if you do not want to use the default role policy.
@@ -142,6 +141,12 @@ Specify an alternative IAM role policy ARN for this integration here if you do n
 custom:
   newRelic:
     customRolePolicy: your-custom-role-policy
+    
+#### `stages` (optional)
+
+An array of stages that the plugin will be included for. If this key is not specified then all stages will be included.
+  stages:
+      - prod
 ```
 
 #### `include` (optional)
