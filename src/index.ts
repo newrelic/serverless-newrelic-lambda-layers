@@ -26,14 +26,16 @@ export default class NewRelicLambdaLayerPlugin {
     this.serverless = serverless;
     this.options = options;
     this.awsProvider = this.serverless.getProvider("aws") as any;
-    this.hooks = {
-      "after:deploy:deploy": this.addLogSubscriptions.bind(this),
-      "after:deploy:function:packageFunction": this.cleanup.bind(this),
-      "after:package:createDeploymentArtifacts": this.cleanup.bind(this),
-      "before:deploy:function:packageFunction": this.run.bind(this),
-      "before:package:createDeploymentArtifacts": this.run.bind(this),
-      "before:remove:remove": this.removeLogSubscriptions.bind(this)
-    };
+    this.hooks = this.shouldSkipPlugin()
+      ? {}
+      : {
+          "after:deploy:deploy": this.addLogSubscriptions.bind(this),
+          "after:deploy:function:packageFunction": this.cleanup.bind(this),
+          "after:package:createDeploymentArtifacts": this.cleanup.bind(this),
+          "before:deploy:function:packageFunction": this.run.bind(this),
+          "before:package:createDeploymentArtifacts": this.run.bind(this),
+          "before:remove:remove": this.removeLogSubscriptions.bind(this)
+        };
   }
 
   get config() {
@@ -69,13 +71,6 @@ export default class NewRelicLambdaLayerPlugin {
   }
 
   public async run() {
-    if (this.shouldSkipPlugin()) {
-      this.serverless.cli.log(
-        `Skipping plugin serverless-newrelic-lambda-layers for stage ${this.stage}`
-      );
-      return;
-    }
-
     const version = this.serverless.getVersion();
     if (semver.lt(version, "1.34.0")) {
       this.serverless.cli.log(
@@ -119,18 +114,10 @@ export default class NewRelicLambdaLayerPlugin {
   }
 
   public cleanup() {
-    if (this.shouldSkipPlugin()) {
-      return;
-    }
-
     this.removeNodeHelper();
   }
 
   public async addLogSubscriptions() {
-    if (this.shouldSkipPlugin()) {
-      return;
-    }
-
     if (this.autoSubscriptionDisabled) {
       this.serverless.cli.log(
         "Skipping adding log subscription. Explicitly disabled"
@@ -175,10 +162,6 @@ export default class NewRelicLambdaLayerPlugin {
   }
 
   public async removeLogSubscriptions() {
-    if (this.shouldSkipPlugin()) {
-      return;
-    }
-
     if (this.autoSubscriptionDisabled) {
       this.serverless.cli.log(
         "Skipping removing log subscription. Explicitly disabled"
@@ -311,6 +294,11 @@ export default class NewRelicLambdaLayerPlugin {
     ) {
       return false;
     }
+
+    this.serverless.cli.log(
+      `Skipping plugin serverless-newrelic-lambda-layers for stage ${this.stage}`
+    );
+
     return true;
   }
 

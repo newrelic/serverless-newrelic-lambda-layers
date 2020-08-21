@@ -65,7 +65,10 @@ describe("NewRelicLambdaLayerPlugin", () => {
         serverless.setProvider("aws", new AwsProvider(serverless, options));
         const plugin = new NewRelicLambdaLayerPlugin(serverless, options);
 
-        await plugin.run();
+        try {
+          await plugin.hooks['before:deploy:function:packageFunction']();
+        } catch (err) {}
+        
 
         expect(
           omit(
