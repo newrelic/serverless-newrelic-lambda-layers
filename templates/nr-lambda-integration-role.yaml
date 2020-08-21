@@ -1,0 +1,76 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  NewRelicAccountNumber:
+    Type: String
+    Description: The Newrelic account number to send data
+    AllowedPattern: '[0-9]+'
+  PolicyName: 
+    Type: String
+    Description: 'Policy name of the policy to use in the Role. If no value is supplied it will use the AWS default ReadOnlyAccess.
+    The default AWS ReadOnlyAccess policy is managed by AWS and automatically gains new permissions as new services are introduced but
+    includes a broad set of permissions which are not required by NewRelic integrations.
+    If a value is supplied a custom policy will be created with the provided name. This custom policy only includes the minimum 
+    required permissions to allow NewRelic to monitor your Lambda functions. Take into account that this policy is not automatically 
+    updated by AWS, and must be managed by you.'
+    
+
+Conditions: 
+  UseCustomPolicy: !Not [!Equals [ !Ref PolicyName, '']]
+  UseDefaultPolicy: !Equals [ !Ref PolicyName, '']
+
+Resources:
+  NewRelicDefaultPolicyLambdaRole:
+    Type: 'AWS::IAM::Role'
+    Condition: UseDefaultPolicy
+    Properties:
+      ManagedPolicyArns: 
+        - arn:aws:iam::aws:policy/ReadOnlyAccess
+      RoleName: !Join ['_', ['NewRelicLambdaIntegrationRole', !Ref NewRelicAccountNumber]]
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:aws:iam::754728514883:root'
+            Action: 'sts:AssumeRole'
+            Condition:
+              StringEquals:
+                'sts:ExternalId': !Ref NewRelicAccountNumber
+
+  NewRelicCustomPolicyLambdaRole:
+    Type: 'AWS::IAM::Role'
+    Condition: UseCustomPolicy
+    Properties:
+      RoleName: !Join ['_', ['NewRelicLambdaIntegrationRole', !Ref NewRelicAccountNumber]]
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:aws:iam::754728514883:root'
+            Action: 'sts:AssumeRole'
+            Condition:
+              StringEquals:
+                'sts:ExternalId': !Ref NewRelicAccountNumber
+
+  NewRelicLambdaCustomPolicy:
+    Type: 'AWS::IAM::ManagedPolicy'
+    Condition: UseCustomPolicy
+    Properties:    
+      ManagedPolicyName: !Ref PolicyName
+      Roles:
+        - !Ref NewRelicCustomPolicyLambdaRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:      
+              - 'cloudwatch:GetMetricStatistics'
+              - 'cloudwatch:ListMetrics'
+              - 'cloudwatch:GetMetricData'            
+              - 'lambda:GetAccountSettings'
+              - 'lambda:ListFunctions'
+              - 'lambda:ListAliases'
+              - 'lambda:ListTags'
+              - 'lambda:ListEventSourceMappings'
+            Resource: '*'

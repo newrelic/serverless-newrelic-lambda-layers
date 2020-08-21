@@ -78,6 +78,17 @@ custom:
     accountId: your-account-id-here
 ```
 
+#### `licenseKey`
+
+Your [New Relic License Key](https://docs.newrelic.com/docs/accounts/accounts-billing/account-setup/new-relic-license-key).
+Required for installing the `newrelic-log-ingestion` lambda via the Serverless plugin.
+
+```yaml
+custom:
+  newRelic:
+    licenseKey: your-license-key-here
+```
+
 #### `trustedAccountKey` (optional)
 
 Only required if your New Relic account is a sub-account. This needs to be the account ID for the root/parent account.
@@ -85,7 +96,6 @@ Only required if your New Relic account is a sub-account. This needs to be the a
 ```yaml
 custom:
   newRelic:
-    accountId: your-sub-account-id
     trustedAccountKey: your-parent-account-id
 ```
 
@@ -123,14 +133,19 @@ Logging configuration is considered in the following order:
 3. custom newRelic `logLevel` property
 4. custom newRelic `debug` flag
 
-#### `stages` (optional)
+#### `customRolePolicy` (optional)
 
-An array of stages that the plugin will be included for. If this key is not specified then all stages will be included.
+Specify an alternative IAM role policy ARN for this integration here if you do not want to use the default role policy.
 
 ```yaml
 custom:
   newRelic:
-    stages:
+    customRolePolicy: your-custom-role-policy
+    
+#### `stages` (optional)
+
+An array of stages that the plugin will be included for. If this key is not specified then all stages will be included.
+  stages:
       - prod
 ```
 
