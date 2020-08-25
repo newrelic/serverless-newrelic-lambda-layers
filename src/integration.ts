@@ -1,6 +1,7 @@
 import * as _ from "lodash";
 import {
   cloudLinkAccountMutation,
+  cloudServiceIntegrationMutation,
   fetchLinkedAccounts,
   nerdgraphFetch
 } from "./api";
@@ -84,11 +85,36 @@ export default class Integration {
         this.region,
         cloudLinkAccountMutation(accountId, roleArn, linkedAccount)
       );
-      const errors = _.get(res, "data.cloudLinkAccount.errors", []);
 
+      const { linkedAccounts, errors } = _.get(
+        res,
+        "data.cloudLinkAccount",
+        {}
+      );
       if (errors.length > 0) {
         throw new Error(errors);
       }
+
+      const linkedAccountId = _.get(linkedAccounts, "[0].id");
+      const integrationRes = await nerdgraphFetch(
+        newRelicApiKey,
+        this.region,
+        cloudServiceIntegrationMutation(
+          accountId,
+          "aws",
+          "lambda",
+          linkedAccountId
+        )
+      );
+      const { errors: integrationErrors } = _.get(
+        integrationRes,
+        "data.cloudConfigureIntegration",
+        {}
+      );
+      if (integrationErrors.length > 0) {
+        throw new Error(integrationErrors);
+      }
+
       this.serverless.cli.log(
         `New Relic cloud ingegration successfully created.`
       );

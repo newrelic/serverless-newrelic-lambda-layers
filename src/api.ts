@@ -36,6 +36,33 @@ export const cloudLinkAccountMutation = (
   }
 `;
 
+export const cloudServiceIntegrationMutation = (
+  accountId: number,
+  provider: string,
+  service: string,
+  linkedAccountId: number
+) => `
+  mutation {
+    cloudConfigureIntegration (
+      accountId: ${accountId},
+      integrations: {${provider}: {${service}: {linkedAccountId: ${linkedAccountId}}}}
+    ) {
+      integrations {
+        id
+        name
+        service {
+          id
+          name
+        }
+      }
+      errors {
+        linkedAccountId
+        message
+      }
+    }
+  }
+`;
+
 export const fetchLinkedAccounts = (accountId: number) => `
   query {
     actor {
