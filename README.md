@@ -78,16 +78,24 @@ custom:
     accountId: your-account-id-here
 ```
 
-#### `licenseKey`
+#### `newRelicApiKey` (required)
 
-Your [New Relic License Key](https://docs.newrelic.com/docs/accounts/accounts-billing/account-setup/new-relic-license-key).
-Required for installing the `newrelic-log-ingestion` lambda via the Serverless plugin.
+Your [New Relic Personal API Key](https://docs.newrelic.com/docs/apis/get-started/intro-apis/types-new-relic-api-keys#personal-api-key).
 
 ```yaml
 custom:
   newRelic:
-    licenseKey: your-license-key-here
+    newRelicApiKey: your-api-key-here
 ```
+
+#### `linkedAccount` (required)
+
+A label for the New Relic Linked Account. This is how this integration will appear in New Relic.
+
+```yaml
+custom:
+  newRelic:
+    linkedAccount: your-linked-account-name
 
 #### `trustedAccountKey` (optional)
 
@@ -113,6 +121,10 @@ custom:
 #### `logEnabled` (optional)
 
 Enables logging. Defaults to `false`
+
+#### `enableIntegration` (optional)
+
+Allows the creation of New Relic aws cloud integration when absent. Defaults to `false`
 
 #### `logLevel` (optional)
 
