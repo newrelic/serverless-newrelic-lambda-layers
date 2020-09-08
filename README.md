@@ -37,14 +37,16 @@ plugins:
 ```
 
 If you don't yet have a New Relic account, [sign up here](https://newrelic.com/products/serverless-aws-lambda).
-Then set up the [New Relic AWS Integration](https://docs.newrelic.com/docs/serverless-function-monitoring/aws-lambda-monitoring/get-started/enable-new-relic-monitoring-aws-lambda#enable-process) (only the `set-up-lambda-integration` step is required).
 
-Get your [New Relic Account ID](https://docs.newrelic.com/docs/accounts/install-new-relic/account-setup/account-id) and plug it into your `serverless.yml`:
+Grab your [New Relic Account ID](https://docs.newrelic.com/docs/accounts/install-new-relic/account-setup/account-id),
+your [New Relic Personal API Key](https://docs.newrelic.com/docs/apis/get-started/intro-apis/types-new-relic-api-keys#personal-api-key)
+and plug them into your `serverless.yml`:
 
 ```yaml
 custom:
   newRelic:
     accountId: your-new-relic-account-id-here
+    apiKey: your-new-relic-personal-api-key-here
 ```
 
 Deploy:
