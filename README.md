@@ -6,10 +6,10 @@ observability using [AWS Lambda Layers](https://docs.aws.amazon.com/lambda/lates
 ## Requirements
 
 - [serverless](https://github.com/serverless/serverless) >= 1.34.0
-- Set up the [New Relic AWS Integration](https://docs.newrelic.com/docs/serverless-function-monitoring/aws-lambda-monitoring/get-started/enable-new-relic-monitoring-aws-lambda#enable-process) (only the `newrelic-lambda integrations install` step is required)
 
 ## Features
 
+- Installs and configures the New Relic AWS Integration
 - Supports Node.js and Python runtimes (more runtimes to come)
 - No code change required to enable New Relic
 - Bundles New Relic's agent in a single layer
@@ -78,19 +78,21 @@ custom:
     accountId: your-account-id-here
 ```
 
-#### `newRelicApiKey` (required)
+#### `apiKey` (required)
 
 Your [New Relic Personal API Key](https://docs.newrelic.com/docs/apis/get-started/intro-apis/types-new-relic-api-keys#personal-api-key).
 
 ```yaml
 custom:
   newRelic:
-    newRelicApiKey: your-api-key-here
+    apiKey: your-api-key-here
 ```
 
-#### `linkedAccount` (required)
+#### `linkedAccount` (optional)
 
-A label for the New Relic Linked Account. This is how this integration will appear in New Relic.
+A label for the New Relic Linked Account. This is how this integration will
+appear in New Relic. If not set, it will default to "New Relic Lambda Integration - 
+<AWS ACcount ID>".
 
 ```yaml
 custom:
@@ -126,6 +128,12 @@ Enables logging. Defaults to `false`
 
 Allows the creation of New Relic aws cloud integration when absent. Defaults to `false`
 
+```yaml
+custom:
+  newRelic:
+    enableIntegration: true
+```
+
 #### `logLevel` (optional)
 
 Sets a log level on all functions. Possible values: `'fatal'`, `'error'`, `'warn'`, `'info'`, `'debug'`, `'trace'` or `'silent'`. Defaults to `'error'`
@@ -152,8 +160,9 @@ Specify an alternative IAM role policy ARN for this integration here if you do n
 ```yaml
 custom:
   newRelic:
-    customRolePolicy: your-custom-role-policy
-    
+    customRolePolicy: your-custom-role-policy-arn
+```
+
 #### `stages` (optional)
 
 An array of stages that the plugin will be included for. If this key is not specified then all stages will be included.

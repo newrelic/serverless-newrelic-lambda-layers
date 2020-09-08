@@ -42,9 +42,7 @@ export default class NewRelicLambdaLayerPlugin {
           "after:deploy:deploy": this.addLogSubscriptions.bind(this),
           "after:deploy:function:packageFunction": this.cleanup.bind(this),
           "after:package:createDeploymentArtifacts": this.cleanup.bind(this),
-          "before:deploy:deploy": this.integration.checkNRIntegration.bind(
-            this
-          ),
+          "before:deploy:deploy": this.integration.check.bind(this),
           "before:deploy:function:packageFunction": this.run.bind(this),
           "before:package:createDeploymentArtifacts": this.run.bind(this),
           "before:remove:remove": this.removeLogSubscriptions.bind(this)
@@ -449,7 +447,7 @@ export default class NewRelicLambdaLayerPlugin {
 
     const {
       logIngestionFunctionName = "newrelic-log-ingestion",
-      newRelicApiKey
+      apiKey
     } = this.config;
 
     try {
@@ -464,9 +462,9 @@ export default class NewRelicLambdaLayerPlugin {
       if (err.providerError) {
         this.serverless.cli.log(err.providerError.message);
       }
-      if (!newRelicApiKey) {
+      if (!apiKey) {
         this.serverless.cli.log(
-          "Unable to create newrelic-log-ingestion because necessary newRelicApiKey env var is not available."
+          "Unable to create newrelic-log-ingestion because New Relic API key not configured."
         );
         return;
       }
@@ -592,9 +590,9 @@ export default class NewRelicLambdaLayerPlugin {
   }
 
   private async formatFunctionVariables() {
-    const { logEnabled, newRelicApiKey, accountId } = this.config;
+    const { logEnabled, apiKey, accountId } = this.config;
     const userData = await nerdgraphFetch(
-      newRelicApiKey,
+      apiKey,
       this.region,
       fetchLicenseKey(accountId)
     );

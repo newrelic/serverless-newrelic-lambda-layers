@@ -1,5 +1,5 @@
 export const nerdgraphFetch = async (
-  newRelicApiKey: string,
+  apiKey: string,
   region: string,
   query: string
 ) => {
@@ -10,7 +10,7 @@ export const nerdgraphFetch = async (
   const res = await fetch(gqlUrl, {
     body: JSON.stringify({ query }),
     headers: {
-      "API-Key": newRelicApiKey,
+      "API-Key": apiKey,
       "Content-Type": "application/json"
     },
     method: "POST"

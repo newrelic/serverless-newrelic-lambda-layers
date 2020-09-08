@@ -20,16 +20,14 @@ export default class Integration {
     this.region = region;
   }
 
-  public checkNRIntegration = async () => {
+  public async check() {
+    const { accountId, enableIntegration, apiKey } = this.config;
     const {
-      accountId,
-      linkedAccount,
-      enableIntegration,
-      newRelicApiKey
+      linkedAccount = `New Relic Lambda Integration - ${accountId}`
     } = this.config;
 
     const integrationData = await nerdgraphFetch(
-      newRelicApiKey,
+      apiKey,
       this.region,
       fetchLinkedAccounts(accountId)
     );
@@ -51,12 +49,14 @@ export default class Integration {
 
     if (match.length < 1) {
       this.serverless.cli.log(
-        "No New Relic integration found for this New Relic linked account and aws account."
+        "No New Relic AWS Lambda integration found for this New Relic linked account and aws account."
       );
+
       if (enableIntegration) {
-        this.enableNRIntegration(externalId);
+        this.enable(externalId);
         return;
       }
+
       this.serverless.cli.log(
         "Please enable the configuration manually or add the 'enableIntegration' config var to your serverless.yaml file."
       );
@@ -66,22 +66,27 @@ export default class Integration {
     this.serverless.cli.log(
       "Existing New Relic integration found for this linked account and aws account, skipping creation."
     );
-  };
+  }
 
-  private enableNRIntegration = async (externalId: string) => {
+  private async enable(externalId: string) {
     try {
       const roleArn = await this.checkAwsIntegrationRole(externalId);
+
       if (!roleArn) {
         return;
       }
 
-      const { linkedAccount, accountId, newRelicApiKey } = this.config;
+      const { accountId, apiKey } = this.config;
+      const {
+        linkedAccount = `New Relic Lambda Integration - ${accountId}`
+      } = this.config;
+
       this.serverless.cli.log(
         `Enabling New Relic integration for linked account: ${linkedAccount} and aws account: ${externalId}.`
       );
 
       const res = await nerdgraphFetch(
-        newRelicApiKey,
+        apiKey,
         this.region,
         cloudLinkAccountMutation(accountId, roleArn, linkedAccount)
       );
@@ -91,13 +96,14 @@ export default class Integration {
         "data.cloudLinkAccount",
         {}
       );
+
       if (errors.length > 0) {
         throw new Error(errors);
       }
 
       const linkedAccountId = _.get(linkedAccounts, "[0].id");
       const integrationRes = await nerdgraphFetch(
-        newRelicApiKey,
+        apiKey,
         this.region,
         cloudServiceIntegrationMutation(
           accountId,
@@ -106,26 +112,28 @@ export default class Integration {
           linkedAccountId
         )
       );
+
       const { errors: integrationErrors } = _.get(
         integrationRes,
         "data.cloudConfigureIntegration",
         {}
       );
+
       if (integrationErrors.length > 0) {
         throw new Error(integrationErrors);
       }
 
       this.serverless.cli.log(
-        `New Relic cloud ingegration successfully created.`
+        `New Relic AWS Lambda cloud integration created successfully.`
       );
     } catch (err) {
       this.serverless.cli.log(
-        `Something went wrong while completing the New Relic cloud integration: ${err}.`
+        `Error while creating the New Relic AWS Lambda cloud integration: ${err}.`
       );
     }
-  };
+  }
 
-  private getCallerIdentity = async () => {
+  private async getCallerIdentity() {
     try {
       const { Account } = await this.awsProvider.request(
         "STS",
@@ -138,13 +146,13 @@ export default class Integration {
         "No AWS config found, please configure a default AWS config."
       );
     }
-  };
+  }
 
-  private checkAwsIntegrationRole = async (externalId: string) => {
+  private async checkAwsIntegrationRole(externalId: string) {
     const { accountId } = this.config;
     if (!accountId) {
       this.serverless.cli.log(
-        "No newRelic accountId specified; Cannot check for required NewRelicLambdaIntegrationRole."
+        "No New Relic Account ID specified; Cannot check for required NewRelicLambdaIntegrationRole."
       );
       return;
     }
@@ -153,9 +161,11 @@ export default class Integration {
       const params = {
         RoleName: `NewRelicLambdaIntegrationRole_${accountId}`
       };
+
       const {
         Role: { Arn }
       } = await this.awsProvider.request("IAM", "getRole", params);
+
       return Arn;
     } catch (err) {
       this.serverless.cli.log(
@@ -166,7 +176,7 @@ export default class Integration {
       waitForStatus(
         {
           awsMethod: "describeStacks",
-          callbackMethod: () => this.enableNRIntegration(externalId),
+          callbackMethod: () => this.enable(externalId),
           methodParams: {
             StackName: stackId
           },
@@ -175,9 +185,9 @@ export default class Integration {
         this
       );
     }
-  };
+  }
 
-  private createCFStack = async (accountId: string) => {
+  private async createCFStack(accountId: string) {
     const stackName = `NewRelicLambdaIntegrationRole-${accountId}`;
     const { customRolePolicy = "" } = this.config;
 
@@ -207,5 +217,5 @@ export default class Integration {
         `Something went wrong while creating NewRelicLambdaIntegrationRole: ${err}`
       );
     }
-  };
+  }
 }
