@@ -37,6 +37,7 @@ export default class Integration {
       "data.actor.account.cloud.linkedAccounts",
       []
     );
+
     const externalId = await this.getCallerIdentity();
 
     const match = linkedAccounts.filter(account => {
