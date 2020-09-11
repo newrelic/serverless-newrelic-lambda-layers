@@ -42,7 +42,7 @@ export default class NewRelicLambdaLayerPlugin {
           "after:deploy:deploy": this.addLogSubscriptions.bind(this),
           "after:deploy:function:packageFunction": this.cleanup.bind(this),
           "after:package:createDeploymentArtifacts": this.cleanup.bind(this),
-          "before:deploy:deploy": this.integration.check.bind(this),
+          "before:deploy:deploy": this.checkIntegration.bind(this),
           "before:deploy:function:packageFunction": this.run.bind(this),
           "before:package:createDeploymentArtifacts": this.run.bind(this),
           "before:remove:remove": this.removeLogSubscriptions.bind(this)
@@ -51,10 +51,6 @@ export default class NewRelicLambdaLayerPlugin {
 
   get config() {
     return _.get(this.serverless, "service.custom.newRelic", {});
-  }
-
-  get integration() {
-    return new Integration(this);
   }
 
   get stage() {
@@ -83,6 +79,9 @@ export default class NewRelicLambdaLayerPlugin {
         .getAllFunctions()
         .map(func => ({ [func]: this.serverless.service.getFunction(func) }))
     );
+  }
+  public checkIntegration() {
+    return new Integration(this).check();
   }
 
   public async run() {
