@@ -1,3 +1,5 @@
+import fetch from "node-fetch";
+
 export const nerdgraphFetch = async (
   apiKey: string,
   region: string,
