@@ -92,13 +92,11 @@ export default class Integration {
         cloudLinkAccountMutation(accountId, roleArn, linkedAccount)
       );
 
-      const { linkedAccounts, errors } = _.get(
-        res,
-        "data.cloudLinkAccount",
-        {}
-      );
+      const { linkedAccounts, errors } = _.get(res, "data.cloudLinkAccount", {
+        errors: ["data.cloudLinkAccount missing in response"]
+      });
 
-      if (errors.length > 0) {
+      if (errors && errors.length) {
         throw new Error(errors);
       }
 
@@ -117,10 +115,12 @@ export default class Integration {
       const { errors: integrationErrors } = _.get(
         integrationRes,
         "data.cloudConfigureIntegration",
-        {}
+        {
+          errors: ["data.cloudConfigureIntegration missing in response"]
+        }
       );
 
-      if (integrationErrors.length > 0) {
+      if (integrationErrors && integrationErrors.length) {
         throw new Error(integrationErrors);
       }
 
