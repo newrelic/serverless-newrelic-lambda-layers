@@ -1,7 +1,7 @@
 import * as fs from "fs-extra";
 import * as _ from "lodash";
 import * as path from "path";
-import * as request from "request";
+import * as request from "request-promise-native";
 import * as semver from "semver";
 import * as util from "util";
 // tslint:disable-next-line
@@ -362,17 +362,12 @@ export default class NewRelicLambdaLayerPlugin {
   }
 
   private async getLayerArn(runtime: string) {
-    return util
-      .promisify(request)(
-        `https://${this.region}.layers.newrelic-external.com/get-layers?CompatibleRuntime=${runtime}`
-      )
-      .then(response => {
-        const awsResp = JSON.parse(response.body);
-        return _.get(
-          awsResp,
-          "Layers[0].LatestMatchingVersion.LayerVersionArn"
-        );
-      });
+    return request(
+      `https://${this.region}.layers.newrelic-external.com/get-layers?CompatibleRuntime=${runtime}`
+    ).then(response => {
+      const awsResp = JSON.parse(response.body);
+      return _.get(awsResp, "Layers[0].LatestMatchingVersion.LayerVersionArn");
+    });
   }
 
   private getHandlerWrapper(runtime: string, handler: string) {
