@@ -365,7 +365,7 @@ export default class NewRelicLambdaLayerPlugin {
     return request(
       `https://${this.region}.layers.newrelic-external.com/get-layers?CompatibleRuntime=${runtime}`
     ).then(response => {
-      const awsResp = JSON.parse(response.body);
+      const awsResp = JSON.parse(response);
       return _.get(awsResp, "Layers[0].LatestMatchingVersion.LayerVersionArn");
     });
   }
