@@ -19,6 +19,7 @@
     }
   },
   "plugins": ["serverless-newrelic-lambda-layers"],
+  "configValidationMode": "warn",
   "custom": {
     "newRelic": {
       "accountId": "${env:NEW_RELIC_ACCOUNT_ID}",
@@ -26,6 +27,7 @@
       "logEnabled": true
     }
   },
+  "disabledDeprecations": [],
   "functions": {
     "layer-nodejs810": {
       "events": [{ "schedule": "rate(5 minutes)" }],
