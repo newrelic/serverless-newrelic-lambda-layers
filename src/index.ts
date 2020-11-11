@@ -158,13 +158,6 @@ export default class NewRelicLambdaLayerPlugin {
       return;
     }
 
-    if (this.config.enableExtension && this.licenseKey) {
-      this.serverless.cli.log(
-        "Log ingestion will be via Lambda Extension; skipping log subscription."
-      );
-      return;
-    }
-
     const funcs = this.functions;
     let { cloudWatchFilter = [...DEFAULT_FILTER_PATTERNS] } = this.config;
 

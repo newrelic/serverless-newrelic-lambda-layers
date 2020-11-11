@@ -126,6 +126,15 @@ custom:
 
 Enables logging. Defaults to `false`
 
+#### `enableExtension` (optional)
+
+Allows your function to deliver its telemetry to New Relic via AWS Lambda Extension. Can be used with the `enableIntegration` option--they're not mutually exclusive. Defaults to `false`
+
+```yaml
+custom:
+  newRelic:
+    enableExtension: true
+```
 #### `enableIntegration` (optional)
 
 Allows the creation of New Relic aws cloud integration when absent. Defaults to `false`
@@ -232,7 +241,7 @@ ingestion function. See the [aws-log-ingestion documentation](https://github.com
 
 #### `prepend` (optional)
 
-Whether or not to prepend the IOpipe layer. Defaults to `false` which appends the layer.
+Whether or not to prepend the New Relic layer. Defaults to `false` which appends the layer.
 
 ```yaml
 custom:
