@@ -12,12 +12,14 @@ export default class Integration {
   public awsProvider: any;
   public serverless: any;
   public region: string;
+  private licenseKey: string;
 
-  constructor({ config, awsProvider, serverless, region }: any) {
+  constructor({ config, awsProvider, serverless, region, licenseKey }: any) {
     this.config = config;
     this.awsProvider = awsProvider;
     this.serverless = serverless;
     this.region = region;
+    this.licenseKey = licenseKey;
   }
 
   public async check() {
@@ -67,6 +69,49 @@ export default class Integration {
     this.serverless.cli.log(
       "Existing New Relic integration found for this linked account and aws account, skipping creation."
     );
+  }
+
+  public async createManagedSecret() {
+    const stackName = `NewRelicLicenseKeySecret`;
+
+    try {
+      const policy = await fetchPolicy("nr-license-key-secret.yaml");
+      const params = {
+        Capabilities: ["CAPABILITY_NAMED_IAM"],
+        Parameters: [
+          {
+            ParameterKey: "LicenseKey",
+            ParameterValue: this.licenseKey
+          },
+          {
+            ParameterKey: "Region",
+            ParameterValue: this.region
+          }
+        ],
+        StackName: stackName,
+        TemplateBody: policy
+      };
+
+      const { StackId } = await this.awsProvider.request(
+        "CloudFormation",
+        "createStack",
+        params
+      );
+      return StackId;
+    } catch (err) {
+      // If the secret already exists, we'll see an error, but we populate
+      // a return value anyway to avoid falling back to the env var.
+      if (
+        `${err}`.indexOf("NewRelicLicenseKeySecret") > -1 &&
+        `${err}`.indexOf("already exists") > -1
+      ) {
+        return "Already created";
+      }
+      this.serverless.cli.log(
+        `Something went wrong while creating NewRelicLicenseKeySecret: ${err}`
+      );
+    }
+    return false;
   }
 
   private async enable(externalId: string) {
