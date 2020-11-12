@@ -3,7 +3,6 @@ import * as _ from "lodash";
 import * as path from "path";
 import * as request from "request-promise-native";
 import * as semver from "semver";
-import * as util from "util";
 // tslint:disable-next-line
 import * as Serverless from "serverless";
 import { fetchLicenseKey, nerdgraphFetch } from "./api";
@@ -25,6 +24,8 @@ export default class NewRelicLambdaLayerPlugin {
   public hooks: {
     [event: string]: Promise<any>;
   };
+  public licenseKey: string;
+  public managedSecretConfigured: boolean;
 
   constructor(serverless: Serverless, options: Serverless.Options) {
     this.serverless = serverless;
@@ -35,6 +36,8 @@ export default class NewRelicLambdaLayerPlugin {
       "provider.region",
       "us-east-1"
     );
+    this.licenseKey = null;
+    this.managedSecretConfigured = false;
 
     this.hooks = this.shouldSkipPlugin()
       ? {}
@@ -84,6 +87,16 @@ export default class NewRelicLambdaLayerPlugin {
     return new Integration(this).check();
   }
 
+  public async configureLicenseForExtension() {
+    if (!this.licenseKey) {
+      this.licenseKey = await this.retrieveLicenseKey();
+    }
+    const managedSecret = await new Integration(this).createManagedSecret();
+    if (managedSecret) {
+      this.managedSecretConfigured = true;
+    }
+  }
+
   public async run() {
     const version = this.serverless.getVersion();
     if (semver.lt(version, "1.34.0")) {
@@ -114,6 +127,12 @@ export default class NewRelicLambdaLayerPlugin {
         "exclude and include options are mutually exclusive; skipping."
       );
       return;
+    }
+
+    if (this.config.enableExtension) {
+      // If using the extension, try to store the NR license key in a managed secret
+      // for the extension to authenticate. If not, fall back to function environment variable
+      await this.configureLicenseForExtension();
     }
 
     const funcs = this.functions;
@@ -222,8 +241,7 @@ export default class NewRelicLambdaLayerPlugin {
       return;
     }
 
-    if (
-      typeof runtime !== "string" ||
+    const wrappableRuntime =
       [
         "nodejs10.x",
         "nodejs12.x",
@@ -232,7 +250,11 @@ export default class NewRelicLambdaLayerPlugin {
         "python3.6",
         "python3.7",
         "python3.8"
-      ].indexOf(runtime) === -1
+      ].indexOf(runtime) === -1;
+
+    if (
+      typeof runtime !== "string" ||
+      (wrappableRuntime && !this.config.enableExtension)
     ) {
       this.serverless.cli.log(
         `Unsupported runtime "${runtime}" for NewRelic layer; skipping.`
@@ -293,6 +315,13 @@ export default class NewRelicLambdaLayerPlugin {
 
     if (runtime.match("python")) {
       environment.NEW_RELIC_SERVERLESS_MODE_ENABLED = "true";
+    }
+
+    if (this.config.enableExtension) {
+      environment.NEW_RELIC_LAMBDA_EXTENSION_ENABLED = "true";
+      if (!this.managedSecretConfigured && this.licenseKey) {
+        environment.NEW_RELIC_LICENSE_KEY = this.licenseKey;
+      }
     }
 
     funcDef.environment = environment;
@@ -583,17 +612,25 @@ export default class NewRelicLambdaLayerPlugin {
     }
   }
 
-  private async formatFunctionVariables() {
-    const { logEnabled, apiKey, accountId } = this.config;
+  private async retrieveLicenseKey() {
+    const { apiKey, accountId } = this.config;
     const userData = await nerdgraphFetch(
       apiKey,
       this.region,
       fetchLicenseKey(accountId)
     );
-    const { licenseKey } = _.get(userData, "data.actor.account", null);
+    this.licenseKey = _.get(userData, "data.actor.account.licenseKey", null);
+    return this.licenseKey;
+  }
+
+  private async formatFunctionVariables() {
+    const { logEnabled } = this.config;
+    const licenseKey = this.licenseKey
+      ? this.licenseKey
+      : await this.retrieveLicenseKey();
     const loggingVar = logEnabled ? "True" : "False";
 
-    const parameters = [
+    return [
       {
         ParameterKey: "NRLoggingEnabled",
         ParameterValue: `${loggingVar}`
@@ -603,7 +640,6 @@ export default class NewRelicLambdaLayerPlugin {
         ParameterValue: `${licenseKey}`
       }
     ];
-    return parameters;
   }
 
   private async getSarTemplate() {
