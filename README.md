@@ -128,7 +128,7 @@ Enables logging. Defaults to `false`
 
 #### `enableExtension` (optional)
 
-Allows your function to deliver its telemetry to New Relic via AWS Lambda Extension. Can be used with the `enableIntegration` option--they're not mutually exclusive. Defaults to `false`
+Allows your function to deliver its telemetry to New Relic via AWS Lambda Extension. Defaults to `true`, so it can be omitted. To avoid delivering your telemetry via the extension, set to `false`.
 
 ```yaml
 custom:

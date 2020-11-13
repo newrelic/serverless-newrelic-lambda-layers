@@ -128,8 +128,8 @@ export default class NewRelicLambdaLayerPlugin {
       );
       return;
     }
-
-    if (this.config.enableExtension) {
+    if (this.config.enableExtension !== false) {
+      this.config.enableExtension = true;
       // If using the extension, try to store the NR license key in a managed secret
       // for the extension to authenticate. If not, fall back to function environment variable
       await this.configureLicenseForExtension();
