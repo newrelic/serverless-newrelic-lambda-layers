@@ -20,6 +20,7 @@
   "custom": {
     "newRelic": {
       "accountId": "${env:NEW_RELIC_ACCOUNT_ID}",
+      "enableExtension": true,
       "include": ["layer-nodejs810"],
       "exclude": ["layer-nodejs12x"]
     }
