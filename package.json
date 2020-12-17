@@ -14,7 +14,7 @@
     "test": "jest",
     "test:watch": "jest --watchAll",
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
-    "generate:test:case": "yaml2json examples/nodejs/serverless.yml > tests/fixtures/example.service.input.json"
+    "generate:test:case": "yaml2json examples/nodejs/serverless.yml > tests/fixtures/example.input.service.json"
   },
   "husky": {
     "hooks": {
