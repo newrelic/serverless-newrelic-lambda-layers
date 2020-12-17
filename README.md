@@ -135,6 +135,16 @@ custom:
   newRelic:
     enableExtension: true
 ```
+#### `enableFunctionLogs` (optional)
+
+Allows your function to deliver all of your function logs to New Relic via AWS Lambda Extension. This would eliminate the need for a CloudWatch log subscription + the NR log ingestion Lambda function. This method of log ingestion is lower-cost, and offers faster time to glass.  
+
+```yaml
+custom:
+  newRelic:
+    enableFunctionLogs: true
+```
+
 #### `enableIntegration` (optional)
 
 Allows the creation of New Relic aws cloud integration when absent. Defaults to `false`
