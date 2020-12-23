@@ -13,6 +13,7 @@ export default class Integration {
   public serverless: any;
   public region: string;
   private licenseKey: string;
+  private externalId: string;
 
   constructor({ config, awsProvider, serverless, region, licenseKey }: any) {
     this.config = config;
@@ -41,6 +42,7 @@ export default class Integration {
     );
 
     const externalId = await this.getCallerIdentity();
+    this.externalId = externalId;
 
     const match = linkedAccounts.filter(account => {
       return (
@@ -71,8 +73,36 @@ export default class Integration {
     );
   }
 
+  public async checkForManagedSecretPolicy() {
+    const thisRegionPolicy = `NewRelic-ViewLicenseKey-${this.region}`;
+    const regionFilter = policy => policy.PolicyName.match(thisRegionPolicy);
+
+    try {
+      const params = {
+        Scope: `Local`
+      };
+
+      const results = await this.awsProvider.request(
+        "IAM",
+        "listPolicies",
+        params
+      );
+      const currentRegionPolicy = results.Policies.filter(regionFilter);
+      return {
+        currentRegionPolicy,
+        secretExists: currentRegionPolicy.length > 0
+      };
+    } catch (err) {
+      this.serverless.cli.log(
+        `Problem getting list of current policies. ${JSON.stringify(err)}`
+      );
+    }
+  }
+
   public async createManagedSecret() {
     const stackName = `NewRelicLicenseKeySecret`;
+    const policyName = `NewRelic-ViewLicenseKey`;
+    const externalId = await this.getCallerIdentity();
 
     try {
       const policy = await fetchPolicy("nr-license-key-secret.yaml");
@@ -86,6 +116,10 @@ export default class Integration {
           {
             ParameterKey: "Region",
             ParameterValue: this.region
+          },
+          {
+            ParameterKey: "PolicyName",
+            ParameterValue: policyName
           }
         ],
         StackName: stackName,
@@ -97,7 +131,9 @@ export default class Integration {
         "createStack",
         params
       );
-      return StackId;
+      const policyArn = `arn:aws:iam::${externalId}:policy/${policyName}-${this.region}`;
+
+      return { stackId: StackId, stackName, policyName, policyArn };
     } catch (err) {
       // If the secret already exists, we'll see an error, but we populate
       // a return value anyway to avoid falling back to the env var.
@@ -105,7 +141,7 @@ export default class Integration {
         `${err}`.indexOf("NewRelicLicenseKeySecret") > -1 &&
         `${err}`.indexOf("already exists") > -1
       ) {
-        return "Already created";
+        return { stackId: "already created", stackName, policyName };
       }
       this.serverless.cli.log(
         `Something went wrong while creating NewRelicLicenseKeySecret: ${err}`
@@ -217,7 +253,6 @@ export default class Integration {
       this.serverless.cli.log(
         "The required NewRelicLambdaIntegrationRole cannot be found; Creating Stack with NewRelicLambdaIntegrationRole."
       );
-
       const stackId = await this.createCFStack(accountId);
       waitForStatus(
         {

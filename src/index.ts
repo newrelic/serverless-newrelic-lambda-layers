@@ -26,6 +26,8 @@ export default class NewRelicLambdaLayerPlugin {
   };
   public licenseKey: string;
   public managedSecretConfigured: boolean;
+  public mgdPolicyArns: any[]; // old
+  public iamMgdPolicies: any[];
 
   constructor(serverless: Serverless, options: Serverless.Options) {
     this.serverless = serverless;
@@ -38,6 +40,8 @@ export default class NewRelicLambdaLayerPlugin {
     );
     this.licenseKey = null;
     this.managedSecretConfigured = false;
+    this.mgdPolicyArns = []; // old
+    this.iamMgdPolicies = [];
 
     this.hooks = this.shouldSkipPlugin()
       ? {}
@@ -56,6 +60,33 @@ export default class NewRelicLambdaLayerPlugin {
     return _.get(this.serverless, "service.custom.newRelic", {
       nrRegion: "us"
     });
+  }
+
+  get managedPolicyArns() {
+    const managedPolicyArns = _.get(
+      this.serverless,
+      "service.provider.managedPolicyArns",
+      false
+    );
+
+    return managedPolicyArns || [];
+  }
+
+  get iamManagedPolicies() {
+    const iamManagedPolicies = _.get(
+      this.serverless,
+      "service.provider.iamManagedPolicies",
+      false /// change to []
+    );
+    return iamManagedPolicies || [];
+  }
+
+  get resources() {
+    return _.get(
+      this.serverless,
+      "service.provider.compiledCloudFormationTemplate.Resources",
+      {}
+    );
   }
 
   get stage() {
@@ -89,14 +120,50 @@ export default class NewRelicLambdaLayerPlugin {
     return new Integration(this).check();
   }
 
+  public async checkForSecretPolicy() {
+    return new Integration(this).checkForManagedSecretPolicy();
+  }
+
+  public async regionPolicyValid(current) {
+    return (
+      current.currentRegionPolicy &&
+      current.currentRegionPolicy[0] &&
+      current.currentRegionPolicy[0].Arn
+    );
+  }
+
   public async configureLicenseForExtension() {
     if (!this.licenseKey) {
       this.licenseKey = await this.retrieveLicenseKey();
     }
-    const managedSecret = await new Integration(this).createManagedSecret();
-    if (managedSecret) {
+
+    // If the managed secret has already been created,
+    // there should be policies for it.
+    const secretAccess = await this.checkForSecretPolicy();
+    let managedSecret;
+
+    if (secretAccess.secretExists) {
       this.managedSecretConfigured = true;
+    } else {
+      // Secret doesn't exist, so create it
+      managedSecret = await new Integration(this).createManagedSecret();
+      if (managedSecret && managedSecret.policyArn) {
+        this.managedSecretConfigured = true;
+      }
     }
+
+    if (secretAccess.currentRegionPolicy.length > 0) {
+      const policyArn = secretAccess.currentRegionPolicy[0].Arn;
+      this.mgdPolicyArns = [...this.managedPolicyArns, policyArn];
+    } else {
+      this.mgdPolicyArns = [...this.managedPolicyArns, managedSecret.policyArn];
+    }
+    return;
+  }
+
+  public applyPolicies(role) {
+    const existingPolicyArns = role.ManagedPolicyArns || [];
+    role.ManagedPolicyArns = [...existingPolicyArns, ...this.mgdPolicyArns];
   }
 
   public async run() {
@@ -136,6 +203,14 @@ export default class NewRelicLambdaLayerPlugin {
       // for the extension to authenticate. If not, fall back to function environment variable
       await this.configureLicenseForExtension();
     }
+
+    // before adding layer, attach policies to each function role:
+    const resources = this.resources;
+    Object.keys(resources)
+      .filter(resourceName => resources[resourceName].Type === `AWS::IAM::Role`)
+      .forEach(roleResource =>
+        this.applyPolicies(resources[roleResource].Properties)
+      );
 
     const funcs = this.functions;
     const promises = [];
@@ -504,7 +579,7 @@ export default class NewRelicLambdaLayerPlugin {
       this.serverless.cli.log(
         `creating required newrelic-log-ingestion function in region ${this.region}`
       );
-      this.addLogIngestionFunction();
+      await this.addLogIngestionFunction();
       return;
     }
 
@@ -605,7 +680,7 @@ export default class NewRelicLambdaLayerPlugin {
         "Waiting for change set creation to complete, this may take a minute..."
       );
 
-      waitForStatus(
+      await waitForStatus(
         {
           awsMethod: "describeChangeSet",
           callbackMethod: () => this.executeChangeSet(Id, StackId),
@@ -680,7 +755,7 @@ export default class NewRelicLambdaLayerPlugin {
         "Waiting for newrelic-log-ingestion install to complete, this may take a minute..."
       );
 
-      waitForStatus(
+      await waitForStatus(
         {
           awsMethod: "describeStacks",
           callbackMethod: () => this.addLogSubscriptions(),
