@@ -53,7 +53,9 @@ export default class NewRelicLambdaLayerPlugin {
   }
 
   get config() {
-    return _.get(this.serverless, "service.custom.newRelic", {});
+    return _.get(this.serverless, "service.custom.newRelic", {
+      nrRegion: "us"
+    });
   }
 
   get stage() {
@@ -620,10 +622,10 @@ export default class NewRelicLambdaLayerPlugin {
   }
 
   private async retrieveLicenseKey() {
-    const { apiKey, accountId } = this.config;
+    const { apiKey, accountId, nrRegion } = this.config;
     const userData = await nerdgraphFetch(
       apiKey,
-      this.region,
+      nrRegion,
       fetchLicenseKey(accountId)
     );
     this.licenseKey = _.get(userData, "data.actor.account.licenseKey", null);
