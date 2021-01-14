@@ -142,7 +142,7 @@ export default class Integration {
       });
 
       if (errors && errors.length) {
-        throw new Error(errors);
+        throw new Error(JSON.stringify(errors));
       }
 
       const linkedAccountId = _.get(linkedAccounts, "[0].id");
@@ -166,7 +166,7 @@ export default class Integration {
       );
 
       if (integrationErrors && integrationErrors.length) {
-        throw new Error(integrationErrors);
+        throw new Error(JSON.stringify(integrationErrors));
       }
 
       this.serverless.cli.log(
