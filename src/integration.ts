@@ -23,14 +23,14 @@ export default class Integration {
   }
 
   public async check() {
-    const { accountId, enableIntegration, apiKey } = this.config;
+    const { accountId, enableIntegration, apiKey, nrRegion } = this.config;
     const {
       linkedAccount = `New Relic Lambda Integration - ${accountId}`
     } = this.config;
 
     const integrationData = await nerdgraphFetch(
       apiKey,
-      this.region,
+      nrRegion,
       fetchLinkedAccounts(accountId)
     );
 
@@ -122,7 +122,7 @@ export default class Integration {
         return;
       }
 
-      const { accountId, apiKey } = this.config;
+      const { accountId, apiKey, nrRegion } = this.config;
       const {
         linkedAccount = `New Relic Lambda Integration - ${accountId}`
       } = this.config;
@@ -133,7 +133,7 @@ export default class Integration {
 
       const res = await nerdgraphFetch(
         apiKey,
-        this.region,
+        nrRegion,
         cloudLinkAccountMutation(accountId, roleArn, linkedAccount)
       );
 
@@ -142,13 +142,13 @@ export default class Integration {
       });
 
       if (errors && errors.length) {
-        throw new Error(errors);
+        throw new Error(JSON.stringify(errors));
       }
 
       const linkedAccountId = _.get(linkedAccounts, "[0].id");
       const integrationRes = await nerdgraphFetch(
         apiKey,
-        this.region,
+        nrRegion,
         cloudServiceIntegrationMutation(
           accountId,
           "aws",
@@ -166,7 +166,7 @@ export default class Integration {
       );
 
       if (integrationErrors && integrationErrors.length) {
-        throw new Error(integrationErrors);
+        throw new Error(JSON.stringify(integrationErrors));
       }
 
       this.serverless.cli.log(

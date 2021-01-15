@@ -13,9 +13,6 @@
       "environment": "us-testing",
       "owning_team": "LAMBDA",
       "product": "aws-lambda"
-    },
-    "environment": {
-      "NEW_RELIC_LOG_LEVEL": "error"
     }
   },
   "plugins": ["serverless-newrelic-lambda-layers"],
@@ -23,9 +20,10 @@
   "custom": {
     "newRelic": {
       "accountId": "${env:NEW_RELIC_ACCOUNT_ID}",
+      "debug": true,
       "enableExtension": true,
-      "logLevel": "trace",
-      "logEnabled": true
+      "logEnabled": true,
+      "nrRegion": "eu"
     }
   },
   "disabledDeprecations": [],
@@ -47,7 +45,7 @@
         "NEW_RELIC_LAMBDA_EXTENSION_ENABLED": "true",
         "NEW_RELIC_LAMBDA_HANDLER": "handler.handler",
         "NEW_RELIC_LOG": "stdout",
-        "NEW_RELIC_LOG_LEVEL": "debug",
+        "NEW_RELIC_LOG_LEVEL": "error",
         "NEW_RELIC_LOG_ENABLED": "true",
         "NEW_RELIC_NO_CONFIG_FILE": "true",
         "NEW_RELIC_TRUSTED_ACCOUNT_KEY": "${env:NEW_RELIC_ACCOUNT_ID}"
@@ -70,7 +68,7 @@
         "NEW_RELIC_LAMBDA_EXTENSION_ENABLED": "true",
         "NEW_RELIC_LAMBDA_HANDLER": "handler.handler",
         "NEW_RELIC_LOG": "stdout",
-        "NEW_RELIC_LOG_LEVEL": "error",
+        "NEW_RELIC_LOG_LEVEL": "debug",
         "NEW_RELIC_LOG_ENABLED": "true",
         "NEW_RELIC_NO_CONFIG_FILE": "true",
         "NEW_RELIC_TRUSTED_ACCOUNT_KEY": "${env:NEW_RELIC_ACCOUNT_ID}"
@@ -93,7 +91,7 @@
         "NEW_RELIC_LAMBDA_EXTENSION_ENABLED": "true",
         "NEW_RELIC_LAMBDA_HANDLER": "handler.handler",
         "NEW_RELIC_LOG": "stdout",
-        "NEW_RELIC_LOG_LEVEL": "error",
+        "NEW_RELIC_LOG_LEVEL": "debug",
         "NEW_RELIC_LOG_ENABLED": "true",
         "NEW_RELIC_NO_CONFIG_FILE": "true",
         "NEW_RELIC_TRUSTED_ACCOUNT_KEY": "${env:NEW_RELIC_ACCOUNT_ID}"
