@@ -40,15 +40,13 @@ const buildTestCases = () => {
       split(".")
     )
   )(testCaseFiles);
-  const testCases = map((caseName: string) => {
+  return map((caseName: string) => {
     const testCaseContents = testCaseContentsFromFiles(
       testCaseFilesByName[caseName]
     );
 
     return { ...testCaseContents, caseName };
   }, Object.keys(testCaseFilesByName));
-
-  return testCases;
 };
 
 describe("NewRelicLambdaLayerPlugin", () => {
@@ -65,10 +63,14 @@ describe("NewRelicLambdaLayerPlugin", () => {
         serverless.setProvider("aws", new AwsProvider(serverless, options));
         const plugin = new NewRelicLambdaLayerPlugin(serverless, options);
 
+        // mock API-calling methods that would cause timeout...
+        plugin.checkForSecretPolicy = jest.fn(() => {});
+        plugin.regionPolicyValid = jest.fn(() => true);
+        plugin.configureLicenseForExtension = jest.fn(() => {});
+
         try {
           await plugin.hooks['before:deploy:function:packageFunction']();
         } catch (err) {}
-        
 
         expect(
           omit(
