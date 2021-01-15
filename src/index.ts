@@ -72,15 +72,6 @@ export default class NewRelicLambdaLayerPlugin {
     return managedPolicyArns || [];
   }
 
-  get iamManagedPolicies() {
-    const iamManagedPolicies = _.get(
-      this.serverless,
-      "service.provider.iamManagedPolicies",
-      false /// change to []
-    );
-    return iamManagedPolicies || [];
-  }
-
   get resources() {
     return _.get(
       this.serverless,
