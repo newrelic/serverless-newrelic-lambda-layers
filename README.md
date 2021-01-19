@@ -5,7 +5,7 @@ observability using [AWS Lambda Layers](https://docs.aws.amazon.com/lambda/lates
 
 ## Requirements
 
-- [serverless](https://github.com/serverless/serverless) >= 1.34.0
+- [serverless](https://github.com/serverless/serverless) >= 2.19.0
 
 ## Features
 
