@@ -26,7 +26,8 @@ export default class NewRelicLambdaLayerPlugin {
   };
   public licenseKey: string;
   public managedSecretConfigured: boolean;
-  public mgdPolicyArns: any[]; // old
+  public mgdPolicyArns: any[];
+  public extFellBackToCW: boolean;
 
   constructor(serverless: Serverless, options: Serverless.Options) {
     this.serverless = serverless;
@@ -39,7 +40,8 @@ export default class NewRelicLambdaLayerPlugin {
     );
     this.licenseKey = null;
     this.managedSecretConfigured = false;
-    this.mgdPolicyArns = []; // old
+    this.mgdPolicyArns = [];
+    this.extFellBackToCW = false;
 
     this.hooks = this.shouldSkipPlugin()
       ? {}
@@ -93,7 +95,8 @@ export default class NewRelicLambdaLayerPlugin {
   get autoSubscriptionDisabled() {
     return (
       typeof this.config.disableAutoSubscription === "boolean" &&
-      this.config.disableAutoSubscription
+      this.config.disableAutoSubscription &&
+      this.extFellBackToCW === false // only disable if ext config worked
     );
   }
 
@@ -105,6 +108,24 @@ export default class NewRelicLambdaLayerPlugin {
         .map(func => ({ [func]: this.serverless.service.getFunction(func) }))
     );
   }
+
+  get extFallbackMessage() {
+    return `
+********************************************************************************
+The variables in the custom block of your serverless.yml show that you've chosen 
+to deliver telemetry via our Lambda Extension. The value of your personal 
+New Relic API Key, however, was not found in your New Relic account. 
+Are you sure you used the correct API key? If not, you can retrieve it from our 
+Onboarding nerdlet for AWS Lambda: https://one.nr/0DvwBpoxbjp
+
+For now, your function will still deliver telemetry to New Relic using a 
+CloudWatch Log Subscription, but we recommend using the lambda extension.
+Please see this link for more information: 
+https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
+********************************************************************************
+    `;
+  }
+
   public checkIntegration() {
     return new Integration(this).check();
   }
@@ -260,6 +281,10 @@ export default class NewRelicLambdaLayerPlugin {
     }
 
     await Promise.all(promises);
+
+    if (this.extFellBackToCW) {
+      this.serverless.cli.log(this.extFallbackMessage);
+    }
   }
 
   public async removeLogSubscriptions() {

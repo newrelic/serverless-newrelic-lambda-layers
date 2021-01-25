@@ -1,6 +1,6 @@
 {
   "name": "serverless-newrelic-lambda-layers",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Serverless plugin for NewRelic APM AWS Lambda layers.",
   "main": "dist/index.js",
   "files": [
@@ -53,7 +53,7 @@
     "yamljs": "^0.3.0"
   },
   "dependencies": {
-    "fs-extra": "^7.0.1",
+    "fs-extra": "^9.1.0",
     "lodash": "^4.17.20",
     "node-fetch": "^2.6.1",
     "path": "^0.12.7",
