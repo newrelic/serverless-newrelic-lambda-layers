@@ -111,7 +111,9 @@ export default class NewRelicLambdaLayerPlugin {
 
   get extFallbackMessage() {
     return `
+    
 ********************************************************************************
+
 The variables in the custom block of your serverless.yml show that you've chosen 
 to deliver telemetry via our Lambda Extension. The value of your personal 
 New Relic API Key, however, was not found in your New Relic account. 
@@ -122,7 +124,9 @@ For now, your function will still deliver telemetry to New Relic using a
 CloudWatch Log Subscription, but we recommend using the lambda extension.
 Please see this link for more information: 
 https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
+
 ********************************************************************************
+
     `;
   }
 
