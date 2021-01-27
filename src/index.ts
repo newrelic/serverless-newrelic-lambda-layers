@@ -149,6 +149,11 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
   public async configureLicenseForExtension() {
     if (!this.licenseKey) {
       this.licenseKey = await this.retrieveLicenseKey();
+      if (!this.licenseKey) {
+        this.config.enableExtension = false;
+        this.extFellBackToCW = true;
+        return;
+      }
     }
 
     // If the managed secret has already been created,
