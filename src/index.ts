@@ -51,11 +51,7 @@ export default class NewRelicLambdaLayerPlugin {
   }
 
   get region() {
-    return _.get(
-      this.serverless.service,
-      "provider.region",
-      "us-east-1"
-    );
+    return _.get(this.serverless.service, "provider.region", "us-east-1");
   }
 
   get config() {
