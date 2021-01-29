@@ -20,7 +20,6 @@ export default class NewRelicLambdaLayerPlugin {
   public serverless: Serverless;
   public options: Serverless.Options;
   public awsProvider: any;
-  public region: string;
   public hooks: {
     [event: string]: Promise<any>;
   };
@@ -33,11 +32,6 @@ export default class NewRelicLambdaLayerPlugin {
     this.serverless = serverless;
     this.options = options;
     this.awsProvider = this.serverless.getProvider("aws") as any;
-    this.region = _.get(
-      this.serverless.service,
-      "provider.region",
-      "us-east-1"
-    );
     this.licenseKey = null;
     this.managedSecretConfigured = false;
     this.mgdPolicyArns = [];
@@ -54,6 +48,10 @@ export default class NewRelicLambdaLayerPlugin {
           "before:package:createDeploymentArtifacts": this.run.bind(this),
           "before:remove:remove": this.removeLogSubscriptions.bind(this)
         };
+  }
+
+  get region() {
+    return _.get(this.serverless.service, "provider.region", "us-east-1");
   }
 
   get config() {
