@@ -46,7 +46,7 @@ export default class Integration {
       return (
         account.name === linkedAccount &&
         account.externalId === externalId &&
-        account.nrAccountId === accountId
+        account.nrAccountId === parseInt(accountId, 10)
       );
     });
 
@@ -210,9 +210,7 @@ export default class Integration {
       );
     } catch (err) {
       this.serverless.cli.log(
-        `Error while creating the New Relic AWS Lambda cloud integration: ${JSON.stringify(
-          err
-        )}.`
+        `Error while creating the New Relic AWS Lambda cloud integration: ${err}.`
       );
     }
   }
