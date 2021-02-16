@@ -407,9 +407,9 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       ? environment.NEW_RELIC_ACCOUNT_ID
       : this.config.accountId;
 
-    environment.NEW_RELIC_DISTRIBUTED_TRACING_ENABLED = environment.NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
-      ? environment.NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
-      : this.config.enableDistributedTracing;
+    if (this.config.enableDistributedTracing) {
+      environment.NEW_RELIC_DISTRIBUTED_TRACING_ENABLED = "true";
+    }
 
     environment.NEW_RELIC_TRUSTED_ACCOUNT_KEY = environment.NEW_RELIC_TRUSTED_ACCOUNT_KEY
       ? environment.NEW_RELIC_TRUSTED_ACCOUNT_KEY
