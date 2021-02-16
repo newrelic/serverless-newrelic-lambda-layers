@@ -15,7 +15,9 @@
       "product": "aws-lambda"
     }
   },
-  "plugins": ["serverless-newrelic-lambda-layers"],
+  "plugins": [
+    "serverless-newrelic-lambda-layers"
+  ],
   "configValidationMode": "warn",
   "custom": {
     "newRelic": {
@@ -29,14 +31,23 @@
   "disabledDeprecations": [],
   "functions": {
     "layer-nodejs810": {
-      "events": [{ "schedule": "rate(5 minutes)" }],
+      "events": [
+        {
+          "schedule": "rate(5 minutes)"
+        }
+      ],
       "handler": "newrelic-wrapper-helper.handler",
       "layers": [
         "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS810:30"
       ],
       "package": {
-        "exclude": ["./**", "!newrelic-wrapper-helper.js"],
-        "include": ["handler.js"]
+        "exclude": [
+          "./**",
+          "!newrelic-wrapper-helper.js"
+        ],
+        "include": [
+          "handler.js"
+        ]
       },
       "runtime": "nodejs8.10",
       "environment": {
@@ -52,14 +63,23 @@
       }
     },
     "layer-nodejs10x": {
-      "events": [{ "schedule": "rate(5 minutes)" }],
+      "events": [
+        {
+          "schedule": "rate(5 minutes)"
+        }
+      ],
       "handler": "newrelic-lambda-wrapper.handler",
       "layers": [
         "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS10X:32"
       ],
       "package": {
-        "exclude": ["./**", "!newrelic-wrapper-helper.js"],
-        "include": ["handler.js"]
+        "exclude": [
+          "./**",
+          "!newrelic-wrapper-helper.js"
+        ],
+        "include": [
+          "handler.js"
+        ]
       },
       "runtime": "nodejs10.x",
       "environment": {
@@ -75,14 +95,23 @@
       }
     },
     "layer-nodejs12x": {
-      "events": [{ "schedule": "rate(5 minutes)" }],
+      "events": [
+        {
+          "schedule": "rate(5 minutes)"
+        }
+      ],
       "handler": "newrelic-lambda-wrapper.handler",
       "layers": [
         "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS12X:30"
       ],
       "package": {
-        "exclude": ["./**", "!newrelic-wrapper-helper.js"],
-        "include": ["handler.js"]
+        "exclude": [
+          "./**",
+          "!newrelic-wrapper-helper.js"
+        ],
+        "include": [
+          "handler.js"
+        ]
       },
       "runtime": "nodejs12.x",
       "environment": {
@@ -95,6 +124,38 @@
         "NEW_RELIC_LOG_ENABLED": "true",
         "NEW_RELIC_NO_CONFIG_FILE": "true",
         "NEW_RELIC_TRUSTED_ACCOUNT_KEY": "${env:NEW_RELIC_ACCOUNT_ID}"
+      },
+      "layer-nodejs14x": {
+        "events": [
+          {
+            "schedule": "rate(5 minutes)"
+          }
+        ],
+        "handler": "newrelic-lambda-wrapper.handler",
+        "layers": [
+          "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS14X:1"
+        ],
+        "package": {
+          "exclude": [
+            "./**",
+            "!newrelic-wrapper-helper.js"
+          ],
+          "include": [
+            "handler.js"
+          ]
+        },
+        "runtime": "nodejs14.x",
+        "environment": {
+          "NEW_RELIC_ACCOUNT_ID": "${env:NEW_RELIC_ACCOUNT_ID}",
+          "NEW_RELIC_APP_NAME": "layer-nodejs14x",
+          "NEW_RELIC_LAMBDA_EXTENSION_ENABLED": "true",
+          "NEW_RELIC_LAMBDA_HANDLER": "handler.handler",
+          "NEW_RELIC_LOG": "stdout",
+          "NEW_RELIC_LOG_LEVEL": "debug",
+          "NEW_RELIC_LOG_ENABLED": "true",
+          "NEW_RELIC_NO_CONFIG_FILE": "true",
+          "NEW_RELIC_TRUSTED_ACCOUNT_KEY": "${env:NEW_RELIC_ACCOUNT_ID}"
+        }
       }
     }
   }
