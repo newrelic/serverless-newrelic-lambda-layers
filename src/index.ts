@@ -225,11 +225,30 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
     // before adding layer, attach secret access policy
     // to each function's execution role:
     const resources = this.resources;
+    console.log('^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*');
+    console.log('THIS RESOURCES', resources)
+    console.log('^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*');
+
+    const xRayPolicy = [{
+      "Effect": "Allow",
+        "Action": [
+          "xray:PutTraceSegments",
+          "xray:PutTelemetryRecords"
+        ],
+        "Resource": "*"
+    }];
+
     Object.keys(resources)
       .filter(resourceName => resources[resourceName].Type === `AWS::IAM::Role`)
-      .forEach(roleResource =>
-        this.applyPolicies(resources[roleResource].Properties)
-      );
+      .forEach(roleResource => {
+        const tgtProperties = resources[roleResource].Properties
+        let policyStatement = resources[roleResource].Properties.Policies[0].PolicyDocument.Statement
+        this.applyPolicies(tgtProperties)
+        if (this.enableXRay) {
+          policyStatement = [...policyStatement, ...xRayPolicy]
+        }
+        return;
+      });
 
     const funcs = this.functions;
     const promises = [];
