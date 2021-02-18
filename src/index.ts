@@ -345,6 +345,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       [
         "nodejs10.x",
         "nodejs12.x",
+        "nodejs14.x",
         "nodejs8.10",
         "python2.7",
         "python3.6",
@@ -511,7 +512,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
   }
 
   private getHandlerWrapper(runtime: string, handler: string) {
-    if (["nodejs10.x", "nodejs12.x"].indexOf(runtime) !== -1) {
+    if (["nodejs10.x", "nodejs12.x", "nodejs14.x"].indexOf(runtime) !== -1) {
       return "newrelic-lambda-wrapper.handler";
     }
 
