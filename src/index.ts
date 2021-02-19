@@ -222,30 +222,35 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       await this.configureLicenseForExtension();
     }
 
+    // xray enabled? DT should be off, to avoid duplicating traces/spans.
+    if (this.config.enableXRay) {
+      this.config.enableDistributedTracing = false;
+    }
+
     // before adding layer, attach secret access policy
     // to each function's execution role:
     const resources = this.resources;
-    console.log('^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*');
-    console.log('THIS RESOURCES', resources)
-    console.log('^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*^*');
 
-    const xRayPolicy = [{
-      "Effect": "Allow",
-        "Action": [
-          "xray:PutTraceSegments",
-          "xray:PutTelemetryRecords"
-        ],
-        "Resource": "*"
-    }];
+    const xRayPolicy = {
+      Action: ["xray:PutTraceSegments", "xray:PutTelemetryRecords"],
+      Effect: "Allow",
+      Resource: "*"
+    };
 
     Object.keys(resources)
       .filter(resourceName => resources[resourceName].Type === `AWS::IAM::Role`)
       .forEach(roleResource => {
-        const tgtProperties = resources[roleResource].Properties
-        let policyStatement = resources[roleResource].Properties.Policies[0].PolicyDocument.Statement
-        this.applyPolicies(tgtProperties)
-        if (this.enableXRay) {
-          policyStatement = [...policyStatement, ...xRayPolicy]
+        this.applyPolicies(resources[roleResource].Properties);
+        if (this.config.enableXRay) {
+          let policyStatement = _.get(
+            resources[roleResource],
+            "Properties.Policies[0].PolicyDocument.Statement",
+            []
+          );
+          policyStatement = [...policyStatement, xRayPolicy];
+          resources[
+            roleResource
+          ].Properties.Policies[0].PolicyDocument.Statement = policyStatement;
         }
         return;
       });
