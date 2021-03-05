@@ -279,6 +279,16 @@ custom:
     disableAutoSubscription: true
 ```
 
+#### `disableLicenseKeySecret` (optional)
+
+Only required if you want to disable creating license key in AWS Secrets Manager. Setting this as `true` would create NEW_RELIC_LICENSE_KEY environment variable for the New Relic Lambda Extension to access.
+
+```yaml
+custom:
+  newRelic:
+    disableLicenseKeySecret: true
+```
+
 ## Supported Runtimes
 
 This plugin currently supports the following AWS runtimes:
