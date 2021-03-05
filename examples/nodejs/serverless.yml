@@ -21,6 +21,7 @@ custom:
     accountId: ${env:NEW_RELIC_ACCOUNT_ID}
     apiKey: ${env:NEW_RELIC_PERSONAL_API_KEY}
     logLevel: debug
+    disableLicenseKeySecret: false
 
 functions:
   layer-nodejs810:
