@@ -98,6 +98,13 @@ export default class NewRelicLambdaLayerPlugin {
     );
   }
 
+  get licenseKeySecretDisabled() {
+    return (
+      typeof this.config.disableLicenseKeySecret === "boolean" &&
+      this.config.disableLicenseKeySecret
+    );
+  }
+
   get functions() {
     return Object.assign.apply(
       null,
@@ -154,27 +161,33 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       }
     }
 
-    // If the managed secret has already been created,
-    // there should be policies for it.
-    const secretAccess = await this.checkForSecretPolicy();
-    let managedSecret;
+    if (!this.licenseKeySecretDisabled) {
+      // If the managed secret has already been created,
+      // there should be policies for it.
+      const secretAccess = await this.checkForSecretPolicy();
+      let managedSecret;
 
-    if (secretAccess.secretExists) {
-      this.managedSecretConfigured = true;
-    } else {
-      // Secret doesn't exist, so create it
-      managedSecret = await new Integration(this).createManagedSecret();
-      if (managedSecret && managedSecret.policyArn) {
+      if (secretAccess.secretExists) {
         this.managedSecretConfigured = true;
+      } else {
+        // Secret doesn't exist, so create it
+        managedSecret = await new Integration(this).createManagedSecret();
+        if (managedSecret && managedSecret.policyArn) {
+          this.managedSecretConfigured = true;
+        }
+      }
+
+      if (secretAccess.currentRegionPolicy.length > 0) {
+        const policyArn = secretAccess.currentRegionPolicy[0].Arn;
+        this.mgdPolicyArns = [...this.managedPolicyArns, policyArn];
+      } else if (this.managedSecretConfigured) {
+        this.mgdPolicyArns = [
+          ...this.managedPolicyArns,
+          managedSecret.policyArn
+        ];
       }
     }
 
-    if (secretAccess.currentRegionPolicy.length > 0) {
-      const policyArn = secretAccess.currentRegionPolicy[0].Arn;
-      this.mgdPolicyArns = [...this.managedPolicyArns, policyArn];
-    } else if (this.managedSecretConfigured) {
-      this.mgdPolicyArns = [...this.managedPolicyArns, managedSecret.policyArn];
-    }
     return;
   }
 
@@ -222,14 +235,18 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       await this.configureLicenseForExtension();
     }
 
-    // before adding layer, attach secret access policy
-    // to each function's execution role:
-    const resources = this.resources;
-    Object.keys(resources)
-      .filter(resourceName => resources[resourceName].Type === `AWS::IAM::Role`)
-      .forEach(roleResource =>
-        this.applyPolicies(resources[roleResource].Properties)
-      );
+    if (!this.licenseKeySecretDisabled) {
+      // before adding layer, attach secret access policy
+      // to each function's execution role:
+      const resources = this.resources;
+      Object.keys(resources)
+        .filter(
+          resourceName => resources[resourceName].Type === `AWS::IAM::Role`
+        )
+        .forEach(roleResource =>
+          this.applyPolicies(resources[roleResource].Properties)
+        );
+    }
 
     const funcs = this.functions;
     const promises = [];
