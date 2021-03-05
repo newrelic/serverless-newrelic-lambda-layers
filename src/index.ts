@@ -240,7 +240,9 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       // to each function's execution role:
       const resources = this.resources;
       Object.keys(resources)
-        .filter(resourceName => resources[resourceName].Type === `AWS::IAM::Role`)
+        .filter(
+          resourceName => resources[resourceName].Type === `AWS::IAM::Role`
+        )
         .forEach(roleResource =>
           this.applyPolicies(resources[roleResource].Properties)
         );
