@@ -89,6 +89,17 @@ custom:
   newRelic:
     apiKey: your-api-key-here
 ```
+If your function's source is committed to version control, you can avoid committing your license key by including it in your serverless.yml as a variable. See [the Serverless docs on template variables](https://www.serverless.com/framework/docs/providers/aws/guide/variables/) for more information.  
+
+#### `nrRegion` (required for EU; optional for US)
+
+If your New Relic account is based in the EU, make sure to specify your nrRegion in the custom block:
+
+```yaml
+custom:
+  newRelic:
+    nrRegion: 'eu'
+```
 
 #### `linkedAccount` (optional)
 
@@ -100,6 +111,7 @@ appear in New Relic. If not set, it will default to "New Relic Lambda Integratio
 custom:
   newRelic:
     linkedAccount: your-linked-account-name
+```
 
 #### `trustedAccountKey` (optional)
 
@@ -296,6 +308,7 @@ This plugin currently supports the following AWS runtimes:
 - nodejs8.10
 - nodejs10.x
 - nodejs12.x
+- nodejs14.x
 - python2.7
 - python3.6
 - python3.7
