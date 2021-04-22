@@ -367,7 +367,9 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
         "python2.7",
         "python3.6",
         "python3.7",
-        "python3.8"
+        "python3.8",
+        "java11",
+        "java8.al2"
       ].indexOf(runtime) === -1;
 
     if (
@@ -540,6 +542,13 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
 
     if (runtime.match("python")) {
       return "newrelic_lambda_wrapper.handler";
+    }
+
+    if (["java11", "java8.al2"].indexOf(runtime) !== -1) {
+      if (handler.includes("RequestHandler")) {
+        return "com.newrelic.java.RequestHandlerWrapper::handleRequest";
+      }
+      return "com.newrelic.java.RequestStreamHandlerWrapper::handleRequest";
     }
 
     return handler;

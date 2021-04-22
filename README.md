@@ -313,6 +313,8 @@ This plugin currently supports the following AWS runtimes:
 - python3.6
 - python3.7
 - python3.8
+- java11
+- java8.al2
 
 ## Contributing
 
