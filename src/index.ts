@@ -16,6 +16,11 @@ const DEFAULT_FILTER_PATTERNS = [
   "RequestId"
 ];
 
+const enum JavaHandler {
+  handleRequest = "handleRequest",
+  handleStreamsRequest = "handleStreamsRequest"
+}
+
 export default class NewRelicLambdaLayerPlugin {
   public serverless: Serverless;
   public options: Serverless.Options;
@@ -103,6 +108,16 @@ export default class NewRelicLambdaLayerPlugin {
       typeof this.config.disableLicenseKeySecret === "boolean" &&
       this.config.disableLicenseKeySecret
     );
+  }
+
+  get javaNewRelicHandler() {
+    if (
+      this.config.javaNewRelicHandler &&
+      this.config.javaNewRelicHandler === "handleStreamsRequest"
+    ) {
+      return JavaHandler.handleStreamsRequest;
+    }
+    return JavaHandler.handleRequest;
   }
 
   get functions() {
@@ -545,10 +560,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
     }
 
     if (["java11", "java8.al2"].indexOf(runtime) !== -1) {
-      if (handler.includes("RequestHandler")) {
-        return "com.newrelic.java.RequestHandlerWrapper::handleRequest";
-      }
-      return "com.newrelic.java.RequestStreamHandlerWrapper::handleRequest";
+      return `com.newrelic.java.HandlerWrapper::${this.javaNewRelicHandler}`;
     }
 
     return handler;

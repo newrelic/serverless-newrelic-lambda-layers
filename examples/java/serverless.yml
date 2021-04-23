@@ -1,0 +1,36 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: java-example
+
+provider:
+  name: aws
+  runtime: java11
+  region: us-west-1
+
+package:
+  artifact: 'target/${self:service}-${self:provider.stage}.jar'
+
+plugins:
+  - serverless-newrelic-lambda-layers
+
+custom:
+  newRelic:
+    accountId: ${env:NEW_RELIC_ACCOUNT_ID}
+    apiKey: ${env:NEW_RELIC_PERSONAL_API_KEY}
+    logLevel: debug
+functions:
+  listProducts:
+    handler: com.serverless.Handler
+
+
