@@ -301,6 +301,20 @@ custom:
     disableLicenseKeySecret: true
 ```
 
+#### `javaNewRelicHandler` (optional)
+
+**Java runtimes only**. Only required if you are implementing the `RequestStreamHandler` interface.
+Defaults to `RequestHandler` interface.
+#### Accepted inputs:
+- handleRequest
+- handleStreamsRequest
+
+```yaml
+custom:
+  newRelic:
+    javaNewRelicHandler: handleStreamsRequest
+```
+
 ## Supported Runtimes
 
 This plugin currently supports the following AWS runtimes:
@@ -313,6 +327,8 @@ This plugin currently supports the following AWS runtimes:
 - python3.6
 - python3.7
 - python3.8
+- java11
+- java8.al2
 
 ## Contributing
 

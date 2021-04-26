@@ -16,6 +16,11 @@ const DEFAULT_FILTER_PATTERNS = [
   "RequestId"
 ];
 
+const enum JavaHandler {
+  handleRequest = "handleRequest",
+  handleStreamsRequest = "handleStreamsRequest"
+}
+
 export default class NewRelicLambdaLayerPlugin {
   public serverless: Serverless;
   public options: Serverless.Options;
@@ -103,6 +108,16 @@ export default class NewRelicLambdaLayerPlugin {
       typeof this.config.disableLicenseKeySecret === "boolean" &&
       this.config.disableLicenseKeySecret
     );
+  }
+
+  get javaNewRelicHandler() {
+    if (
+      this.config.javaNewRelicHandler &&
+      this.config.javaNewRelicHandler === "handleStreamsRequest"
+    ) {
+      return JavaHandler.handleStreamsRequest;
+    }
+    return JavaHandler.handleRequest;
   }
 
   get functions() {
@@ -367,7 +382,9 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
         "python2.7",
         "python3.6",
         "python3.7",
-        "python3.8"
+        "python3.8",
+        "java11",
+        "java8.al2"
       ].indexOf(runtime) === -1;
 
     if (
@@ -540,6 +557,10 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
 
     if (runtime.match("python")) {
       return "newrelic_lambda_wrapper.handler";
+    }
+
+    if (["java11", "java8.al2"].indexOf(runtime) !== -1) {
+      return `com.newrelic.java.HandlerWrapper::${this.javaNewRelicHandler}`;
     }
 
     return handler;

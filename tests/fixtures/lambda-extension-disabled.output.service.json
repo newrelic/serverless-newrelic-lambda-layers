@@ -25,7 +25,7 @@
       ],
       "handler": "newrelic-lambda-wrapper.handler",
       "layers": [
-        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS10X:37"
+        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS10X:43"
       ],
       "package": {
         "exclude": ["./**", "!newrelic-wrapper-helper.js"],
@@ -49,7 +49,7 @@
       ],
       "handler": "newrelic-lambda-wrapper.handler",
       "layers": [
-        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS12X:35"
+        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS12X:41"
       ],
       "package": {
         "exclude": ["./**", "!newrelic-wrapper-helper.js"],
@@ -73,7 +73,7 @@
       ],
       "handler": "newrelic-lambda-wrapper.handler",
       "layers": [
-        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS14X:5"
+        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS14X:11"
       ],
       "package": {
         "exclude": ["./**", "!newrelic-wrapper-helper.js"],
@@ -97,7 +97,7 @@
       ],
       "handler": "newrelic-wrapper-helper.handler",
       "layers": [
-        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS810:35"
+        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS810:41"
       ],
       "package": {
         "exclude": ["./**", "!newrelic-wrapper-helper.js"],
