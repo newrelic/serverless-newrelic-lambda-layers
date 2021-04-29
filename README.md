@@ -10,7 +10,7 @@ observability using [AWS Lambda Layers](https://docs.aws.amazon.com/lambda/lates
 ## Features
 
 - Installs and configures the New Relic AWS Integration
-- Supports Node.js and Python runtimes (more runtimes to come)
+- Supports Node.js, Python and Java runtimes (more runtimes to come)
 - No code change required to enable New Relic
 - Bundles New Relic's agent in a single layer
 - Configures CloudWatch subscription filters automatically
@@ -65,6 +65,7 @@ do it for you automatically.
 
 - [Node.js Instrumentation Guide](https://docs.newrelic.com/docs/agents/nodejs-agent/getting-started/introduction-new-relic-nodejs#extend-instrumentation)
 - [Python Instrumentation Guide](https://docs.newrelic.com/docs/agents/python-agent/custom-instrumentation/python-custom-instrumentation)
+- [Java Instrumentation Guide](https://docs.newrelic.com/docs/agents/java-agent/custom-instrumentation/java-custom-instrumentation)
 
 ## Config
 
