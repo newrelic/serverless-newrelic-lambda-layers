@@ -250,6 +250,10 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       await this.configureLicenseForExtension();
     }
 
+    if (this.config.proxy) {
+      this.serverless.cli.log(`HTTP proxy set to ${this.config.proxy}`);
+    }
+
     if (!this.licenseKeySecretDisabled) {
       // before adding layer, attach secret access policy
       // to each function's execution role:
