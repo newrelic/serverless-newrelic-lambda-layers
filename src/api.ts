@@ -1,16 +1,22 @@
+import { HttpsProxyAgent } from "https-proxy-agent";
 import fetch from "node-fetch";
 
 export const nerdgraphFetch = async (
   apiKey: string,
   region: string,
-  query: string
+  query: string,
+  proxy?: string
 ) => {
   const gqlUrl =
     region === "eu"
       ? "https://api.eu.newrelic.com/graphql"
       : "https://api.newrelic.com/graphql";
 
+  const agent =
+    typeof proxy === "undefined" ? null : new HttpsProxyAgent(proxy);
+
   const res = await fetch(gqlUrl, {
+    agent,
     body: JSON.stringify({ query }),
     headers: {
       "API-Key": apiKey,

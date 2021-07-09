@@ -763,11 +763,12 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
   }
 
   private async retrieveLicenseKey() {
-    const { apiKey, accountId, nrRegion } = this.config;
+    const { apiKey, accountId, nrRegion, proxy } = this.config;
     const userData = await nerdgraphFetch(
       apiKey,
       nrRegion,
-      fetchLicenseKey(accountId)
+      fetchLicenseKey(accountId),
+      proxy
     );
     this.licenseKey = _.get(userData, "data.actor.account.licenseKey", null);
     return this.licenseKey;
