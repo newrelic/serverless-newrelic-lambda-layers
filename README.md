@@ -316,6 +316,16 @@ custom:
     javaNewRelicHandler: handleStreamsRequest
 ```
 
+#### `proxy` (optional)
+
+This plugin makes various HTTP requests to public APIs in order to retrieve data about the New Relic and cloud provider accounts. If you are behind a proxy when this plugin runs, the HTTP agent needs the proxy information to connect to those APIs. Use the given URL as a proxy for HTTP requests.
+
+```yaml
+custom:
+  newRelic:
+    proxy: http://yourproxy.com:8080
+```
+
 ## Supported Runtimes
 
 This plugin currently supports the following AWS runtimes:

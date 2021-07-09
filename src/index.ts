@@ -250,6 +250,10 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       await this.configureLicenseForExtension();
     }
 
+    if (this.config.proxy) {
+      this.serverless.cli.log(`HTTP proxy set to ${this.config.proxy}`);
+    }
+
     if (!this.licenseKeySecretDisabled) {
       // before adding layer, attach secret access policy
       // to each function's execution role:
@@ -763,11 +767,12 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
   }
 
   private async retrieveLicenseKey() {
-    const { apiKey, accountId, nrRegion } = this.config;
+    const { apiKey, accountId, nrRegion, proxy } = this.config;
     const userData = await nerdgraphFetch(
       apiKey,
       nrRegion,
-      fetchLicenseKey(accountId)
+      fetchLicenseKey(accountId),
+      proxy
     );
     this.licenseKey = _.get(userData, "data.actor.account.licenseKey", null);
     return this.licenseKey;
