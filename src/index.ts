@@ -452,9 +452,9 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
 
     environment.NEW_RELIC_TRUSTED_ACCOUNT_KEY = environment.NEW_RELIC_TRUSTED_ACCOUNT_KEY
       ? environment.NEW_RELIC_TRUSTED_ACCOUNT_KEY
-      : environment.NEW_RELIC_ACCOUNT_ID
-      ? environment.NEW_RELIC_ACCOUNT_ID
-      : this.config.trustedAccountKey;
+      : this.config.trustedAccountKey
+      ? this.config.trustedAccountKey
+      : environment.NEW_RELIC_ACCOUNT_ID;
 
     if (runtime.match("python")) {
       environment.NEW_RELIC_SERVERLESS_MODE_ENABLED = "true";
