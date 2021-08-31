@@ -330,7 +330,6 @@ custom:
 
 This plugin currently supports the following AWS runtimes:
 
-- nodejs8.10
 - nodejs10.x
 - nodejs12.x
 - nodejs14.x
