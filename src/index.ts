@@ -387,6 +387,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
         "python3.6",
         "python3.7",
         "python3.8",
+        "python3.9",
         "java11",
         "java8.al2"
       ].indexOf(runtime) === -1;
