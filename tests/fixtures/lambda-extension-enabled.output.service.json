@@ -81,30 +81,6 @@
         "include": ["handler.js"]
       },
       "runtime": "nodejs14.x"
-    },
-    "layer-nodejs810": {
-      "environment": {
-        "NEW_RELIC_ACCOUNT_ID": "${env:NEW_RELIC_ACCOUNT_ID}",
-        "NEW_RELIC_APP_NAME": "layer-nodejs810",
-        "NEW_RELIC_LAMBDA_EXTENSION_ENABLED": "true",
-        "NEW_RELIC_LAMBDA_HANDLER": "handler.handler",
-        "NEW_RELIC_NO_CONFIG_FILE": "true",
-        "NEW_RELIC_TRUSTED_ACCOUNT_KEY": "${env:NEW_RELIC_ACCOUNT_ID}"
-      },
-      "events": [
-        {
-          "schedule": "rate(5 minutes)"
-        }
-      ],
-      "handler": "newrelic-wrapper-helper.handler",
-      "layers": [
-        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS810:46"
-      ],
-      "package": {
-        "exclude": ["./**", "!newrelic-wrapper-helper.js"],
-        "include": ["handler.js"]
-      },
-      "runtime": "nodejs8.10"
     }
   },
   "plugins": ["serverless-newrelic-lambda-layers"],
