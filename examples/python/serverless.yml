@@ -66,3 +66,14 @@ functions:
       include:
         - handler.py
     runtime: python3.8
+
+  layer-python39:
+    events:
+      - schedule: rate(5 minutes)
+    handler: handler.handler
+    package:
+      exclude:
+        - ./**
+      include:
+        - handler.py
+    runtime: python3.9

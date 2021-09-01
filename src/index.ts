@@ -382,11 +382,11 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
         "nodejs10.x",
         "nodejs12.x",
         "nodejs14.x",
-        "nodejs8.10",
         "python2.7",
         "python3.6",
         "python3.7",
         "python3.8",
+        "python3.9",
         "java11",
         "java8.al2"
       ].indexOf(runtime) === -1;
@@ -552,11 +552,6 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
   private getHandlerWrapper(runtime: string, handler: string) {
     if (["nodejs10.x", "nodejs12.x", "nodejs14.x"].indexOf(runtime) !== -1) {
       return "newrelic-lambda-wrapper.handler";
-    }
-
-    if (runtime === "nodejs8.10") {
-      this.addNodeHelper();
-      return "newrelic-wrapper-helper.handler";
     }
 
     if (runtime.match("python")) {

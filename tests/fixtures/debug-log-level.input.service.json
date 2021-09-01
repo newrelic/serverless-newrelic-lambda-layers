@@ -27,15 +27,6 @@
   },
   "disabledDeprecations": [],
   "functions": {
-    "layer-nodejs810": {
-      "events": [{ "schedule": "rate(5 minutes)" }],
-      "handler": "handler.handler",
-      "package": { "exclude": ["./**"], "include": ["handler.js"] },
-      "runtime": "nodejs8.10",
-      "environment": {
-        "NEW_RELIC_LOG_LEVEL": "debug"
-      }
-    },
     "layer-nodejs10x": {
       "events": [{ "schedule": "rate(5 minutes)" }],
       "handler": "handler.handler",

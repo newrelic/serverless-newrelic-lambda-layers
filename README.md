@@ -330,7 +330,6 @@ custom:
 
 This plugin currently supports the following AWS runtimes:
 
-- nodejs8.10
 - nodejs10.x
 - nodejs12.x
 - nodejs14.x
@@ -338,6 +337,7 @@ This plugin currently supports the following AWS runtimes:
 - python3.6
 - python3.7
 - python3.8
+- python3.9
 - java11
 - java8.al2
 
