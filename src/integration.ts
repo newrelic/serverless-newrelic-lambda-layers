@@ -38,7 +38,11 @@ export default class Integration {
       apiKey,
       nrRegion,
       fetchLinkedAccounts(accountId),
-      proxy
+      proxy,
+      {
+        caller: "check integration for linked accounts",
+        serverless: this.serverless
+      }
     );
 
     const linkedAccounts = _.get(
@@ -178,7 +182,11 @@ export default class Integration {
         apiKey,
         nrRegion,
         cloudLinkAccountMutation(accountId, roleArn, linkedAccount),
-        proxy
+        proxy,
+        {
+          caller: "enable integration, cloudLinkAccountMutation",
+          serverless: this.serverless
+        }
       );
 
       const { linkedAccounts, errors } = _.get(res, "data.cloudLinkAccount", {
@@ -199,7 +207,11 @@ export default class Integration {
           "lambda",
           linkedAccountId
         ),
-        proxy
+        proxy,
+        {
+          caller: "enable integration, cloudServiceIntegrationMutation",
+          serverless: this.serverless
+        }
       );
 
       const { errors: integrationErrors } = _.get(

@@ -1,6 +1,4 @@
-import * as fs from "fs-extra";
 import * as _ from "lodash";
-import * as path from "path";
 import * as request from "request-promise-native";
 import * as semver from "semver";
 // tslint:disable-next-line
@@ -279,7 +277,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
   }
 
   public cleanup() {
-    this.removeNodeHelper();
+    // any cleanup can happen here. Previously used for Node 8.
   }
 
   public async addLogSubscriptions() {
@@ -541,12 +539,22 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
   }
 
   private async getLayerArn(runtime: string) {
-    return request(
-      `https://${this.region}.layers.newrelic-external.com/get-layers?CompatibleRuntime=${runtime}`
-    ).then(response => {
-      const awsResp = JSON.parse(response);
-      return _.get(awsResp, "Layers[0].LatestMatchingVersion.LayerVersionArn");
-    });
+    const url = `https://${this.region}.layers.newrelic-external.com/get-layers?CompatibleRuntime=${runtime}`;
+    return request(url)
+      .then(response => {
+        const awsResp = JSON.parse(response);
+        return _.get(
+          awsResp,
+          "Layers[0].LatestMatchingVersion.LayerVersionArn"
+        );
+      })
+      .catch(reason => {
+        this.serverless.cli.log(
+          `Unable to get layer ARN for ${runtime} in ${this.region}`
+        );
+        this.serverless.cli.log(`URL: ${url}`);
+        this.serverless.cli.log(reason);
+      });
   }
 
   private getHandlerWrapper(runtime: string, handler: string) {
@@ -563,30 +571,6 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
     }
 
     return handler;
-  }
-
-  private addNodeHelper() {
-    const helperPath = path.join(
-      this.serverless.config.servicePath,
-      "newrelic-wrapper-helper.js"
-    );
-    if (!fs.existsSync(helperPath)) {
-      fs.writeFileSync(
-        helperPath,
-        "module.exports = require('newrelic-lambda-wrapper');"
-      );
-    }
-  }
-
-  private removeNodeHelper() {
-    const helperPath = path.join(
-      this.serverless.config.servicePath,
-      "newrelic-wrapper-helper.js"
-    );
-
-    if (fs.existsSync(helperPath)) {
-      fs.removeSync(helperPath);
-    }
   }
 
   private updatePackageExcludes(runtime: string, pkg: any) {
@@ -704,11 +688,18 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
   }
 
   private async getDestinationArn(logIngestionFunctionName: string) {
-    return this.awsProvider
-      .request("Lambda", "getFunction", {
-        FunctionName: logIngestionFunctionName
-      })
-      .then(res => res.Configuration.FunctionArn);
+    try {
+      return this.awsProvider
+        .request("Lambda", "getFunction", {
+          FunctionName: logIngestionFunctionName
+        })
+        .then(res => res.Configuration.FunctionArn);
+    } catch (e) {
+      this.serverless.cli.log(
+        `Error getting ingestion function destination ARN.`
+      );
+      this.serverless.cli.log(e);
+    }
   }
 
   private async addLogIngestionFunction() {
@@ -735,11 +726,18 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
         TemplateURL: templateUrl
       };
 
-      const { Id, StackId } = await this.awsProvider.request(
-        "CloudFormation",
-        "createChangeSet",
-        params
-      );
+      let cfResponse;
+      try {
+        cfResponse = await this.awsProvider.request(
+          "CloudFormation",
+          "createChangeSet",
+          params
+        );
+      } catch (e) {
+        this.serverless.cli.log(`Unable to get stack information.`);
+        this.serverless.cli.log(e);
+      }
+      const { Id, StackId } = cfResponse;
 
       this.serverless.cli.log(
         "Waiting for change set creation to complete, this may take a minute..."
@@ -767,7 +765,8 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       apiKey,
       nrRegion,
       fetchLicenseKey(accountId),
-      proxy
+      proxy,
+      { serverless: this.serverless, caller: "retrieveLicenseKey" }
     );
     this.licenseKey = _.get(userData, "data.actor.account.licenseKey", null);
     return this.licenseKey;
