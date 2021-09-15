@@ -1,0 +1,47 @@
+{
+  "service": "newrelic-lambda-layers-nodejs-example",
+  "provider": {
+    "name": "aws",
+    "stage": "prod",
+    "region": "us-east-1",
+    "stackTags": {
+      "environment": "us-testing",
+      "owning_team": "LAMBDA",
+      "product": "aws-lambda"
+    },
+    "tags": {
+      "environment": "us-testing",
+      "owning_team": "LAMBDA",
+      "product": "aws-lambda"
+    }
+  },
+  "plugins": ["serverless-newrelic-lambda-layers"],
+  "configValidationMode": "warn",
+  "custom": {
+    "newRelic": {
+      "accountId": "${env:NEW_RELIC_ACCOUNT_ID}",
+      "trustedAccountKey": "${env:NEW_RELIC_TRUSTED_ACCOUNT_KEY}"
+    }
+  },
+  "disabledDeprecations": [],
+  "functions": {
+    "layer-nodejs10x": {
+      "events": [{ "schedule": "rate(5 minutes)" }],
+      "handler": "handler.handler",
+      "package": { "exclude": ["./**"], "include": ["handler.js"] },
+      "runtime": "nodejs10.x"
+    },
+    "layer-nodejs12x": {
+      "events": [{ "schedule": "rate(5 minutes)" }],
+      "handler": "handler.handler",
+      "package": { "exclude": ["./**"], "include": ["handler.js"] },
+      "runtime": "nodejs12.x"
+    },
+    "layer-nodejs14x": {
+      "events": [{ "schedule": "rate(5 minutes)" }],
+      "handler": "handler.handler",
+      "package": { "exclude": ["./**"], "include": ["handler.js"] },
+      "runtime": "nodejs14.x"
+    }
+  }
+}
