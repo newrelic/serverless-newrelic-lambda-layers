@@ -5,7 +5,8 @@ export const nerdgraphFetch = async (
   apiKey: string,
   region: string,
   query: string,
-  proxy?: string
+  proxy?: string,
+  context?: any
 ) => {
   const gqlUrl =
     region === "eu"
@@ -23,6 +24,10 @@ export const nerdgraphFetch = async (
       "Content-Type": "application/json"
     },
     method: "POST"
+  }).catch(e => {
+    context.serverless.log(`Error fetching from NerdGraph; ${context.caller}`);
+    context.serverless.log.log(e);
+    return null;
   });
   return res.json();
 };
