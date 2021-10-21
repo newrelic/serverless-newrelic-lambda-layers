@@ -200,6 +200,9 @@ custom:
 #### `stages` (optional)
 
 An array of stages that the plugin will be included for. If this key is not specified then all stages will be included.
+
+```yaml
+custom:
   stages:
       - prod
 ```
