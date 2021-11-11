@@ -364,6 +364,11 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       environment = {},
       handler,
       runtime = _.get(this.serverless.service, "provider.runtime"),
+      architecture = _.get(
+        this.serverless.service,
+        "provider.architecture",
+        null
+      ),
       layers = [],
       package: pkg = {}
     } = funcDef;
@@ -405,7 +410,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
 
     const layerArn = this.config.layerArn
       ? this.config.layerArn
-      : await this.getLayerArn(runtime);
+      : await this.getLayerArn(runtime, architecture);
 
     const newRelicLayers = layers.filter(
       layer => typeof layer === "string" && layer.match(layerArn)
@@ -538,8 +543,11 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
     }
   }
 
-  private async getLayerArn(runtime: string) {
-    const url = `https://${this.region}.layers.newrelic-external.com/get-layers?CompatibleRuntime=${runtime}`;
+  private async getLayerArn(runtime: string, architecture?: string) {
+    let url = `https://${this.region}.layers.newrelic-external.com/get-layers?CompatibleRuntime=${runtime}`;
+    if (architecture) {
+      url = `${url}&CompatibleArchitecture=${architecture}`;
+    }
     return request(url)
       .then(response => {
         const awsResp = JSON.parse(response);
