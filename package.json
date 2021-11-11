@@ -1,6 +1,6 @@
 {
   "name": "serverless-newrelic-lambda-layers",
-  "version": "2.1.4",
+  "version": "2.2.0",
   "description": "Serverless plugin for NewRelic APM AWS Lambda layers.",
   "main": "dist/index.js",
   "files": [
@@ -41,11 +41,11 @@
     "@types/serverless": "^1.72.6",
     "get-installed-path": "^4.0.8",
     "husky": "^4.3.0",
-    "jest": "^26.6.3",
+    "jest": "^27.3.1",
     "prettier": "^1.19.1",
     "ramda": "^0.27.1",
-    "serverless": "^2.59.0",
-    "ts-jest": "^26.4.4",
+    "serverless": "^2.66.1",
+    "ts-jest": "^27.0.7",
     "tslint": "^5.20.1",
     "tslint-config-prettier": "^1.18.0",
     "tslint-plugin-prettier": "^2.3.0",
