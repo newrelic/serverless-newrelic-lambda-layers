@@ -66,7 +66,7 @@ export default class Integration {
         "No New Relic AWS Lambda integration found for this New Relic linked account and aws account."
       );
 
-      if (enableIntegration) {
+      if (enableIntegration && enableIntegration !== "false") {
         this.enable(externalId);
         return;
       }
@@ -251,6 +251,18 @@ export default class Integration {
     }
   }
 
+  private async requestRoleArn(RoleName: string) {
+    const params = {
+      RoleName
+    };
+
+    const {
+      Role: { Arn }
+    } = await this.awsProvider.request("IAM", "getRole", params);
+
+    return Arn;
+  }
+
   private async checkAwsIntegrationRole(externalId: string) {
     const { accountId } = this.config;
     if (!accountId) {
@@ -261,31 +273,29 @@ export default class Integration {
     }
 
     try {
-      const params = {
-        RoleName: `NewRelicLambdaIntegrationRole_${accountId}`
-      };
-
-      const {
-        Role: { Arn }
-      } = await this.awsProvider.request("IAM", "getRole", params);
-
-      return Arn;
+      return this.requestRoleArn(`NewRelicLambdaIntegrationRole_${accountId}`);
     } catch (err) {
-      this.serverless.cli.log(
-        "The required NewRelicLambdaIntegrationRole cannot be found; Creating Stack with NewRelicLambdaIntegrationRole."
-      );
-      const stackId = await this.createCFStack(accountId);
-      waitForStatus(
-        {
-          awsMethod: "describeStacks",
-          callbackMethod: () => this.enable(externalId),
-          methodParams: {
-            StackName: stackId
+      // We're limited to one rolename and a 64-character regex, so allowing for streams means a second query
+      try {
+        return this.requestRoleArn(`NewRelicInfrastructure-Integrations`);
+      } catch (fallbackErr) {
+        this.serverless.cli.log(
+          `Neither NewRelicLambdaIntegrationRole_${accountId} nor NewRelicInfrastructure-Integrations can be found.
+           Creating Stack with NewRelicLambdaIntegrationRole.`
+        );
+        const stackId = await this.createCFStack(accountId);
+        waitForStatus(
+          {
+            awsMethod: "describeStacks",
+            callbackMethod: () => this.enable(externalId),
+            methodParams: {
+              StackName: stackId
+            },
+            statusPath: "Stacks[0].StackStatus"
           },
-          statusPath: "Stacks[0].StackStatus"
-        },
-        this
-      );
+          this
+        );
+      }
     }
   }
 
