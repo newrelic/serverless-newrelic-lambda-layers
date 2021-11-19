@@ -30,9 +30,6 @@ export default class Integration {
       nrRegion,
       proxy
     } = this.config;
-    const {
-      linkedAccount = `New Relic Lambda Integration - ${accountId}`
-    } = this.config;
 
     const integrationData = await nerdgraphFetch(
       apiKey,
@@ -55,7 +52,6 @@ export default class Integration {
 
     const match = linkedAccounts.filter(account => {
       return (
-        account.name === linkedAccount &&
         account.externalId === externalId &&
         account.nrAccountId === parseInt(accountId, 10)
       );
@@ -255,10 +251,11 @@ export default class Integration {
     const params = {
       RoleName
     };
+    const response = await this.awsProvider.request("IAM", "getRole", params);
 
     const {
       Role: { Arn }
-    } = await this.awsProvider.request("IAM", "getRole", params);
+    } = response;
 
     return Arn;
   }
@@ -277,7 +274,9 @@ export default class Integration {
     } catch (err) {
       // We're limited to one rolename and a 64-character regex, so allowing for streams means a second query
       try {
-        return this.requestRoleArn(`NewRelicInfrastructure-Integrations`);
+        return this.requestRoleArn(
+          `NewRelicInfrastructure-Integrations|NewRelicStagingIntegration`
+        );
       } catch (fallbackErr) {
         this.serverless.cli.log(
           `Neither NewRelicLambdaIntegrationRole_${accountId} nor NewRelicInfrastructure-Integrations can be found.
