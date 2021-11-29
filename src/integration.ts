@@ -274,9 +274,7 @@ export default class Integration {
     } catch (err) {
       // We're limited to one rolename and a 64-character regex, so allowing for streams means a second query
       try {
-        return this.requestRoleArn(
-          `NewRelicInfrastructure-Integrations|NewRelicStagingIntegration`
-        );
+        return this.requestRoleArn(`NewRelicInfrastructure-Integrations`);
       } catch (fallbackErr) {
         this.serverless.cli.log(
           `Neither NewRelicLambdaIntegrationRole_${accountId} nor NewRelicInfrastructure-Integrations can be found.
