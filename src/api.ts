@@ -11,6 +11,8 @@ export const nerdgraphFetch = async (
   const gqlUrl =
     region === "eu"
       ? "https://api.eu.newrelic.com/graphql"
+      : region === "staging"
+      ? "https://staging-api.newrelic.com/graphql"
       : "https://api.newrelic.com/graphql";
 
   const agent =
