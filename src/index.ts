@@ -419,6 +419,10 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       ? this.config.layerArn
       : await this.getLayerArn(runtime, architecture);
 
+    if (!layerArn) {
+      return;
+    }
+
     const newRelicLayers = layers.filter(
       layer => typeof layer === "string" && layer.match(layerArn)
     );
@@ -551,17 +555,44 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
   }
 
   private async getLayerArn(runtime: string, architecture?: string) {
-    let url = `https://${this.region}.layers.newrelic-external.com/get-layers?CompatibleRuntime=${runtime}`;
-    if (architecture) {
-      url = `${url}&CompatibleArchitecture=${architecture}`;
-    }
+    const url = `https://${this.region}.layers.newrelic-external.com/get-layers?CompatibleRuntime=${runtime}`;
     return fetch(url)
-      .then(response => response.json())
-      .then(awsResp => {
-        return _.get(
-          awsResp,
-          "Layers[0].LatestMatchingVersion.LayerVersionArn"
-        );
+      .then(async response => {
+        const awsResp = await response.json();
+        const layers = _.get(awsResp, "Layers", []);
+        const compatibleLayers = layers
+          .map(layer => {
+            const latestLayer = layer.LatestMatchingVersion;
+            const latestArch = latestLayer.CompatibleArchitectures;
+            const latestArchHasValues =
+              latestArch && latestArch.length && latestArch.length > 0;
+
+            if (
+              !architecture &&
+              (!latestArch ||
+                (latestArchHasValues && latestArch[0] === "x86_64"))
+            ) {
+              return latestLayer;
+            } else if (
+              architecture &&
+              latestArchHasValues &&
+              architecture === latestArch[0]
+            ) {
+              return latestLayer;
+            }
+          })
+          .filter(layer => typeof layer !== "undefined");
+
+        if (
+          !compatibleLayers ||
+          (compatibleLayers.length < 1 && architecture)
+        ) {
+          this.serverless.cli.log(
+            `${architecture} is not yet supported by New Relic layers for ${runtime} in ${this.region}. Skipping.`
+          );
+          return false;
+        }
+        return compatibleLayers[0].LayerVersionArn;
       })
       .catch(reason => {
         this.serverless.cli.log(
@@ -569,6 +600,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
         );
         this.serverless.cli.log(`URL: ${url}`);
         this.serverless.cli.log(reason);
+        return;
       });
   }
 
