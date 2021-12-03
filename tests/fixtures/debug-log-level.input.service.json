@@ -27,12 +27,6 @@
   },
   "disabledDeprecations": [],
   "functions": {
-    "layer-nodejs10x": {
-      "events": [{ "schedule": "rate(5 minutes)" }],
-      "handler": "handler.handler",
-      "package": { "exclude": ["./**"], "include": ["handler.js"] },
-      "runtime": "nodejs10.x"
-    },
     "layer-nodejs12x": {
       "events": [{ "schedule": "rate(5 minutes)" }],
       "handler": "handler.handler",
