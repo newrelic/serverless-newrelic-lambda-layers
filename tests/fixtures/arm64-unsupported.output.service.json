@@ -26,7 +26,7 @@
       ],
       "handler": "newrelic-lambda-wrapper.handler",
       "layers": [
-        "arn:aws:lambda:ap-northeast-2:451483290750:layer:NewRelicNodeJS12X:58"
+        "arn:aws:lambda:ap-northeast-2:451483290750:layer:NewRelicNodeJS12X:61"
       ],
       "package": {
         "exclude": [
@@ -55,7 +55,7 @@
       ],
       "handler": "newrelic-lambda-wrapper.handler",
       "layers": [
-        "arn:aws:lambda:ap-northeast-2:451483290750:layer:NewRelicNodeJS14X:28"
+        "arn:aws:lambda:ap-northeast-2:451483290750:layer:NewRelicNodeJS14X:31"
       ],
       "package": {
         "exclude": [

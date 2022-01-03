@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import * as request from "request-promise-native";
+import fetch from "node-fetch";
 import * as semver from "semver";
 // tslint:disable-next-line
 import * as Serverless from "serverless";
@@ -548,9 +548,9 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
     if (architecture) {
       url = `${url}&CompatibleArchitecture=${architecture}`;
     }
-    return request(url)
-      .then(response => {
-        const awsResp = JSON.parse(response);
+    return fetch(url)
+      .then(response => response.json())
+      .then(awsResp => {
         return _.get(
           awsResp,
           "Layers[0].LatestMatchingVersion.LayerVersionArn"
