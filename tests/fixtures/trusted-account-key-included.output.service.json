@@ -20,6 +20,7 @@
   "custom": {
     "newRelic": {
       "accountId": "${env:NEW_RELIC_ACCOUNT_ID}",
+      "apiKey": "${env:NEW_RELIC_PERSONAL_API_KEY}",
       "enableExtension": true,
       "trustedAccountKey": "${env:NEW_RELIC_TRUSTED_ACCOUNT_KEY}"
     }
@@ -50,7 +51,7 @@
       "events": [{ "schedule": "rate(5 minutes)" }],
       "handler": "newrelic-lambda-wrapper.handler",
       "layers": [
-        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS12X:63"
+        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS12X:64"
       ],
       "package": {
         "exclude": ["./**", "!newrelic-wrapper-helper.js"],
@@ -70,7 +71,7 @@
       "events": [{ "schedule": "rate(5 minutes)" }],
       "handler": "newrelic-lambda-wrapper.handler",
       "layers": [
-        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS14X:33"
+        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS14X:34"
       ],
       "package": {
         "exclude": ["./**", "!newrelic-wrapper-helper.js"],
