@@ -564,20 +564,12 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
           .map(layer => {
             const latestLayer = layer.LatestMatchingVersion;
             const latestArch = latestLayer.CompatibleArchitectures;
-            const latestArchHasValues =
-              latestArch && latestArch.length && latestArch.length > 0;
+            const matchingArch =
+              architecture && latestArch && architecture === latestArch[0];
+            const defaultArch =
+              !architecture && (!latestArch || latestArch[0] === "x86_64");
 
-            if (
-              !architecture &&
-              (!latestArch ||
-                (latestArchHasValues && latestArch[0] === "x86_64"))
-            ) {
-              return latestLayer;
-            } else if (
-              architecture &&
-              latestArchHasValues &&
-              architecture === latestArch[0]
-            ) {
+            if (matchingArch || defaultArch) {
               return latestLayer;
             }
           })
