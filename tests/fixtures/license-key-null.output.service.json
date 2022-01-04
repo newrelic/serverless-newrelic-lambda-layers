@@ -1,0 +1,66 @@
+{
+  "configValidationMode": "warn",
+  "custom": {
+    "newRelic": {
+      "accountId": "${env:NEW_RELIC_ACCOUNT_ID}",
+      "apiKey": null,
+      "logLevel": "debug"
+    }
+  },
+  "disabledDeprecations": [],
+  "functions": {
+    "layer-nodejs12x": {
+      "events": [
+        {
+          "schedule": "rate(5 minutes)"
+        }
+      ],
+      "handler": "handler.handler",
+      "package": {
+        "exclude": [
+          "./**"
+        ],
+        "include": [
+          "handler.js"
+        ]
+      },
+      "runtime": "nodejs12.x"
+    },
+    "layer-nodejs14x": {
+      "events": [
+        {
+          "schedule": "rate(5 minutes)"
+        }
+      ],
+      "handler": "handler.handler",
+      "package": {
+        "exclude": [
+          "./**"
+        ],
+        "include": [
+          "handler.js"
+        ]
+      },
+      "runtime": "nodejs14.x"
+    }
+  },
+  "plugins": [
+    "serverless-newrelic-lambda-layers"
+  ],
+  "provider": {
+    "name": "aws",
+    "region": "us-east-1",
+    "stackTags": {
+      "environment": "us-testing",
+      "owning_team": "LAMBDA",
+      "product": "aws-lambda"
+    },
+    "stage": "prod",
+    "tags": {
+      "environment": "us-testing",
+      "owning_team": "LAMBDA",
+      "product": "aws-lambda"
+    }
+  },
+  "service": "newrelic-lambda-layers-nodejs-example"
+}
