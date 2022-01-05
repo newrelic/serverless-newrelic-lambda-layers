@@ -234,6 +234,13 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       return;
     }
 
+    if (!this.config.apiKey) {
+      this.serverless.cli.log(
+        `Please use a valid New Relic API key as your apiKey value; skipping.`
+      );
+      return;
+    }
+
     const { exclude = [], include = [] } = this.config;
     if (!_.isEmpty(exclude) && !_.isEmpty(include)) {
       this.serverless.cli.log(

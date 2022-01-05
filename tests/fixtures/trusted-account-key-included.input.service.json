@@ -20,6 +20,7 @@
   "custom": {
     "newRelic": {
       "accountId": "${env:NEW_RELIC_ACCOUNT_ID}",
+      "apiKey": "${env:NEW_RELIC_PERSONAL_API_KEY}",
       "trustedAccountKey": "${env:NEW_RELIC_TRUSTED_ACCOUNT_KEY}"
     }
   },
