@@ -333,10 +333,8 @@ custom:
 
 This plugin currently supports the following AWS runtimes:
 
-- nodejs10.x
 - nodejs12.x
 - nodejs14.x
-- python2.7
 - python3.6
 - python3.7
 - python3.8

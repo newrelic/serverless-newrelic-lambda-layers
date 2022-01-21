@@ -23,17 +23,6 @@ custom:
     debug: true
 
 functions:
-  layer-python27:
-    events:
-      - schedule: rate(5 minutes)
-    handler: handler.handler
-    package:
-      exclude:
-        - ./**
-      include:
-        - handler.py
-    runtime: python2.7
-
   layer-python36:
     events:
       - schedule: rate(5 minutes)
