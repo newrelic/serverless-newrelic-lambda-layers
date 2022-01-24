@@ -22,29 +22,11 @@
       "accountId": "${env:NEW_RELIC_ACCOUNT_ID}",
       "apiKey": "${env:NEW_RELIC_PERSONAL_API_KEY}",
       "enableExtension": true,
-      "include": ["layer-nodejs10x"]
+      "include": ["layer-nodejs14x"]
     }
   },
   "disabledDeprecations": [],
   "functions": {
-    "layer-nodejs10x": {
-      "environment": {
-        "NEW_RELIC_ACCOUNT_ID": "${env:NEW_RELIC_ACCOUNT_ID}",
-        "NEW_RELIC_APP_NAME": "layer-nodejs10x",
-        "NEW_RELIC_LAMBDA_EXTENSION_ENABLED": "true",
-        "NEW_RELIC_LAMBDA_HANDLER": "handler.handler",
-        "NEW_RELIC_NO_CONFIG_FILE": "true",
-        "NEW_RELIC_TRUSTED_ACCOUNT_KEY": "${env:NEW_RELIC_ACCOUNT_ID}"
-       },
-
-      "events": [{ "schedule": "rate(5 minutes)" }],
-      "handler": "newrelic-lambda-wrapper.handler",
-      "layers": [
-        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS10X:55"
-      ],
-      "package": { "exclude": ["./**", "!newrelic-wrapper-helper.js"], "include": ["handler.js"] },
-      "runtime": "nodejs10.x"
-    },
     "layer-nodejs12x": {
       "events": [{ "schedule": "rate(5 minutes)" }],
       "handler": "handler.handler",
@@ -52,9 +34,23 @@
       "runtime": "nodejs12.x"
     },
     "layer-nodejs14x": {
+       "environment": {
+         "NEW_RELIC_ACCOUNT_ID": "${env:NEW_RELIC_ACCOUNT_ID}",
+         "NEW_RELIC_APP_NAME": "layer-nodejs14x",
+         "NEW_RELIC_LAMBDA_EXTENSION_ENABLED": "true",
+         "NEW_RELIC_LAMBDA_HANDLER": "handler.handler",
+         "NEW_RELIC_NO_CONFIG_FILE": "true",
+         "NEW_RELIC_TRUSTED_ACCOUNT_KEY": "${env:NEW_RELIC_ACCOUNT_ID}"
+       },
       "events": [{ "schedule": "rate(5 minutes)" }],
-      "handler": "handler.handler",
-      "package": { "exclude": ["./**"], "include": ["handler.js"] },
+      "handler": "newrelic-lambda-wrapper.handler",
+      "layers":  [
+           "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS14X:37"
+       ],
+      "package": { "exclude": [
+        "./**",
+        "!newrelic-wrapper-helper.js"
+      ], "include": ["handler.js"] },
       "runtime": "nodejs14.x"
     }
   }

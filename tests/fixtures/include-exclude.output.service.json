@@ -21,18 +21,12 @@
     "newRelic": {
       "accountId": "${env:NEW_RELIC_ACCOUNT_ID}",
       "enableExtension": true,
-      "include": ["layer-nodejs10x"],
-      "exclude": ["layer-nodejs12x"]
+      "include": ["layer-nodejs12x"],
+      "exclude": ["layer-nodejs14x"]
     }
   },
   "disabledDeprecations": [],
   "functions": {
-    "layer-nodejs10x": {
-      "events": [{ "schedule": "rate(5 minutes)" }],
-      "handler": "handler.handler",
-      "package": { "exclude": ["./**"], "include": ["handler.js"] },
-      "runtime": "nodejs10.x"
-    },
     "layer-nodejs12x": {
       "events": [{ "schedule": "rate(5 minutes)" }],
       "handler": "handler.handler",
