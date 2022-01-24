@@ -23,10 +23,10 @@ export const nerdgraphFetch = async (
     body: JSON.stringify({ query }),
     headers: {
       "API-Key": apiKey,
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    method: "POST"
-  }).catch(e => {
+    method: "POST",
+  }).catch((e) => {
     context.serverless.log(`Error fetching from NerdGraph; ${context.caller}`);
     context.serverless.log.log(e);
     return null;

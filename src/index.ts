@@ -11,12 +11,12 @@ const DEFAULT_FILTER_PATTERNS = [
   "REPORT",
   "NR_LAMBDA_MONITORING",
   "Task timed out",
-  "RequestId"
+  "RequestId",
 ];
 
 const enum JavaHandler {
   handleRequest = "handleRequest",
-  handleStreamsRequest = "handleStreamsRequest"
+  handleStreamsRequest = "handleStreamsRequest",
 }
 
 export default class NewRelicLambdaLayerPlugin {
@@ -49,7 +49,7 @@ export default class NewRelicLambdaLayerPlugin {
           "before:deploy:deploy": this.checkIntegration.bind(this),
           "before:deploy:function:packageFunction": this.run.bind(this),
           "before:package:createDeploymentArtifacts": this.run.bind(this),
-          "before:remove:remove": this.removeLogSubscriptions.bind(this)
+          "before:remove:remove": this.removeLogSubscriptions.bind(this),
         };
   }
 
@@ -59,7 +59,7 @@ export default class NewRelicLambdaLayerPlugin {
 
   get config() {
     return _.get(this.serverless, "service.custom.newRelic", {
-      nrRegion: "us"
+      nrRegion: "us",
     });
   }
 
@@ -123,7 +123,7 @@ export default class NewRelicLambdaLayerPlugin {
       null,
       this.serverless.service
         .getAllFunctions()
-        .map(func => ({ [func]: this.serverless.service.getFunction(func) }))
+        .map((func) => ({ [func]: this.serverless.service.getFunction(func) }))
     );
   }
 
@@ -196,7 +196,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       } else if (this.managedSecretConfigured) {
         this.mgdPolicyArns = [
           ...this.managedPolicyArns,
-          managedSecret.policyArn
+          managedSecret.policyArn,
         ];
       }
     }
@@ -265,9 +265,9 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       const resources = this.resources;
       Object.keys(resources)
         .filter(
-          resourceName => resources[resourceName].Type === `AWS::IAM::Role`
+          (resourceName) => resources[resourceName].Type === `AWS::IAM::Role`
         )
-        .forEach(roleResource =>
+        .forEach((roleResource) =>
           this.applyPolicies(resources[roleResource].Properties)
         );
     }
@@ -303,7 +303,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       typeof cloudWatchFilter === "object" &&
       cloudWatchFilter.indexOf("*") === -1
     ) {
-      cloudWatchFilter = cloudWatchFilter.map(el => `?\"${el}\"`);
+      cloudWatchFilter = cloudWatchFilter.map((el) => `?\"${el}\"`);
       cloudWatchFilterString = cloudWatchFilter.join(" ");
     } else if (cloudWatchFilter.indexOf("*") === -1) {
       cloudWatchFilterString = String(cloudWatchFilter);
@@ -377,7 +377,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
         null
       ),
       layers = [],
-      package: pkg = {}
+      package: pkg = {},
     } = funcDef;
 
     if (!this.config.accountId && !environment.NEW_RELIC_ACCOUNT_ID) {
@@ -396,7 +396,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
         "python3.8",
         "python3.9",
         "java11",
-        "java8.al2"
+        "java8.al2",
       ].indexOf(runtime) === -1;
 
     if (
@@ -422,7 +422,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
     }
 
     const newRelicLayers = layers.filter(
-      layer => typeof layer === "string" && layer.match(layerArn)
+      (layer) => typeof layer === "string" && layer.match(layerArn)
     );
 
     // Note: This is if the user specifies a layer in their serverless.yml
@@ -462,11 +462,12 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       environment.NEW_RELIC_DISTRIBUTED_TRACING_ENABLED = "true";
     }
 
-    environment.NEW_RELIC_TRUSTED_ACCOUNT_KEY = environment.NEW_RELIC_TRUSTED_ACCOUNT_KEY
-      ? environment.NEW_RELIC_TRUSTED_ACCOUNT_KEY
-      : this.config.trustedAccountKey
-      ? this.config.trustedAccountKey
-      : environment.NEW_RELIC_ACCOUNT_ID;
+    environment.NEW_RELIC_TRUSTED_ACCOUNT_KEY =
+      environment.NEW_RELIC_TRUSTED_ACCOUNT_KEY
+        ? environment.NEW_RELIC_TRUSTED_ACCOUNT_KEY
+        : this.config.trustedAccountKey
+        ? this.config.trustedAccountKey
+        : environment.NEW_RELIC_ACCOUNT_ID;
 
     if (runtime.match("python")) {
       environment.NEW_RELIC_SERVERLESS_MODE_ENABLED = "true";
@@ -555,11 +556,11 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
   private async getLayerArn(runtime: string, architecture?: string) {
     const url = `https://${this.region}.layers.newrelic-external.com/get-layers?CompatibleRuntime=${runtime}`;
     return fetch(url)
-      .then(async response => {
+      .then(async (response) => {
         const awsResp = await response.json();
         const layers = _.get(awsResp, "Layers", []);
         const compatibleLayers = layers
-          .map(layer => {
+          .map((layer) => {
             const latestLayer = layer.LatestMatchingVersion;
             const latestArch = latestLayer.CompatibleArchitectures;
             const matchingArch =
@@ -571,7 +572,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
               return latestLayer;
             }
           })
-          .filter(layer => typeof layer !== "undefined");
+          .filter((layer) => typeof layer !== "undefined");
 
         if (
           !compatibleLayers ||
@@ -584,7 +585,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
         }
         return compatibleLayers[0].LayerVersionArn;
       })
-      .catch(reason => {
+      .catch((reason) => {
         this.serverless.cli.log(
           `Unable to get layer ARN for ${runtime} in ${this.region}`
         );
@@ -627,7 +628,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
   ) {
     try {
       await this.awsProvider.request("Lambda", "getFunction", {
-        FunctionName: funcName
+        FunctionName: funcName,
       });
     } catch (err) {
       if (err.providerError) {
@@ -638,10 +639,8 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
 
     let destinationArn;
 
-    const {
-      logIngestionFunctionName = "newrelic-log-ingestion",
-      apiKey
-    } = this.config;
+    const { logIngestionFunctionName = "newrelic-log-ingestion", apiKey } =
+      this.config;
 
     try {
       destinationArn = await this.getDestinationArn(logIngestionFunctionName);
@@ -681,7 +680,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
     }
 
     const competingFilters = subscriptionFilters.filter(
-      filter => filter.filterName !== "NewRelicLogStreaming"
+      (filter) => filter.filterName !== "NewRelicLogStreaming"
     );
 
     if (competingFilters.length) {
@@ -691,7 +690,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
     }
 
     const existingFilters = subscriptionFilters.filter(
-      filter => filter.filterName === "NewRelicLogStreaming"
+      (filter) => filter.filterName === "NewRelicLogStreaming"
     );
 
     if (existingFilters.length) {
@@ -701,9 +700,9 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
 
       await Promise.all(
         existingFilters
-          .filter(filter => filter.filterPattern !== cloudWatchFilterString)
-          .map(async filter => this.removeSubscriptionFilter(funcName))
-          .map(async filter =>
+          .filter((filter) => filter.filterPattern !== cloudWatchFilterString)
+          .map(async (filter) => this.removeSubscriptionFilter(funcName))
+          .map(async (filter) =>
             this.addSubscriptionFilter(
               funcName,
               destinationArn,
@@ -728,9 +727,9 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
     try {
       return this.awsProvider
         .request("Lambda", "getFunction", {
-          FunctionName: logIngestionFunctionName
+          FunctionName: logIngestionFunctionName,
         })
-        .then(res => res.Configuration.FunctionArn);
+        .then((res) => res.Configuration.FunctionArn);
     } catch (e) {
       this.serverless.cli.log(
         `Error getting ingestion function destination ARN.`
@@ -760,7 +759,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
         ChangeSetType: mode,
         Parameters: parameters,
         StackName: stackName,
-        TemplateURL: templateUrl
+        TemplateURL: templateUrl,
       };
 
       let cfResponse;
@@ -785,7 +784,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
           awsMethod: "describeChangeSet",
           callbackMethod: () => this.executeChangeSet(Id, StackId),
           methodParams: { ChangeSetName: Id },
-          statusPath: "Status"
+          statusPath: "Status",
         },
         this
       );
@@ -819,12 +818,12 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
     return [
       {
         ParameterKey: "NRLoggingEnabled",
-        ParameterValue: `${loggingVar}`
+        ParameterValue: `${loggingVar}`,
       },
       {
         ParameterKey: "NRLicenseKey",
-        ParameterValue: `${licenseKey}`
-      }
+        ParameterValue: `${licenseKey}`,
+      },
     ];
   }
 
@@ -835,7 +834,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
         "createCloudFormationTemplate",
         {
           ApplicationId:
-            "arn:aws:serverlessrepo:us-east-1:463657938898:applications/NewRelic-log-ingestion"
+            "arn:aws:serverlessrepo:us-east-1:463657938898:applications/NewRelic-log-ingestion",
         }
       );
 
@@ -851,7 +850,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
   private async executeChangeSet(changeSetName: string, stackId: string) {
     try {
       await this.awsProvider.request("CloudFormation", "executeChangeSet", {
-        ChangeSetName: changeSetName
+        ChangeSetName: changeSetName,
       });
       this.serverless.cli.log(
         "Waiting for newrelic-log-ingestion install to complete, this may take a minute..."
@@ -862,7 +861,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
           awsMethod: "describeStacks",
           callbackMethod: () => this.addLogSubscriptions(),
           methodParams: { StackName: stackId },
-          statusPath: "Stacks[0].StackStatus"
+          statusPath: "Stacks[0].StackStatus",
         },
         this
       );
@@ -876,9 +875,9 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
   private async describeSubscriptionFilters(funcName: string) {
     return this.awsProvider
       .request("CloudWatchLogs", "describeSubscriptionFilters", {
-        logGroupName: `/aws/lambda/${funcName}`
+        logGroupName: `/aws/lambda/${funcName}`,
       })
-      .then(res => res.subscriptionFilters);
+      .then((res) => res.subscriptionFilters);
   }
 
   private async addSubscriptionFilter(
@@ -891,9 +890,9 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
         destinationArn,
         filterName: "NewRelicLogStreaming",
         filterPattern: cloudWatchFilterString,
-        logGroupName: `/aws/lambda/${funcName}`
+        logGroupName: `/aws/lambda/${funcName}`,
       })
-      .catch(err => {
+      .catch((err) => {
         if (err.providerError) {
           this.serverless.cli.log(err.providerError.message);
         }
@@ -904,9 +903,9 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
     return this.awsProvider
       .request("CloudWatchLogs", "DeleteSubscriptionFilter", {
         filterName: "NewRelicLogStreaming",
-        logGroupName: `/aws/lambda/${funcName}`
+        logGroupName: `/aws/lambda/${funcName}`,
       })
-      .catch(err => {
+      .catch((err) => {
         if (err.providerError) {
           this.serverless.cli.log(err.providerError.message);
         }
