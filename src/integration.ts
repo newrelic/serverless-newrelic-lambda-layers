@@ -3,7 +3,7 @@ import {
   cloudLinkAccountMutation,
   cloudServiceIntegrationMutation,
   fetchLinkedAccounts,
-  nerdgraphFetch
+  nerdgraphFetch,
 } from "./api";
 import { fetchPolicy, waitForStatus } from "./utils";
 
@@ -23,13 +23,8 @@ export default class Integration {
   }
 
   public async check() {
-    const {
-      accountId,
-      enableIntegration,
-      apiKey,
-      nrRegion,
-      proxy
-    } = this.config;
+    const { accountId, enableIntegration, apiKey, nrRegion, proxy } =
+      this.config;
 
     const integrationData = await nerdgraphFetch(
       apiKey,
@@ -38,7 +33,7 @@ export default class Integration {
       proxy,
       {
         caller: "check integration for linked accounts",
-        serverless: this.serverless
+        serverless: this.serverless,
       }
     );
 
@@ -50,7 +45,7 @@ export default class Integration {
 
     const externalId = await this.getCallerIdentity();
 
-    const match = linkedAccounts.filter(account => {
+    const match = linkedAccounts.filter((account) => {
       return (
         account.externalId === externalId &&
         account.nrAccountId === parseInt(accountId, 10)
@@ -80,11 +75,11 @@ export default class Integration {
 
   public async checkForManagedSecretPolicy() {
     const thisRegionPolicy = `NewRelic-ViewLicenseKey-${this.region}`;
-    const regionFilter = policy => policy.PolicyName.match(thisRegionPolicy);
+    const regionFilter = (policy) => policy.PolicyName.match(thisRegionPolicy);
 
     try {
       const params = {
-        Scope: `Local`
+        Scope: `Local`,
       };
 
       const results = await this.awsProvider.request(
@@ -95,7 +90,7 @@ export default class Integration {
       const currentRegionPolicy = results.Policies.filter(regionFilter);
       return {
         currentRegionPolicy,
-        secretExists: currentRegionPolicy.length > 0
+        secretExists: currentRegionPolicy.length > 0,
       };
     } catch (err) {
       this.serverless.cli.log(
@@ -117,19 +112,19 @@ export default class Integration {
         Parameters: [
           {
             ParameterKey: "LicenseKey",
-            ParameterValue: this.licenseKey
+            ParameterValue: this.licenseKey,
           },
           {
             ParameterKey: "Region",
-            ParameterValue: this.region
+            ParameterValue: this.region,
           },
           {
             ParameterKey: "PolicyName",
-            ParameterValue: policyName
-          }
+            ParameterValue: policyName,
+          },
         ],
         StackName: stackName,
-        TemplateBody: policy
+        TemplateBody: policy,
       };
 
       const { StackId } = await this.awsProvider.request(
@@ -166,9 +161,8 @@ export default class Integration {
       }
 
       const { accountId, apiKey, nrRegion, proxy } = this.config;
-      const {
-        linkedAccount = `New Relic Lambda Integration - ${accountId}`
-      } = this.config;
+      const { linkedAccount = `New Relic Lambda Integration - ${accountId}` } =
+        this.config;
 
       this.serverless.cli.log(
         `Enabling New Relic integration for linked account: ${linkedAccount} and aws account: ${externalId}.`
@@ -181,12 +175,12 @@ export default class Integration {
         proxy,
         {
           caller: "enable integration, cloudLinkAccountMutation",
-          serverless: this.serverless
+          serverless: this.serverless,
         }
       );
 
       const { linkedAccounts, errors } = _.get(res, "data.cloudLinkAccount", {
-        errors: ["data.cloudLinkAccount missing in response"]
+        errors: ["data.cloudLinkAccount missing in response"],
       });
 
       if (errors && errors.length) {
@@ -206,7 +200,7 @@ export default class Integration {
         proxy,
         {
           caller: "enable integration, cloudServiceIntegrationMutation",
-          serverless: this.serverless
+          serverless: this.serverless,
         }
       );
 
@@ -214,7 +208,7 @@ export default class Integration {
         integrationRes,
         "data.cloudConfigureIntegration",
         {
-          errors: ["data.cloudConfigureIntegration missing in response"]
+          errors: ["data.cloudConfigureIntegration missing in response"],
         }
       );
 
@@ -249,12 +243,12 @@ export default class Integration {
 
   private async requestRoleArn(RoleName: string) {
     const params = {
-      RoleName
+      RoleName,
     };
     const response = await this.awsProvider.request("IAM", "getRole", params);
 
     const {
-      Role: { Arn }
+      Role: { Arn },
     } = response;
 
     return Arn;
@@ -286,9 +280,9 @@ export default class Integration {
             awsMethod: "describeStacks",
             callbackMethod: () => this.enable(externalId),
             methodParams: {
-              StackName: stackId
+              StackName: stackId,
             },
-            statusPath: "Stacks[0].StackStatus"
+            statusPath: "Stacks[0].StackStatus",
           },
           this
         );
@@ -307,12 +301,12 @@ export default class Integration {
         Parameters: [
           {
             ParameterKey: "NewRelicAccountNumber",
-            ParameterValue: accountId.toString()
+            ParameterValue: accountId.toString(),
           },
-          { ParameterKey: "PolicyName", ParameterValue: customRolePolicy }
+          { ParameterKey: "PolicyName", ParameterValue: customRolePolicy },
         ],
         StackName: stackName,
-        TemplateBody: policy
+        TemplateBody: policy,
       };
 
       const { StackId } = await this.awsProvider.request(
