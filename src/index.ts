@@ -3,6 +3,7 @@ import fetch from "node-fetch";
 import * as semver from "semver";
 // tslint:disable-next-line
 import * as Serverless from "serverless";
+import * as logging from "log";
 import { fetchLicenseKey, nerdgraphFetch } from "./api";
 import Integration from "./integration";
 import { waitForStatus } from "./utils";
@@ -22,6 +23,7 @@ const enum JavaHandler {
 export default class NewRelicLambdaLayerPlugin {
   public serverless: Serverless;
   public options: Serverless.Options;
+  public log: any;
   public awsProvider: any;
   public hooks: {
     [event: string]: Promise<any>;
@@ -34,6 +36,7 @@ export default class NewRelicLambdaLayerPlugin {
   constructor(serverless: Serverless, options: Serverless.Options) {
     this.serverless = serverless;
     this.options = options;
+    this.log = logging;
     this.awsProvider = this.serverless.getProvider("aws") as any;
     this.licenseKey = null;
     this.managedSecretConfigured = false;
@@ -213,29 +216,30 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
   public async run() {
     const version = this.serverless.getVersion();
     if (semver.lt(version, "1.34.0")) {
-      this.serverless.cli.log(
+      this.log.info(
         `Serverless ${version} does not support layers. Please upgrade to >=1.34.0.`
       );
       return;
     }
 
     let plugins = _.get(this.serverless, "service.plugins", []);
+
     if (!_.isArray(plugins) && plugins.modules) {
       plugins = plugins.modules;
     }
-    this.serverless.cli.log(`Plugins: ${JSON.stringify(plugins)}`);
+    this.log.info(`Plugins: ${JSON.stringify(plugins)}`);
     if (
       plugins.indexOf("serverless-webpack") >
       plugins.indexOf("serverless-newrelic-lambda-layers")
     ) {
-      this.serverless.cli.log(
+      this.log.error(
         "serverless-newrelic-lambda-layers plugin must come after serverless-webpack in serverless.yml; skipping."
       );
       return;
     }
 
     if (!this.config.apiKey) {
-      this.serverless.cli.log(
+      this.log.error(
         `Please use a valid New Relic API key as your apiKey value; skipping.`
       );
       return;
@@ -243,7 +247,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
 
     const { exclude = [], include = [] } = this.config;
     if (!_.isEmpty(exclude) && !_.isEmpty(include)) {
-      this.serverless.cli.log(
+      this.log.error(
         "exclude and include options are mutually exclusive; skipping."
       );
       return;
@@ -256,7 +260,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
     }
 
     if (this.config.proxy) {
-      this.serverless.cli.log(`HTTP proxy set to ${this.config.proxy}`);
+      this.log.info(`HTTP proxy set to ${this.config.proxy}`);
     }
 
     if (!this.licenseKeySecretDisabled) {
@@ -289,9 +293,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
 
   public async addLogSubscriptions() {
     if (this.autoSubscriptionDisabled) {
-      this.serverless.cli.log(
-        "Skipping adding log subscription. Explicitly disabled"
-      );
+      this.log.info("Skipping adding log subscription. Explicitly disabled");
       return;
     }
 
@@ -309,7 +311,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       cloudWatchFilterString = String(cloudWatchFilter);
     }
 
-    this.serverless.cli.log(`log filter: ${cloudWatchFilterString}`);
+    this.log.info(`log filter: ${cloudWatchFilterString}`);
 
     const promises = [];
 
@@ -318,9 +320,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
         return;
       }
 
-      this.serverless.cli.log(
-        `Configuring New Relic log subscription for ${funcName}`
-      );
+      this.log.info(`Configuring New Relic log subscription for ${funcName}`);
 
       const funcDef = funcs[funcName];
       promises.push(
@@ -331,15 +331,13 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
     await Promise.all(promises);
 
     if (this.extFellBackToCW) {
-      this.serverless.cli.log(this.extFallbackMessage);
+      this.log.info(this.extFallbackMessage);
     }
   }
 
   public async removeLogSubscriptions() {
     if (this.autoSubscriptionDisabled) {
-      this.serverless.cli.log(
-        "Skipping removing log subscription. Explicitly disabled"
-      );
+      this.log.info("Skipping removing log subscription. Explicitly disabled");
       return;
     }
     const funcs = this.functions;
@@ -347,9 +345,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
 
     for (const funcName of Object.keys(funcs)) {
       const { name } = funcs[funcName];
-      this.serverless.cli.log(
-        `Removing New Relic log subscription for ${funcName}`
-      );
+      this.log.info(`Removing New Relic log subscription for ${funcName}`);
       promises.push(this.removeSubscriptionFilter(name));
     }
 
@@ -357,12 +353,10 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
   }
 
   private async addLayer(funcName: string, funcDef: any) {
-    this.serverless.cli.log(`Adding NewRelic layer to ${funcName}`);
+    this.log.info(`Adding NewRelic layer to ${funcName}`);
 
     if (!this.region) {
-      this.serverless.cli.log(
-        "No AWS region specified for NewRelic layer; skipping."
-      );
+      this.log.warm("No AWS region specified for NewRelic layer; skipping.");
       return;
     }
 
@@ -381,7 +375,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
     } = funcDef;
 
     if (!this.config.accountId && !environment.NEW_RELIC_ACCOUNT_ID) {
-      this.serverless.cli.log(
+      this.log.warn(
         `No New Relic Account ID specified for "${funcName}"; skipping.`
       );
       return;
@@ -403,7 +397,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       typeof runtime !== "string" ||
       (wrappableRuntime && !this.config.enableExtension)
     ) {
-      this.serverless.cli.log(
+      this.log.warn(
         `Unsupported runtime "${runtime}" for NewRelic layer; skipping.`
       );
       return;
@@ -427,7 +421,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
 
     // Note: This is if the user specifies a layer in their serverless.yml
     if (newRelicLayers.length) {
-      this.serverless.cli.log(
+      this.log.warn(
         `Function "${funcName}" already specifies an NewRelic layer; skipping.`
       );
     } else {
@@ -500,7 +494,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       return false;
     }
 
-    this.serverless.cli.log(
+    this.log.warn(
       `Skipping plugin serverless-newrelic-lambda-layers for stage ${this.stage}`
     );
 
@@ -515,14 +509,14 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       _.isArray(include) &&
       include.indexOf(funcName) === -1
     ) {
-      this.serverless.cli.log(
-        `Excluded function ${funcName}; is not part of include skipping`
+      this.log.warn(
+        `Excluded function ${funcName}; is not part of include; skipping`
       );
       return true;
     }
 
     if (_.isArray(exclude) && exclude.indexOf(funcName) !== -1) {
-      this.serverless.cli.log(`Excluded function ${funcName}; skipping`);
+      this.log.warn(`Excluded function ${funcName}; skipping`);
       return true;
     }
 
@@ -578,7 +572,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
           !compatibleLayers ||
           (compatibleLayers.length < 1 && architecture)
         ) {
-          this.serverless.cli.log(
+          this.log.warn(
             `${architecture} is not yet supported by New Relic layers for ${runtime} in ${this.region}. Skipping.`
           );
           return false;
@@ -586,11 +580,11 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
         return compatibleLayers[0].LayerVersionArn;
       })
       .catch((reason) => {
-        this.serverless.cli.log(
+        this.log.error(
           `Unable to get layer ARN for ${runtime} in ${this.region}`
         );
-        this.serverless.cli.log(`URL: ${url}`);
-        this.serverless.cli.log(reason);
+        this.log.error(`URL: ${url}`);
+        this.log.error(reason);
         return;
       });
   }
@@ -632,7 +626,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       });
     } catch (err) {
       if (err.providerError) {
-        this.serverless.cli.log(err.providerError.message);
+        this.log.error(err.providerError.message);
       }
       return;
     }
@@ -645,23 +639,23 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
     try {
       destinationArn = await this.getDestinationArn(logIngestionFunctionName);
     } catch (err) {
-      this.serverless.cli.log(
+      this.log.error(
         `Could not find a \`${logIngestionFunctionName}\` function installed.`
       );
-      this.serverless.cli.log(
+      this.log.warn(
         "Details about setup requirements are available here: https://docs.newrelic.com/docs/serverless-function-monitoring/aws-lambda-monitoring/get-started/enable-new-relic-monitoring-aws-lambda#enable-process"
       );
       if (err.providerError) {
-        this.serverless.cli.log(err.providerError.message);
+        this.log.error(err.providerError.message);
       }
       if (!apiKey) {
-        this.serverless.cli.log(
+        this.log.error(
           "Unable to create newrelic-log-ingestion because New Relic API key not configured."
         );
         return;
       }
 
-      this.serverless.cli.log(
+      this.log.info(
         `creating required newrelic-log-ingestion function in region ${this.region}`
       );
       await this.addLogIngestionFunction();
@@ -674,7 +668,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       subscriptionFilters = await this.describeSubscriptionFilters(funcName);
     } catch (err) {
       if (err.providerError) {
-        this.serverless.cli.log(err.providerError.message);
+        this.log.error(err.providerError.message);
       }
       return;
     }
@@ -684,7 +678,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
     );
 
     if (competingFilters.length) {
-      this.serverless.cli.log(
+      this.log.warn(
         "WARNING: Found a log subscription filter that was not installed by New Relic. This may prevent the New Relic log subscription filter from being installed. If you know you don't need this log subscription filter, you should first remove it and rerun this command. If your organization requires this log subscription filter, please contact New Relic at serverless@newrelic.com for assistance with getting the AWS log subscription filter limit increased."
       );
     }
@@ -694,7 +688,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
     );
 
     if (existingFilters.length) {
-      this.serverless.cli.log(
+      this.log.info(
         `Found log subscription for ${funcName}, verifying configuration`
       );
 
@@ -711,9 +705,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
           )
       );
     } else {
-      this.serverless.cli.log(
-        `Adding New Relic log subscription to ${funcName}`
-      );
+      this.log.info(`Adding New Relic log subscription to ${funcName}`);
 
       await this.addSubscriptionFilter(
         funcName,
@@ -731,17 +723,15 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
         })
         .then((res) => res.Configuration.FunctionArn);
     } catch (e) {
-      this.serverless.cli.log(
-        `Error getting ingestion function destination ARN.`
-      );
-      this.serverless.cli.log(e);
+      this.log.error(`Error getting ingestion function destination ARN.`);
+      this.log.error(e);
     }
   }
 
   private async addLogIngestionFunction() {
     const templateUrl = await this.getSarTemplate();
     if (!templateUrl) {
-      this.serverless.cli.log(
+      this.log.error(
         "Unable to create newRelic-log-ingestion without sar template."
       );
       return;
@@ -770,12 +760,12 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
           params
         );
       } catch (e) {
-        this.serverless.cli.log(`Unable to get stack information.`);
-        this.serverless.cli.log(e);
+        this.log.error(`Unable to get stack information.`);
+        this.log.error(e);
       }
       const { Id, StackId } = cfResponse;
 
-      this.serverless.cli.log(
+      this.log.info(
         "Waiting for change set creation to complete, this may take a minute..."
       );
 
@@ -789,7 +779,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
         this
       );
     } catch (err) {
-      this.serverless.cli.log(
+      this.log.warn(
         "Unable to create newrelic-log-ingestion function. Please verify that required environment variables have been set."
       );
     }
@@ -841,7 +831,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       const { TemplateUrl } = data;
       return TemplateUrl;
     } catch (err) {
-      this.serverless.cli.log(
+      this.log.error(
         `Something went wrong while fetching the sar template: ${err}`
       );
     }
@@ -852,7 +842,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       await this.awsProvider.request("CloudFormation", "executeChangeSet", {
         ChangeSetName: changeSetName,
       });
-      this.serverless.cli.log(
+      this.log.info(
         "Waiting for newrelic-log-ingestion install to complete, this may take a minute..."
       );
 
@@ -866,7 +856,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
         this
       );
     } catch (changeSetErr) {
-      this.serverless.cli.log(
+      this.log.error(
         `Something went wrong while executing the change set: ${changeSetErr}`
       );
     }
@@ -894,7 +884,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       })
       .catch((err) => {
         if (err.providerError) {
-          this.serverless.cli.log(err.providerError.message);
+          this.log.error(err.providerError.message);
         }
       });
   }
@@ -907,7 +897,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       })
       .catch((err) => {
         if (err.providerError) {
-          this.serverless.cli.log(err.providerError.message);
+          this.log.error(err.providerError.message);
         }
       });
   }
