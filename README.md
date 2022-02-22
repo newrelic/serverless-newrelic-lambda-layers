@@ -5,7 +5,7 @@ observability using [AWS Lambda Layers](https://docs.aws.amazon.com/lambda/lates
 
 ## Requirements
 
-- [serverless](https://github.com/serverless/serverless) >= 2.21.1
+- [serverless](https://github.com/serverless/serverless) >= 3.2.1
 
 ## Features
 
@@ -160,7 +160,7 @@ custom:
 
 #### `enableIntegration` (optional)
 
-Allows the creation of New Relic aws cloud integration when absent. Defaults to `false`
+Allows the creation of New Relic aws cloud integration when absent. Defaults to `false`. If an integration already exists for your AWS account,you can omit this. 
 
 ```yaml
 custom:
