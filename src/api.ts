@@ -27,8 +27,8 @@ export const nerdgraphFetch = async (
     },
     method: "POST",
   }).catch((e) => {
-    context.serverless.log(`Error fetching from NerdGraph; ${context.caller}`);
-    context.serverless.log.log(e);
+    context.log.error(`Error fetching from NerdGraph; ${context.caller}`);
+    context.log.error(e);
     return null;
   });
   return res.json();

@@ -11,11 +11,20 @@ export default class Integration {
   public config: any;
   public awsProvider: any;
   public serverless: any;
+  public log: any;
   public region: string;
   private licenseKey: string;
 
-  constructor({ config, awsProvider, serverless, region, licenseKey }: any) {
+  constructor({
+    config,
+    awsProvider,
+    serverless,
+    region,
+    licenseKey,
+    log,
+  }: any) {
     this.config = config;
+    this.log = log;
     this.awsProvider = awsProvider;
     this.serverless = serverless;
     this.region = region;
@@ -53,7 +62,7 @@ export default class Integration {
     });
 
     if (match.length < 1) {
-      this.serverless.cli.log(
+      this.log.warn(
         "No New Relic AWS Lambda integration found for this New Relic linked account and aws account."
       );
 
@@ -62,13 +71,13 @@ export default class Integration {
         return;
       }
 
-      this.serverless.cli.log(
+      this.log.info(
         "Please enable the configuration manually or add the 'enableIntegration' config var to your serverless.yaml file."
       );
       return;
     }
 
-    this.serverless.cli.log(
+    this.log.info(
       "Existing New Relic integration found for this linked account and aws account, skipping creation."
     );
   }
@@ -93,7 +102,7 @@ export default class Integration {
         secretExists: currentRegionPolicy.length > 0,
       };
     } catch (err) {
-      this.serverless.cli.log(
+      this.log.error(
         `Problem getting list of current policies. ${JSON.stringify(err)}`
       );
     }
@@ -141,11 +150,11 @@ export default class Integration {
         `${err}`.indexOf("NewRelicLicenseKeySecret") > -1 &&
         `${err}`.indexOf("already exists") > -1
       ) {
-        this.serverless.cli.log(JSON.stringify(err));
+        this.log.error(JSON.stringify(err));
 
         return { stackId: "already created", stackName, policyName };
       }
-      this.serverless.cli.log(
+      this.log.error(
         `Something went wrong while creating NewRelicLicenseKeySecret: ${err}`
       );
     }
@@ -164,7 +173,7 @@ export default class Integration {
       const { linkedAccount = `New Relic Lambda Integration - ${accountId}` } =
         this.config;
 
-      this.serverless.cli.log(
+      this.log.info(
         `Enabling New Relic integration for linked account: ${linkedAccount} and aws account: ${externalId}.`
       );
 
@@ -216,11 +225,11 @@ export default class Integration {
         throw new Error(JSON.stringify(integrationErrors));
       }
 
-      this.serverless.cli.log(
+      this.log.info(
         `New Relic AWS Lambda cloud integration created successfully.`
       );
     } catch (err) {
-      this.serverless.cli.log(
+      this.log.error(
         `Error while creating the New Relic AWS Lambda cloud integration: ${err}.`
       );
     }
@@ -235,7 +244,7 @@ export default class Integration {
       );
       return Account;
     } catch (err) {
-      this.serverless.cli.log(
+      this.log.error(
         "No AWS config found, please configure a default AWS config."
       );
     }
@@ -257,7 +266,7 @@ export default class Integration {
   private async checkAwsIntegrationRole(externalId: string) {
     const { accountId } = this.config;
     if (!accountId) {
-      this.serverless.cli.log(
+      this.log.error(
         "No New Relic Account ID specified; Cannot check for required NewRelicLambdaIntegrationRole."
       );
       return;
@@ -270,7 +279,7 @@ export default class Integration {
       try {
         return this.requestRoleArn(`NewRelicInfrastructure-Integrations`);
       } catch (fallbackErr) {
-        this.serverless.cli.log(
+        this.log.error(
           `Neither NewRelicLambdaIntegrationRole_${accountId} nor NewRelicInfrastructure-Integrations can be found.
            Creating Stack with NewRelicLambdaIntegrationRole.`
         );
@@ -316,7 +325,7 @@ export default class Integration {
       );
       return StackId;
     } catch (err) {
-      this.serverless.cli.log(
+      this.log.error(
         `Something went wrong while creating NewRelicLambdaIntegrationRole: ${JSON.stringify(
           err
         )}`

@@ -17,7 +17,7 @@ const NewRelicLambdaLayerPlugin = require("../src/index");
 const serverlessPath = getInstalledPathSync("serverless", { local: true });
 const AwsProvider = require(`${serverlessPath}/lib/plugins/aws/provider`);
 const CLI = require(`${serverlessPath}/lib/classes/CLI`);
-const Serverless = require(`${serverlessPath}/lib/Serverless`);
+const Serverless = require(`${serverlessPath}/lib/serverless`);
 const fixturesPath = path.resolve(__dirname, "fixtures");
 
 const buildTestCases = () => {
@@ -51,17 +51,19 @@ const buildTestCases = () => {
 
 describe("NewRelicLambdaLayerPlugin", () => {
   const stage = "dev";
-  const options = { stage };
+  // const commands = [{ lifecycleEvents: ['init', 'run'] }];
+  const commands = [];
+  const config = { commands, options: { stage } };
 
   describe("run", () => {
     buildTestCases().forEach(({ caseName, input, output }) => {
       it(`generates the correct service configuration: test case ${caseName}`, async () => {
-        const serverless = new Serverless(options);
+        const serverless = new Serverless(config);
         Object.assign(serverless.service, input);
         serverless.cli = new CLI(serverless);
         serverless.config.servicePath = os.tmpdir();
-        serverless.setProvider("aws", new AwsProvider(serverless, options));
-        const plugin = new NewRelicLambdaLayerPlugin(serverless, options);
+        serverless.setProvider("aws", new AwsProvider(serverless, config));
+        const plugin = new NewRelicLambdaLayerPlugin(serverless, config);
 
         // mock API-calling methods that would cause timeout...
         plugin.checkForSecretPolicy = jest.fn(() => {});

@@ -7,7 +7,7 @@ export const waitForStatus = async (
   serverlessProps: any,
   retryCount: number = 0
 ) => {
-  const { awsProvider, serverless } = serverlessProps;
+  const { awsProvider, log } = serverlessProps;
   const { awsMethod, callbackMethod, methodParams, statusPath } = requestParams;
 
   try {
@@ -21,7 +21,7 @@ export const waitForStatus = async (
     if (status.includes("FAILED") || retryCount > 120) {
       throw new Error();
     } else if (status === "CREATE_COMPLETE") {
-      serverless.cli.log("Resource successfully created.");
+      log("Resource successfully created.");
       callbackMethod();
       return;
     }
@@ -31,9 +31,7 @@ export const waitForStatus = async (
       30000
     );
   } catch (stackErr) {
-    serverless.cli.log(
-      `Something went wrong while creating aws resource: ${stackErr}`
-    );
+    log(`Something went wrong while creating aws resource: ${stackErr}`);
   }
 };
 
