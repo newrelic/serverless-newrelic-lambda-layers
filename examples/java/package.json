@@ -13,7 +13,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "serverless": "^2.57.0",
-    "serverless-newrelic-lambda-layers": "^2.1.0"
+    "serverless": "^3.3.0",
+    "serverless-newrelic-lambda-layers": "^3.0.0"
   }
 }
