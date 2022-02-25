@@ -66,18 +66,21 @@ export default class Integration {
         "No New Relic AWS Lambda integration found for this New Relic linked account and aws account."
       );
 
-      if (enableIntegration && enableIntegration !== "false") {
+      if (
+        enableIntegration &&
+        (enableIntegration !== "false" || enableIntegration !== false)
+      ) {
         this.enable(externalId);
         return;
       }
 
-      this.log.info(
+      this.log.notice(
         "Please enable the configuration manually or add the 'enableIntegration' config var to your serverless.yaml file."
       );
       return;
     }
 
-    this.log.info(
+    this.log.notice(
       "Existing New Relic integration found for this linked account and aws account, skipping creation."
     );
   }
@@ -105,6 +108,7 @@ export default class Integration {
       this.log.error(
         `Problem getting list of current policies. ${JSON.stringify(err)}`
       );
+      return {};
     }
   }
 
@@ -173,7 +177,7 @@ export default class Integration {
       const { linkedAccount = `New Relic Lambda Integration - ${accountId}` } =
         this.config;
 
-      this.log.info(
+      this.log.notice(
         `Enabling New Relic integration for linked account: ${linkedAccount} and aws account: ${externalId}.`
       );
 
@@ -225,7 +229,7 @@ export default class Integration {
         throw new Error(JSON.stringify(integrationErrors));
       }
 
-      this.log.info(
+      this.log.notice(
         `New Relic AWS Lambda cloud integration created successfully.`
       );
     } catch (err) {
@@ -279,7 +283,7 @@ export default class Integration {
       try {
         return this.requestRoleArn(`NewRelicInfrastructure-Integrations`);
       } catch (fallbackErr) {
-        this.log.error(
+        this.log.warning(
           `Neither NewRelicLambdaIntegrationRole_${accountId} nor NewRelicInfrastructure-Integrations can be found.
            Creating Stack with NewRelicLambdaIntegrationRole.`
         );

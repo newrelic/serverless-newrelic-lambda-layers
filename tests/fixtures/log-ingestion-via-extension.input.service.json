@@ -20,9 +20,9 @@
     "newRelic": {
       "accountId": "${env:NEW_RELIC_ACCOUNT_ID}",
       "apiKey": "${env:NEW_RELIC_PERSONAL_API_KEY}",
+      "disableAutoSubscription": true,
       "logLevel": "debug",
       "enableIntegration": true,
-      "enableExtension": true,
       "enableFunctionLogs": true
     }
   },
