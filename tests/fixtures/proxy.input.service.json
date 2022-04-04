@@ -20,7 +20,6 @@
     "newRelic": {
       "accountId": "${env:NEW_RELIC_ACCOUNT_ID}",
       "apiKey": "${env:NEW_RELIC_PERSONAL_API_KEY}",
-      "enableExtension": true,
       "proxy": "http://myproxy.com:8080"
     }
   },

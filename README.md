@@ -5,7 +5,7 @@ observability using [AWS Lambda Layers](https://docs.aws.amazon.com/lambda/lates
 
 ## Requirements
 
-- [serverless](https://github.com/serverless/serverless) >= 3.2.1
+- [serverless](https://github.com/serverless/serverless) >= 3.3.0
 
 ## Features
 
@@ -135,10 +135,6 @@ custom:
     debug: true
 ```
 
-#### `logEnabled` (optional)
-
-Enables logging. Defaults to `false`
-
 #### `enableExtension` (optional)
 
 Allows your function to deliver its telemetry to New Relic via AWS Lambda Extension. Defaults to `true`, so it can be omitted. To avoid delivering your telemetry via the extension, set to `false`.
@@ -157,6 +153,21 @@ custom:
   newRelic:
     enableFunctionLogs: true
 ```
+
+#### `enableExtensionLogs` (optional)
+
+The New Relic Lambda Extension writes diagnostic logs by default. If you'd prefer to mute them, set this to `false`. (Defaults to `true`.) 
+
+```yaml
+custom:
+  newRelic:
+    enableExtensionLogs: false
+```
+
+#### `logEnabled` (optional)
+
+Enables logging when using CloudWatch-based telemetry transport with the newrelic-log-ingestion Lambda function. Defaults to `false`
+
 
 #### `enableIntegration` (optional)
 

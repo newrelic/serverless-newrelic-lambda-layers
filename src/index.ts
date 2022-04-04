@@ -3,10 +3,11 @@ import fetch from "node-fetch";
 import * as semver from "semver";
 // tslint:disable-next-line
 import * as Serverless from "serverless";
-import * as logging from "log";
 import { fetchLicenseKey, nerdgraphFetch } from "./api";
 import Integration from "./integration";
 import { waitForStatus } from "./utils";
+// tslint:disable-next-line
+import * as backupLogs from "@serverless/utils/log";
 
 const DEFAULT_FILTER_PATTERNS = [
   "REPORT",
@@ -33,10 +34,11 @@ export default class NewRelicLambdaLayerPlugin {
   public mgdPolicyArns: any[];
   public extFellBackToCW: boolean;
 
-  constructor(serverless: Serverless, options: Serverless.Options) {
+  constructor(serverless: Serverless, options: Serverless.Options, logParam) {
     this.serverless = serverless;
     this.options = options;
-    this.log = logging;
+    // The run-from-lib method used by the test can't supply a log object, so this is a fallback:
+    this.log = logParam && logParam.log ? logParam.log : backupLogs.log;
     this.awsProvider = this.serverless.getProvider("aws") as any;
     this.licenseKey = null;
     this.managedSecretConfigured = false;
@@ -173,7 +175,10 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       if (!this.licenseKey) {
         this.config.enableExtension = false;
         this.extFellBackToCW = true;
-        return;
+        this.log.warning(
+          "Unable to find NR License key for extension validation; falling back to CloudWatch for transport."
+        );
+        return false;
       }
     }
 
@@ -181,9 +186,10 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       // If the managed secret has already been created,
       // there should be policies for it.
       const secretAccess = await this.checkForSecretPolicy();
+
       let managedSecret;
 
-      if (secretAccess.secretExists) {
+      if (secretAccess && secretAccess.secretExists) {
         this.managedSecretConfigured = true;
       } else {
         // Secret doesn't exist, so create it
@@ -204,7 +210,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       }
     }
 
-    return;
+    return true;
   }
 
   public applyPolicies(role) {
@@ -216,7 +222,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
   public async run() {
     const version = this.serverless.getVersion();
     if (semver.lt(version, "1.34.0")) {
-      this.log.info(
+      this.log.error(
         `Serverless ${version} does not support layers. Please upgrade to >=1.34.0.`
       );
       return;
@@ -227,7 +233,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
     if (!_.isArray(plugins) && plugins.modules) {
       plugins = plugins.modules;
     }
-    this.log.info(`Plugins: ${JSON.stringify(plugins)}`);
+    this.log.notice(`Plugins: ${JSON.stringify(plugins)}`);
     if (
       plugins.indexOf("serverless-webpack") >
       plugins.indexOf("serverless-newrelic-lambda-layers")
@@ -252,15 +258,24 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       );
       return;
     }
-    if (this.config.enableExtension !== false) {
-      this.config.enableExtension = true;
+
+    const extensionDisabled =
+      !_.isUndefined(this.config.enableExtension) &&
+      (this.config.enableExtension === false ||
+        this.config.enableExtension === "false");
+
+    if (!extensionDisabled) {
       // If using the extension, try to store the NR license key in a managed secret
       // for the extension to authenticate. If not, fall back to function environment variable
-      await this.configureLicenseForExtension();
+      const extConfig = await this.configureLicenseForExtension();
+      if (extConfig && (this.licenseKey || this.managedSecretConfigured)) {
+        // extension will be able to authenticate, so disable subscription
+        this.config.disableAutoSubscription = true;
+      }
     }
 
     if (this.config.proxy) {
-      this.log.info(`HTTP proxy set to ${this.config.proxy}`);
+      this.log.notice(`HTTP proxy set to ${this.config.proxy}`);
     }
 
     if (!this.licenseKeySecretDisabled) {
@@ -293,7 +308,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
 
   public async addLogSubscriptions() {
     if (this.autoSubscriptionDisabled) {
-      this.log.info("Skipping adding log subscription. Explicitly disabled");
+      this.log.notice("Skipping adding log subscription. Explicitly disabled");
       return;
     }
 
@@ -311,7 +326,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       cloudWatchFilterString = String(cloudWatchFilter);
     }
 
-    this.log.info(`log filter: ${cloudWatchFilterString}`);
+    this.log.notice(`log filter: ${cloudWatchFilterString}`);
 
     const promises = [];
 
@@ -320,7 +335,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
         return;
       }
 
-      this.log.info(`Configuring New Relic log subscription for ${funcName}`);
+      this.log.notice(`Configuring New Relic log subscription for ${funcName}`);
 
       const funcDef = funcs[funcName];
       promises.push(
@@ -331,13 +346,15 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
     await Promise.all(promises);
 
     if (this.extFellBackToCW) {
-      this.log.info(this.extFallbackMessage);
+      this.log.notice(this.extFallbackMessage);
     }
   }
 
   public async removeLogSubscriptions() {
     if (this.autoSubscriptionDisabled) {
-      this.log.info("Skipping removing log subscription. Explicitly disabled");
+      this.log.notice(
+        "Skipping removing log subscription. Explicitly disabled"
+      );
       return;
     }
     const funcs = this.functions;
@@ -345,7 +362,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
 
     for (const funcName of Object.keys(funcs)) {
       const { name } = funcs[funcName];
-      this.log.info(`Removing New Relic log subscription for ${funcName}`);
+      this.log.notice(`Removing New Relic log subscription for ${funcName}`);
       promises.push(this.removeSubscriptionFilter(name));
     }
 
@@ -353,10 +370,10 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
   }
 
   private async addLayer(funcName: string, funcDef: any) {
-    this.log.info(`Adding NewRelic layer to ${funcName}`);
+    this.log.notice(`Adding NewRelic layer to ${funcName}`);
 
     if (!this.region) {
-      this.log.warm("No AWS region specified for NewRelic layer; skipping.");
+      this.log.warn("No AWS region specified for NewRelic layer; skipping.");
       return;
     }
 
@@ -436,7 +453,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
 
     environment.NEW_RELIC_LAMBDA_HANDLER = handler;
 
-    if (this.config.logEnabled === true) {
+    if (this.config.logEnabled === true || this.config.logEnabled === "true") {
       this.logLevel(environment);
     }
 
@@ -467,18 +484,33 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       environment.NEW_RELIC_SERVERLESS_MODE_ENABLED = "true";
     }
 
-    if (this.config.enableExtension) {
-      environment.NEW_RELIC_LAMBDA_EXTENSION_ENABLED = "true";
+    const extensionDisabled =
+      !_.isUndefined(this.config.enableExtension) &&
+      (this.config.enableExtension === "false" ||
+        this.config.enableExtension === false);
+
+    if (extensionDisabled) {
+      environment.NEW_RELIC_LAMBDA_EXTENSION_ENABLED = "false";
+    } else {
       if (!this.managedSecretConfigured && this.licenseKey) {
         environment.NEW_RELIC_LICENSE_KEY = this.licenseKey;
       }
 
-      if (this.config.enableFunctionLogs) {
+      if (
+        this.config.enableFunctionLogs &&
+        this.config.enableFunctionLogs !== "false"
+      ) {
         environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS = "true";
         this.config.disableAutoSubscription = true;
       }
-    } else {
-      environment.NEW_RELIC_LAMBDA_EXTENSION_ENABLED = "false";
+
+      if (
+        this.config.enableExtensionLogs &&
+        (this.config.enableExtensionLogs === "false" ||
+          this.config.enableExtensionLogs === false)
+      ) {
+        environment.NEW_RELIC_EXTENSION_LOGS_ENABLED = "false";
+      }
     }
 
     funcDef.environment = environment;
@@ -524,7 +556,6 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
   }
 
   private logLevel(environment) {
-    environment.NEW_RELIC_LOG_ENABLED = "true";
     environment.NEW_RELIC_LOG = environment.NEW_RELIC_LOG
       ? environment.NEW_RELIC_LOG
       : "stdout";
@@ -655,7 +686,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
         return;
       }
 
-      this.log.info(
+      this.log.notice(
         `creating required newrelic-log-ingestion function in region ${this.region}`
       );
       await this.addLogIngestionFunction();
@@ -688,7 +719,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
     );
 
     if (existingFilters.length) {
-      this.log.info(
+      this.log.notice(
         `Found log subscription for ${funcName}, verifying configuration`
       );
 
@@ -705,7 +736,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
           )
       );
     } else {
-      this.log.info(`Adding New Relic log subscription to ${funcName}`);
+      this.log.notice(`Adding New Relic log subscription to ${funcName}`);
 
       await this.addSubscriptionFilter(
         funcName,
@@ -765,7 +796,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       }
       const { Id, StackId } = cfResponse;
 
-      this.log.info(
+      this.log.notice(
         "Waiting for change set creation to complete, this may take a minute..."
       );
 
@@ -842,7 +873,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       await this.awsProvider.request("CloudFormation", "executeChangeSet", {
         ChangeSetName: changeSetName,
       });
-      this.log.info(
+      this.log.notice(
         "Waiting for newrelic-log-ingestion install to complete, this may take a minute..."
       );
 

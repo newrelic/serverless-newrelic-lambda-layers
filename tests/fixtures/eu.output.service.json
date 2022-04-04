@@ -5,7 +5,6 @@
       "accountId": "${env:NEW_RELIC_ACCOUNT_ID}",
       "apiKey": "${env:NEW_RELIC_PERSONAL_API_KEY}",
       "debug": true,
-      "enableExtension": true,
       "logEnabled": true,
       "nrRegion": "eu"
     }
@@ -16,11 +15,9 @@
       "environment": {
         "NEW_RELIC_ACCOUNT_ID": "${env:NEW_RELIC_ACCOUNT_ID}",
         "NEW_RELIC_APP_NAME": "layer-nodejs12x",
-        "NEW_RELIC_LAMBDA_EXTENSION_ENABLED": "true",
         "NEW_RELIC_LAMBDA_HANDLER": "handler.handler",
         "NEW_RELIC_LOG": "stdout",
-        "NEW_RELIC_LOG_ENABLED": "true",
-        "NEW_RELIC_LOG_LEVEL": "debug",
+           "NEW_RELIC_LOG_LEVEL": "debug",
         "NEW_RELIC_NO_CONFIG_FILE": "true",
         "NEW_RELIC_TRUSTED_ACCOUNT_KEY": "${env:NEW_RELIC_ACCOUNT_ID}"
       },
@@ -31,7 +28,7 @@
       ],
       "handler": "newrelic-lambda-wrapper.handler",
       "layers": [
-        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS12X:67"
+        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS12X:74"
       ],
       "package": {
         "exclude": ["./**", "!newrelic-wrapper-helper.js"],
@@ -43,11 +40,9 @@
       "environment": {
         "NEW_RELIC_ACCOUNT_ID": "${env:NEW_RELIC_ACCOUNT_ID}",
         "NEW_RELIC_APP_NAME": "layer-nodejs14x",
-        "NEW_RELIC_LAMBDA_EXTENSION_ENABLED": "true",
         "NEW_RELIC_LAMBDA_HANDLER": "handler.handler",
         "NEW_RELIC_LOG": "stdout",
-        "NEW_RELIC_LOG_ENABLED": "true",
-        "NEW_RELIC_LOG_LEVEL": "debug",
+           "NEW_RELIC_LOG_LEVEL": "debug",
         "NEW_RELIC_NO_CONFIG_FILE": "true",
         "NEW_RELIC_TRUSTED_ACCOUNT_KEY": "${env:NEW_RELIC_ACCOUNT_ID}"
       },
@@ -58,7 +53,7 @@
       ],
       "handler": "newrelic-lambda-wrapper.handler",
       "layers": [
-        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS14X:37"
+        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS14X:44"
       ],
       "package": {
         "exclude": ["./**", "!newrelic-wrapper-helper.js"],

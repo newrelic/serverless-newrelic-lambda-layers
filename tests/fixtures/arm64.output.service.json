@@ -4,7 +4,6 @@
     "newRelic": {
       "accountId": "${env:NEW_RELIC_ACCOUNT_ID}",
       "apiKey": "${env:NEW_RELIC_PERSONAL_API_KEY}",
-      "enableExtension": true,
       "logLevel": "debug"
     }
   },
@@ -14,7 +13,6 @@
       "environment": {
         "NEW_RELIC_ACCOUNT_ID": "${env:NEW_RELIC_ACCOUNT_ID}",
         "NEW_RELIC_APP_NAME": "layer-nodejs12x",
-        "NEW_RELIC_LAMBDA_EXTENSION_ENABLED": "true",
         "NEW_RELIC_LAMBDA_HANDLER": "handler.handler",
         "NEW_RELIC_NO_CONFIG_FILE": "true",
         "NEW_RELIC_TRUSTED_ACCOUNT_KEY": "${env:NEW_RELIC_ACCOUNT_ID}"
@@ -26,7 +24,7 @@
       ],
       "handler": "newrelic-lambda-wrapper.handler",
       "layers": [
-        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS12XARM64:12"
+        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS12XARM64:19"
       ],
       "package": {
         "exclude": [
@@ -43,7 +41,6 @@
       "environment": {
         "NEW_RELIC_ACCOUNT_ID": "${env:NEW_RELIC_ACCOUNT_ID}",
         "NEW_RELIC_APP_NAME": "layer-nodejs14x",
-        "NEW_RELIC_LAMBDA_EXTENSION_ENABLED": "true",
         "NEW_RELIC_LAMBDA_HANDLER": "handler.handler",
         "NEW_RELIC_NO_CONFIG_FILE": "true",
         "NEW_RELIC_TRUSTED_ACCOUNT_KEY": "${env:NEW_RELIC_ACCOUNT_ID}"
@@ -55,7 +52,7 @@
       ],
       "handler": "newrelic-lambda-wrapper.handler",
       "layers": [
-        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS14XARM64:11"
+        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS14XARM64:18"
       ],
       "package": {
         "exclude": [

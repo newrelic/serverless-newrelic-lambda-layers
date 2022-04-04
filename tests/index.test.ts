@@ -13,6 +13,7 @@ const {
 } = require("ramda");
 const { getInstalledPathSync } = require("get-installed-path");
 const NewRelicLambdaLayerPlugin = require("../src/index");
+const log = require("@serverless/utils/log");
 
 const serverlessPath = getInstalledPathSync("serverless", { local: true });
 const AwsProvider = require(`${serverlessPath}/lib/plugins/aws/provider`);
@@ -53,7 +54,7 @@ describe("NewRelicLambdaLayerPlugin", () => {
   const stage = "dev";
   // const commands = [{ lifecycleEvents: ['init', 'run'] }];
   const commands = [];
-  const config = { commands, options: { stage } };
+  const config = { commands, options: { stage }, log };
 
   describe("run", () => {
     buildTestCases().forEach(({ caseName, input, output }) => {
