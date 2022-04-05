@@ -258,13 +258,23 @@ export default class Integration {
     const params = {
       RoleName,
     };
-    const response = await this.awsProvider.request("IAM", "getRole", params);
 
-    const {
-      Role: { Arn },
-    } = response;
+    try {
+      const response = await this.awsProvider.request("IAM", "getRole", params);
+      const {
+        Role: { Arn },
+      } = response;
 
-    return Arn;
+      return Arn;
+    } catch (e) {
+      if (e.code && e.code === "AWS_I_A_M_GET_ROLE_NO_SUCH_ENTITY") {
+        return null;
+      } else {
+        // some other error; attempting creation will fail
+        this.log.warning(e);
+        return false;
+      }
+    }
   }
 
   private async checkAwsIntegrationRole(externalId: string) {
@@ -276,31 +286,37 @@ export default class Integration {
       return;
     }
 
-    try {
-      return this.requestRoleArn(`NewRelicLambdaIntegrationRole_${accountId}`);
-    } catch (err) {
-      // We're limited to one rolename and a 64-character regex, so allowing for streams means a second query
-      try {
-        return this.requestRoleArn(`NewRelicInfrastructure-Integrations`);
-      } catch (fallbackErr) {
-        this.log.warning(
-          `Neither NewRelicLambdaIntegrationRole_${accountId} nor NewRelicInfrastructure-Integrations can be found.
-           Creating Stack with NewRelicLambdaIntegrationRole.`
-        );
-        const stackId = await this.createCFStack(accountId);
-        waitForStatus(
-          {
-            awsMethod: "describeStacks",
-            callbackMethod: () => this.enable(externalId),
-            methodParams: {
-              StackName: stackId,
-            },
-            statusPath: "Stacks[0].StackStatus",
-          },
-          this
-        );
-      }
+    let roleArn = await this.requestRoleArn(
+      `NewRelicLambdaIntegrationRole_${accountId}`
+    );
+
+    if (roleArn || roleArn === false) {
+      return roleArn;
     }
+
+    this.log.warning(
+      `NewRelicLambdaIntegrationRole_${accountId} not found. Creating Stack with NewRelicLambdaIntegrationRole.`
+    );
+    const stackId = await this.createCFStack(accountId);
+    waitForStatus(
+      {
+        awsMethod: "describeStacks",
+        callbackMethod: () => this.enable(externalId),
+        methodParams: {
+          StackName: stackId,
+        },
+        statusPath: "Stacks[0].StackStatus",
+      },
+      this
+    );
+    try {
+      roleArn = await this.requestRoleArn(
+        `NewRelicLambdaIntegrationRole_${accountId}`
+      );
+    } catch (e) {
+      this.log.error("Unable to create integration role", e);
+    }
+    return roleArn;
   }
 
   private async createCFStack(accountId: string) {

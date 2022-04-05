@@ -199,7 +199,12 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
         }
       }
 
-      if (secretAccess.currentRegionPolicy.length > 0) {
+      if (
+        secretAccess &&
+        secretAccess.currentRegionPolicy &&
+        secretAccess.currentRegionPolicy.length &&
+        secretAccess.currentRegionPolicy.length > 0
+      ) {
         const policyArn = secretAccess.currentRegionPolicy[0].Arn;
         this.mgdPolicyArns = [...this.managedPolicyArns, policyArn];
       } else if (this.managedSecretConfigured) {
