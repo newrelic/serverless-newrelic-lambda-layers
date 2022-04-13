@@ -6,8 +6,6 @@ import * as Serverless from "serverless";
 import { fetchLicenseKey, nerdgraphFetch } from "./api";
 import Integration from "./integration";
 import { waitForStatus } from "./utils";
-// tslint:disable-next-line
-import * as backupLogs from "@serverless/utils/log";
 
 const DEFAULT_FILTER_PATTERNS = [
   "REPORT",
@@ -20,6 +18,13 @@ const enum JavaHandler {
   handleRequest = "handleRequest",
   handleStreamsRequest = "handleStreamsRequest",
 }
+
+// The plugin uses only these log levels:
+const logShim = {
+  error: console.error, // tslint:disable-line
+  warning: console.log, // tslint:disable-line
+  notice: console.log, // tslint:disable-line
+};
 
 export default class NewRelicLambdaLayerPlugin {
   public serverless: Serverless;
@@ -38,7 +43,7 @@ export default class NewRelicLambdaLayerPlugin {
     this.serverless = serverless;
     this.options = options;
     // The run-from-lib method used by the test can't supply a log object, so this is a fallback:
-    this.log = logParam && logParam.log ? logParam.log : backupLogs.log;
+    this.log = logParam && logParam.log ? logParam.log : logShim;
     this.awsProvider = this.serverless.getProvider("aws") as any;
     this.licenseKey = null;
     this.managedSecretConfigured = false;
@@ -227,18 +232,16 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
   public async run() {
     const version = this.serverless.getVersion();
     if (semver.lt(version, "1.34.0")) {
-      // tslint:disable-next-line
-      console.error(
+      this.log.error(
         `Serverless ${version} does not support layers. Please upgrade to >=1.34.0.`
       );
       return;
     } else if (semver.lt(version, "3.0.0")) {
-      // tslint:disable-next-line
-      console.error(
-        `Serverless 3.0.0 changed its logging interface, and is incompatible with Serverless ${version}.   
-        This plugin requires Serverless 3.x. Please upgrade Serverless to >=3.0.0, or use version 2.4.1 of this plugin.`
-      );
-      return;
+      this.log.warning(`
+The Serverless logging interface changed with the release of 3.x. This plugin is compatible with Serverless 3, 
+but may not be fully compatible with Serverless ${version}. If you have trouble deploying, we recommend that you
+either upgrade Serverless to >=3.0.0, or use version 2.4.1 of this plugin.
+      `);
     }
 
     let plugins = _.get(this.serverless, "service.plugins", []);
@@ -386,7 +389,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
     this.log.notice(`Adding NewRelic layer to ${funcName}`);
 
     if (!this.region) {
-      this.log.warn("No AWS region specified for NewRelic layer; skipping.");
+      this.log.warning("No AWS region specified for NewRelic layer; skipping.");
       return;
     }
 
@@ -405,7 +408,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
     } = funcDef;
 
     if (!this.config.accountId && !environment.NEW_RELIC_ACCOUNT_ID) {
-      this.log.warn(
+      this.log.warning(
         `No New Relic Account ID specified for "${funcName}"; skipping.`
       );
       return;
@@ -427,7 +430,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       typeof runtime !== "string" ||
       (wrappableRuntime && !this.config.enableExtension)
     ) {
-      this.log.warn(
+      this.log.warning(
         `Unsupported runtime "${runtime}" for NewRelic layer; skipping.`
       );
       return;
@@ -451,7 +454,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
 
     // Note: This is if the user specifies a layer in their serverless.yml
     if (newRelicLayers.length) {
-      this.log.warn(
+      this.log.warning(
         `Function "${funcName}" already specifies an NewRelic layer; skipping.`
       );
     } else {
@@ -539,7 +542,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       return false;
     }
 
-    this.log.warn(
+    this.log.warning(
       `Skipping plugin serverless-newrelic-lambda-layers for stage ${this.stage}`
     );
 
@@ -554,14 +557,14 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       _.isArray(include) &&
       include.indexOf(funcName) === -1
     ) {
-      this.log.warn(
+      this.log.warning(
         `Excluded function ${funcName}; is not part of include; skipping`
       );
       return true;
     }
 
     if (_.isArray(exclude) && exclude.indexOf(funcName) !== -1) {
-      this.log.warn(`Excluded function ${funcName}; skipping`);
+      this.log.warning(`Excluded function ${funcName}; skipping`);
       return true;
     }
 
@@ -616,7 +619,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
           !compatibleLayers ||
           (compatibleLayers.length < 1 && architecture)
         ) {
-          this.log.warn(
+          this.log.warning(
             `${architecture} is not yet supported by New Relic layers for ${runtime} in ${this.region}. Skipping.`
           );
           return false;
@@ -686,7 +689,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
       this.log.error(
         `Could not find a \`${logIngestionFunctionName}\` function installed.`
       );
-      this.log.warn(
+      this.log.warning(
         "Details about setup requirements are available here: https://docs.newrelic.com/docs/serverless-function-monitoring/aws-lambda-monitoring/get-started/enable-new-relic-monitoring-aws-lambda#enable-process"
       );
       if (err.providerError) {
@@ -722,7 +725,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
     );
 
     if (competingFilters.length) {
-      this.log.warn(
+      this.log.warning(
         "WARNING: Found a log subscription filter that was not installed by New Relic. This may prevent the New Relic log subscription filter from being installed. If you know you don't need this log subscription filter, you should first remove it and rerun this command. If your organization requires this log subscription filter, please contact New Relic at serverless@newrelic.com for assistance with getting the AWS log subscription filter limit increased."
       );
     }
@@ -823,7 +826,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
         this
       );
     } catch (err) {
-      this.log.warn(
+      this.log.warning(
         "Unable to create newrelic-log-ingestion function. Please verify that required environment variables have been set."
       );
     }

@@ -62,7 +62,7 @@ export default class Integration {
     });
 
     if (match.length < 1) {
-      this.log.warn(
+      this.log.warning(
         "No New Relic AWS Lambda integration found for this New Relic linked account and aws account."
       );
 
