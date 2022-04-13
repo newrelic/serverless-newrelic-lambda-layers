@@ -227,15 +227,16 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
   public async run() {
     const version = this.serverless.getVersion();
     if (semver.lt(version, "1.34.0")) {
-      this.log.error(
+      // tslint:disable-next-line
+      console.error(
         `Serverless ${version} does not support layers. Please upgrade to >=1.34.0.`
       );
       return;
     } else if (semver.lt(version, "3.0.0")) {
-      this.log.error(
-        `Serverless ${version} and Serverless >= 3.0.0 have some incompatibilities in logging.  
-        This plugin is optimized for Serverless 3.x. Please upgrade Serverless to >=3.0.0, 
-        or use version 2.4.1 of this plugin.`
+      // tslint:disable-next-line
+      console.error(
+        `Serverless 3.0.0 changed its logging interface, and is incompatible with Serverless ${version}.   
+        This plugin requires Serverless 3.x. Please upgrade Serverless to >=3.0.0, or use version 2.4.1 of this plugin.`
       );
       return;
     }
