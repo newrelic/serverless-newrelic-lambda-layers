@@ -5,7 +5,8 @@ observability using [AWS Lambda Layers](https://docs.aws.amazon.com/lambda/lates
 
 ## Requirements
 
-- [serverless](https://github.com/serverless/serverless) >= 3.3.0
+- [serverless](https://github.com/serverless/serverless) >= 3.x (v3.x of this plugin has been tested to work with Serverless v2, but future compatibility is not guaranteed.)
+- [Node](https://nodejs.org/) >= 14.x (if using Serverless version 3)
 
 ## Features
 
@@ -22,6 +23,7 @@ With NPM:
 ```bash
 npm install --save-dev serverless-newrelic-lambda-layers
 ```
+(Note: this plugin's production dependencies are now defined as peer dependencies. NPM v7 and later will install missing peer dependencies automatically, but v6 does not.)
 
 With yarn:
 
