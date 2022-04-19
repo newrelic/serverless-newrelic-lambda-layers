@@ -231,6 +231,7 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
 
   public async run() {
     const version = this.serverless.getVersion();
+    const nodeVersion = process.version;
     if (semver.lt(version, "1.34.0")) {
       this.log.error(
         `Serverless ${version} does not support layers. Please upgrade to >=1.34.0.`
@@ -241,6 +242,12 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
 The Serverless logging interface changed with the release of 3.x. This plugin is compatible with Serverless 3, 
 but may not be fully compatible with Serverless ${version}. If you have trouble deploying, we recommend that you
 either upgrade Serverless to >=3.0.0, or use version 2.4.1 of this plugin.
+      `);
+    }
+    if (semver.lt(nodeVersion, "16.0.0")) {
+      this.log.warning(`
+If your version of NPM is earlier than v7, either update to a recent version of NPM, 
+or make sure that you already have Serverless 3.x installed in your project.
       `);
     }
 
