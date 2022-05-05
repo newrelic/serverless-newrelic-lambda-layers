@@ -26,6 +26,16 @@ const logShim = {
   notice: console.log, // tslint:disable-line
 };
 
+const wrappableRuntimeList = [
+  "nodejs12.x",
+  "nodejs14.x",
+  "python3.6",
+  "python3.7",
+  "python3.8",
+  "python3.9",
+  "java11",
+  "java8.al2",
+];
 export default class NewRelicLambdaLayerPlugin {
   public serverless: Serverless;
   public options: Serverless.Options;
@@ -315,11 +325,56 @@ or make sure that you already have Serverless 3.x installed in your project.
     }
 
     const funcs = this.functions;
+    const functionsArray = _.values(funcs);
+    const functionsRuntimeList = functionsArray.map((f) => f.runtime);
+    const functionsArchitectureList = functionsArray.map((f) => f.architecture);
     const promises = [];
+
+    const isNotExcluding = !exclude || _.isEmpty(exclude);
+    const isNotIncludingOrIncludingAll =
+      !include ||
+      _.isEmpty(include) ||
+      (include &&
+        _.isArray(include) &&
+        include.length === functionsArray.length);
+    const shouldUseProviderLayers =
+      isNotExcluding &&
+      isNotIncludingOrIncludingAll &&
+      _.uniq(functionsRuntimeList).length === 1 &&
+      _.uniq(functionsArchitectureList).length === 1;
+    if (functionsArray.length) {
+      const runtime =
+        functionsRuntimeList[0] ||
+        _.get(this.serverless.service, "provider.runtime");
+
+      const architecture =
+        functionsArchitectureList[0] ||
+        _.get(this.serverless.service, "provider.architecture");
+
+      const layerArn = this.config.layerArn
+        ? this.config.layerArn
+        : await this.getLayerArn(runtime, architecture);
+
+      if (
+        shouldUseProviderLayers &&
+        this.region && // Region is specified
+        this.config.accountId && // account id is specified
+        typeof runtime === "string" &&
+        wrappableRuntimeList.indexOf(runtime) !== -1 && // wrappable runtime
+        layerArn // has a layerArn
+      ) {
+        // use providers for the layers
+        if (this.serverless.service.provider.layers) {
+          this.serverless.service.provider.layers.push(layerArn);
+        } else {
+          this.serverless.service.provider.layers = [layerArn];
+        }
+      }
+    }
 
     for (const funcName of Object.keys(funcs)) {
       const funcDef = funcs[funcName];
-      promises.push(this.addLayer(funcName, funcDef));
+      promises.push(this.addLayer(funcName, funcDef, shouldUseProviderLayers));
     }
 
     await Promise.all(promises);
@@ -392,7 +447,11 @@ or make sure that you already have Serverless 3.x installed in your project.
     await Promise.all(promises);
   }
 
-  private async addLayer(funcName: string, funcDef: any) {
+  private async addLayer(
+    funcName: string,
+    funcDef: any,
+    shouldUseProviderLayers: boolean = false
+  ) {
     this.log.notice(`Adding NewRelic layer to ${funcName}`);
 
     if (!this.region) {
@@ -421,17 +480,7 @@ or make sure that you already have Serverless 3.x installed in your project.
       return;
     }
 
-    const wrappableRuntime =
-      [
-        "nodejs12.x",
-        "nodejs14.x",
-        "python3.6",
-        "python3.7",
-        "python3.8",
-        "python3.9",
-        "java11",
-        "java8.al2",
-      ].indexOf(runtime) === -1;
+    const wrappableRuntime = wrappableRuntimeList.indexOf(runtime) === -1;
 
     if (
       typeof runtime !== "string" ||
@@ -455,23 +504,29 @@ or make sure that you already have Serverless 3.x installed in your project.
       return;
     }
 
-    const newRelicLayers = layers.filter(
-      (layer) => typeof layer === "string" && layer.match(layerArn)
-    );
-
-    // Note: This is if the user specifies a layer in their serverless.yml
-    if (newRelicLayers.length) {
+    if (shouldUseProviderLayers) {
       this.log.warning(
-        `Function "${funcName}" already specifies an NewRelic layer; skipping.`
+        `Function "${funcName}" already will be handled with provider.layers; skipping.`
       );
     } else {
-      if (this.prependLayer) {
-        layers.unshift(layerArn);
-      } else {
-        layers.push(layerArn);
-      }
+      const newRelicLayers = layers.filter(
+        (layer) => typeof layer === "string" && layer.match(layerArn)
+      );
 
-      funcDef.layers = layers;
+      // Note: This is if the user specifies a layer in their serverless.yml
+      if (newRelicLayers.length) {
+        this.log.warning(
+          `Function "${funcName}" already specifies an NewRelic layer; skipping.`
+        );
+      } else {
+        if (this.prependLayer) {
+          layers.unshift(layerArn);
+        } else {
+          layers.push(layerArn);
+        }
+
+        funcDef.layers = layers;
+      }
     }
 
     environment.NEW_RELIC_LAMBDA_HANDLER = handler;
