@@ -325,24 +325,26 @@ or make sure that you already have Serverless 3.x installed in your project.
     }
 
     const funcs = this.functions;
-    const functionsArray = _.values(funcs);
-    const functionsRuntimeList = functionsArray.map((f) => f.runtime);
-    const functionsArchitectureList = functionsArray.map((f) => f.architecture);
     const promises = [];
 
-    const isNotExcluding = !exclude || _.isEmpty(exclude);
-    const isNotIncludingOrIncludingAll =
-      !include ||
-      _.isEmpty(include) ||
-      (include &&
-        _.isArray(include) &&
-        include.length === functionsArray.length);
-    const shouldUseProviderLayers =
-      isNotExcluding &&
-      isNotIncludingOrIncludingAll &&
-      _.uniq(functionsRuntimeList).length === 1 &&
-      _.uniq(functionsArchitectureList).length === 1;
+    const functionsArray = _.values(funcs);
+    let shouldUseProviderLayers = false;
     if (functionsArray.length) {
+      const functionsRuntimeList = functionsArray.map((f) => f.runtime);
+      const functionsArchitectureList = functionsArray.map(
+        (f) => f.architecture
+      );
+      const isNotExcluding = !exclude || _.isEmpty(exclude);
+      const isNotIncludingOrIncludingAll =
+        !include ||
+        _.isEmpty(include) ||
+        (include &&
+          _.isArray(include) &&
+          include.length === functionsArray.length);
+      const allFunctionsHaveTheSameRuntime =
+        _.uniq(functionsRuntimeList).length === 1;
+      const allFunctionsHaveTheSameArchitecture =
+        _.uniq(functionsArchitectureList).length === 1;
       const runtime =
         functionsRuntimeList[0] ||
         _.get(this.serverless.service, "provider.runtime");
@@ -355,14 +357,20 @@ or make sure that you already have Serverless 3.x installed in your project.
         ? this.config.layerArn
         : await this.getLayerArn(runtime, architecture);
 
-      if (
-        shouldUseProviderLayers &&
+      const runtimeIsWrapAble =
+        typeof runtime === "string" &&
+        wrappableRuntimeList.indexOf(runtime) !== -1;
+
+      shouldUseProviderLayers =
+        isNotExcluding &&
+        isNotIncludingOrIncludingAll &&
+        allFunctionsHaveTheSameRuntime &&
+        allFunctionsHaveTheSameArchitecture &&
         this.region && // Region is specified
         this.config.accountId && // account id is specified
-        typeof runtime === "string" &&
-        wrappableRuntimeList.indexOf(runtime) !== -1 && // wrappable runtime
-        layerArn // has a layerArn
-      ) {
+        runtimeIsWrapAble &&
+        layerArn; // has a layerArn;
+      if (shouldUseProviderLayers) {
         // use providers for the layers
         if (this.serverless.service.provider.layers) {
           this.serverless.service.provider.layers.push(layerArn);
