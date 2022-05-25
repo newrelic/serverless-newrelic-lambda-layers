@@ -29,6 +29,7 @@ const logShim = {
 const wrappableRuntimeList = [
   "nodejs12.x",
   "nodejs14.x",
+  "nodejs16.x",
   "python3.6",
   "python3.7",
   "python3.8",
@@ -707,7 +708,7 @@ or make sure that you already have Serverless 3.x installed in your project.
   }
 
   private getHandlerWrapper(runtime: string, handler: string) {
-    if (["nodejs12.x", "nodejs14.x"].indexOf(runtime) !== -1) {
+    if (runtime.startsWith("nodejs")) {
       return "newrelic-lambda-wrapper.handler";
     }
 
