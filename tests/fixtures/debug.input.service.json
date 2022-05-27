@@ -38,6 +38,12 @@
       "handler": "handler.handler",
       "package": { "exclude": ["./**"], "include": ["handler.js"] },
       "runtime": "nodejs14.x"
+    },
+    "layer-nodejs16x": {
+      "events": [{ "schedule": "rate(5 minutes)" }],
+      "handler": "handler.handler",
+      "package": { "exclude": ["./**"], "include": ["handler.js"] },
+      "runtime": "nodejs16.x"
     }
   }
 }
