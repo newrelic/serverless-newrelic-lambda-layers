@@ -34,7 +34,7 @@
       "events": [{ "schedule": "rate(5 minutes)" }],
       "handler": "newrelic-lambda-wrapper.handler",
       "layers": [
-        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS12X:85"
+        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS12X:86"
       ],
       "package": {
         "exclude": ["./**", "!newrelic-wrapper-helper.js"],
@@ -46,8 +46,9 @@
         "NEW_RELIC_APP_NAME": "layer-nodejs12x",
         "NEW_RELIC_LAMBDA_HANDLER": "handler.handler",
         "NEW_RELIC_LOG": "stdout",
+        "NEW_RELIC_LOG_ENABLED": "true",
         "NEW_RELIC_LOG_LEVEL": "error",
-           "NEW_RELIC_NO_CONFIG_FILE": "true",
+        "NEW_RELIC_NO_CONFIG_FILE": "true",
         "NEW_RELIC_TRUSTED_ACCOUNT_KEY": "${env:NEW_RELIC_ACCOUNT_ID}"
       }
     },
@@ -55,7 +56,7 @@
       "events": [{ "schedule": "rate(5 minutes)" }],
       "handler": "newrelic-lambda-wrapper.handler",
       "layers": [
-        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS14X:55"
+        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS14X:56"
       ],
       "package": {
         "exclude": ["./**", "!newrelic-wrapper-helper.js"],
@@ -67,8 +68,9 @@
         "NEW_RELIC_APP_NAME": "layer-nodejs14x",
         "NEW_RELIC_LAMBDA_HANDLER": "handler.handler",
         "NEW_RELIC_LOG": "stdout",
+        "NEW_RELIC_LOG_ENABLED": "true",
         "NEW_RELIC_LOG_LEVEL": "error",
-           "NEW_RELIC_NO_CONFIG_FILE": "true",
+        "NEW_RELIC_NO_CONFIG_FILE": "true",
         "NEW_RELIC_TRUSTED_ACCOUNT_KEY": "${env:NEW_RELIC_ACCOUNT_ID}"
       }
     }
