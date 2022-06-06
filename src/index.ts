@@ -643,6 +643,10 @@ or make sure that you already have Serverless 3.x installed in your project.
   }
 
   private logLevel(environment) {
+    environment.NEW_RELIC_LOG_ENABLED = environment.NEW_RELIC_LOG_ENABLED
+      ? environment.NEW_RELIC_LOG_ENABLED
+      : "true";
+
     environment.NEW_RELIC_LOG = environment.NEW_RELIC_LOG
       ? environment.NEW_RELIC_LOG
       : "stdout";
