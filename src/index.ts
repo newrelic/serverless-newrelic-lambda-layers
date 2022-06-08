@@ -37,6 +37,7 @@ const wrappableRuntimeList = [
   "java11",
   "java8.al2",
 ];
+
 export default class NewRelicLambdaLayerPlugin {
   public serverless: Serverless;
   public options: Serverless.Options;
@@ -329,7 +330,13 @@ or make sure that you already have Serverless 3.x installed in your project.
     const promises = [];
 
     const functionsArray = _.values(funcs);
+    const hasProviderLayers = _.get(
+      this.serverless.service,
+      "provider.layers",
+      false
+    );
     let shouldUseProviderLayers = false;
+
     if (functionsArray.length) {
       const functionsRuntimeList = functionsArray.map((f) => f.runtime);
       const functionsArchitectureList = functionsArray.map(
@@ -358,26 +365,23 @@ or make sure that you already have Serverless 3.x installed in your project.
         ? this.config.layerArn
         : await this.getLayerArn(runtime, architecture);
 
-      const runtimeIsWrapAble =
+      const runtimeIsWrappable =
         typeof runtime === "string" &&
         wrappableRuntimeList.indexOf(runtime) !== -1;
 
       shouldUseProviderLayers =
+        hasProviderLayers &&
         isNotExcluding &&
         isNotIncludingOrIncludingAll &&
         allFunctionsHaveTheSameRuntime &&
         allFunctionsHaveTheSameArchitecture &&
         this.region && // Region is specified
         this.config.accountId && // account id is specified
-        runtimeIsWrapAble &&
+        runtimeIsWrappable &&
         layerArn; // has a layerArn;
+
       if (shouldUseProviderLayers) {
-        // use providers for the layers
-        if (this.serverless.service.provider.layers) {
-          this.serverless.service.provider.layers.push(layerArn);
-        } else {
-          this.serverless.service.provider.layers = [layerArn];
-        }
+        this.serverless.service.provider.layers.push(layerArn);
       }
     }
 
