@@ -370,7 +370,6 @@ or make sure that you already have Serverless 3.x installed in your project.
         wrappableRuntimeList.indexOf(runtime) !== -1;
 
       shouldUseProviderLayers =
-        hasProviderLayers &&
         isNotExcluding &&
         isNotIncludingOrIncludingAll &&
         allFunctionsHaveTheSameRuntime &&
@@ -381,7 +380,11 @@ or make sure that you already have Serverless 3.x installed in your project.
         layerArn; // has a layerArn;
 
       if (shouldUseProviderLayers) {
-        this.serverless.service.provider.layers.push(layerArn);
+        if (hasProviderLayers) {
+          this.serverless.service.provider.layers.push(layerArn);
+        } else {
+          this.serverless.service.provider.layers = [layerArn];
+        }
       }
     }
 
