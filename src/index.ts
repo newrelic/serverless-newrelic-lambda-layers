@@ -548,7 +548,7 @@ or make sure that you already have Serverless 3.x installed in your project.
     environment.NEW_RELIC_LAMBDA_HANDLER = handler;
 
     if (this.config.logEnabled === true || this.config.logEnabled === "true") {
-      this.logLevel(environment);
+      this.logLevel(environment, runtime);
     }
 
     environment.NEW_RELIC_NO_CONFIG_FILE = environment.NEW_RELIC_NO_CONFIG_FILE
@@ -649,13 +649,18 @@ or make sure that you already have Serverless 3.x installed in your project.
     return false;
   }
 
-  private logLevel(environment) {
+  private logLevel(environment, runtime) {
+    const isPython =
+      String(runtime).toLocaleLowerCase().substring(0, 6) === "python";
+
     environment.NEW_RELIC_LOG_ENABLED = environment.NEW_RELIC_LOG_ENABLED
       ? environment.NEW_RELIC_LOG_ENABLED
       : "true";
 
     environment.NEW_RELIC_LOG = environment.NEW_RELIC_LOG
       ? environment.NEW_RELIC_LOG
+      : isPython
+      ? "stderr"
       : "stdout";
 
     if (!environment.NEW_RELIC_LOG_LEVEL) {
