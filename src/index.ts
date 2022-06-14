@@ -37,6 +37,7 @@ const wrappableRuntimeList = [
   "java11",
   "java8.al2",
 ];
+
 export default class NewRelicLambdaLayerPlugin {
   public serverless: Serverless;
   public options: Serverless.Options;
@@ -329,7 +330,13 @@ or make sure that you already have Serverless 3.x installed in your project.
     const promises = [];
 
     const functionsArray = _.values(funcs);
+    const hasProviderLayers = _.get(
+      this.serverless.service,
+      "provider.layers",
+      false
+    );
     let shouldUseProviderLayers = false;
+
     if (functionsArray.length) {
       const functionsRuntimeList = functionsArray.map((f) => f.runtime);
       const functionsArchitectureList = functionsArray.map(
@@ -358,7 +365,7 @@ or make sure that you already have Serverless 3.x installed in your project.
         ? this.config.layerArn
         : await this.getLayerArn(runtime, architecture);
 
-      const runtimeIsWrapAble =
+      const runtimeIsWrappable =
         typeof runtime === "string" &&
         wrappableRuntimeList.indexOf(runtime) !== -1;
 
@@ -369,11 +376,11 @@ or make sure that you already have Serverless 3.x installed in your project.
         allFunctionsHaveTheSameArchitecture &&
         this.region && // Region is specified
         this.config.accountId && // account id is specified
-        runtimeIsWrapAble &&
+        runtimeIsWrappable &&
         layerArn; // has a layerArn;
+
       if (shouldUseProviderLayers) {
-        // use providers for the layers
-        if (this.serverless.service.provider.layers) {
+        if (hasProviderLayers) {
           this.serverless.service.provider.layers.push(layerArn);
         } else {
           this.serverless.service.provider.layers = [layerArn];
@@ -541,7 +548,7 @@ or make sure that you already have Serverless 3.x installed in your project.
     environment.NEW_RELIC_LAMBDA_HANDLER = handler;
 
     if (this.config.logEnabled === true || this.config.logEnabled === "true") {
-      this.logLevel(environment);
+      this.logLevel(environment, runtime);
     }
 
     environment.NEW_RELIC_NO_CONFIG_FILE = environment.NEW_RELIC_NO_CONFIG_FILE
@@ -642,13 +649,18 @@ or make sure that you already have Serverless 3.x installed in your project.
     return false;
   }
 
-  private logLevel(environment) {
+  private logLevel(environment, runtime) {
+    const isPython =
+      String(runtime).toLocaleLowerCase().substring(0, 6) === "python";
+
     environment.NEW_RELIC_LOG_ENABLED = environment.NEW_RELIC_LOG_ENABLED
       ? environment.NEW_RELIC_LOG_ENABLED
       : "true";
 
     environment.NEW_RELIC_LOG = environment.NEW_RELIC_LOG
       ? environment.NEW_RELIC_LOG
+      : isPython
+      ? "stderr"
       : "stdout";
 
     if (!environment.NEW_RELIC_LOG_LEVEL) {
