@@ -873,7 +873,7 @@ or make sure that you already have Serverless 3.x installed in your project.
 
     try {
       const mode = "CREATE";
-      const stackName = "NewRelic-log-ingestion";
+      const stackName = "NewRelicLogIngestion";
       const changeSetName = `${stackName}-${mode}-${Date.now()}`;
       const parameters = await this.formatFunctionVariables();
 
