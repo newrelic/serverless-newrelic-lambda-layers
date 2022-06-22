@@ -17,6 +17,7 @@ provider:
   name: aws
   runtime: java11
   region: us-west-1
+  stage: dev
 
 package:
   artifact: 'target/${self:service}-${self:provider.stage}.jar'
