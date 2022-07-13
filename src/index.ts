@@ -279,6 +279,16 @@ or make sure that you already have Serverless 3.x installed in your project.
       return;
     }
 
+    if (
+      plugins.indexOf("serverless-plugin-typescript") >
+      plugins.indexOf("serverless-newrelic-lambda-layers")
+    ) {
+      this.log.error(
+        "serverless-newrelic-lambda-layers plugin must come after serverless-plugin-typescript in serverless.yml; skipping."
+      );
+      return;
+    }
+
     if (!this.config.apiKey) {
       this.log.error(
         `Please use a valid New Relic API key as your apiKey value; skipping.`
