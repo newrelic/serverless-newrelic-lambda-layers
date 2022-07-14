@@ -38,6 +38,8 @@ plugins:
   - serverless-newrelic-lambda-layers
 ```
 
+This plugin should come last in your plugin ordering, particularly if you're also using plugins such as `serverless-plugin-typescript` or `serverless-webpack`.
+
 If you don't yet have a New Relic account, [sign up here](https://newrelic.com/products/serverless-aws-lambda).
 
 Grab your [New Relic Account ID](https://docs.newrelic.com/docs/accounts/install-new-relic/account-setup/account-id),
