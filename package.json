@@ -1,6 +1,6 @@
 {
   "name": "serverless-newrelic-lambda-layers",
-  "version": "3.3.5",
+  "version": "3.3.6",
   "description": "Serverless plugin for NewRelic APM AWS Lambda layers.",
   "main": "dist/index.js",
   "files": [
@@ -14,12 +14,8 @@
     "test": "jest",
     "test:watch": "jest --watchAll",
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
-    "generate:test:case": "yaml2json examples/nodejs/serverless.yml > tests/fixtures/example.input.service.json"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint"
-    }
+    "generate:test:case": "yaml2json examples/nodejs/serverless.yml > tests/fixtures/example.input.service.json",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -51,13 +47,13 @@
     "yamljs": "^0.3.0"
   },
   "peerDependencies": {
+    "@types/serverless": "^3.12.7",
     "fs-extra": "^10.0.1",
     "https-proxy-agent": "^5.0.0",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
     "path": "^0.12.7",
     "semver": "^7.3.5",
-    "@types/serverless": "^3.12.7",
     "serverless": "^3.19.0"
   },
   "keywords": [
