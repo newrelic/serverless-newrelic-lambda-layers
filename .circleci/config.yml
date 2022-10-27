@@ -28,7 +28,6 @@ jobs:
           key: npm-cache-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run: npm install
       - run: npm run lint
-      - run: npm install -g serverless@^3.19.0
       - run: npm run test
       - run: npm run build
 
