@@ -25,6 +25,7 @@ jobs:
           key: npm-cache-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run: npm install
       - run: npm run lint
+      - run: npm run test
       - run: npm run build
 
   release:
@@ -57,6 +58,10 @@ workflows:
               only: /.*/
             tags:
               only: /.*/
+          post-steps:
+            - codecov/upload:
+                file: ./coverage/lcov.info
+                flags: unit-tests
       - release:
           requires:
             - install
