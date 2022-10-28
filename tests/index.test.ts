@@ -17,7 +17,7 @@ const log = require("@serverless/utils/log");
 
 const serverlessPath = getInstalledPathSync("serverless", { local: true });
 const AwsProvider = require(`${serverlessPath}/lib/plugins/aws/provider`);
-const CLI = require(`${serverlessPath}/lib/classes/CLI`);
+const CLI = require(`${serverlessPath}/lib/classes/cli`);
 const Serverless = require(`${serverlessPath}/lib/serverless`);
 const fixturesPath = path.resolve(__dirname, "fixtures");
 
