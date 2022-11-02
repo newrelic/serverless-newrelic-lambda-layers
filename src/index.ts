@@ -495,7 +495,7 @@ or make sure that you already have Serverless 3.x installed in your project.
         "provider.architecture",
         null
       ),
-      layers = [],
+      layers,
       package: pkg = {},
     } = funcDef;
 
@@ -530,12 +530,13 @@ or make sure that you already have Serverless 3.x installed in your project.
       return;
     }
 
-    if (shouldUseProviderLayers) {
+    if (shouldUseProviderLayers && !layers) {
       this.log.warning(
         `Function "${funcName}" already will be handled with provider.layers; skipping.`
       );
     } else {
-      const newRelicLayers = layers.filter(
+      const funcLayers = layers || [];
+      const newRelicLayers = funcLayers.filter(
         (layer) => typeof layer === "string" && layer.match(layerArn)
       );
 
@@ -546,12 +547,12 @@ or make sure that you already have Serverless 3.x installed in your project.
         );
       } else {
         if (this.prependLayer) {
-          layers.unshift(layerArn);
+          funcLayers.unshift(layerArn);
         } else {
-          layers.push(layerArn);
+          funcLayers.push(layerArn);
         }
 
-        funcDef.layers = layers;
+        funcDef.layers = funcLayers;
       }
     }
 
