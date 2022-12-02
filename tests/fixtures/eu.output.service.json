@@ -55,7 +55,7 @@
       ],
       "handler": "newrelic-lambda-wrapper.handler",
       "layers": [
-        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS14X:74"
+        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS14X:80"
       ],
       "package": {
         "exclude": ["./**", "!newrelic-wrapper-helper.js"],
