@@ -264,13 +264,15 @@ or make sure that you already have Serverless 3.x installed in your project.
       `);
     }
 
-    type EnhancedPlugins = { modules: string[]} 
-    type StandardPlugins = string[]
-    function isEnhancedPlugins(plugins: any): plugins is EnhancedPlugins {
-      return !_.isArray(plugins) && plugins.modules
+    type EnhancedPlugins = { modules: string[] };
+    type StandardPlugins = string[];
+    function isEnhancedPlugins(pluginDef: any): pluginDef is EnhancedPlugins {
+      return !_.isArray(pluginDef) && pluginDef.modules;
     }
 
-    let plugins = _.get(this.serverless, "service.plugins", []) as StandardPlugins | EnhancedPlugins;
+    let plugins = _.get(this.serverless, "service.plugins", []) as
+      | StandardPlugins
+      | EnhancedPlugins;
 
     if (isEnhancedPlugins(plugins)) {
       plugins = plugins.modules;
