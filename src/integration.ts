@@ -93,13 +93,18 @@ export default class Integration {
       const params = {
         Scope: `Local`,
       };
-
-      const results = await this.awsProvider.request(
-        "IAM",
-        "listPolicies",
-        params
-      );
-      const currentRegionPolicy = results.Policies.filter(regionFilter);
+      const listPolicies = (p: any) =>
+        this.awsProvider.request("IAM", "listPolicies", p);
+      let results = await listPolicies(params);
+      const policies = results.Policies;
+      while (results.IsTruncated) {
+        results = await listPolicies({
+          ...params,
+          Marker: results.Marker,
+        });
+        policies.push(...results.Policies);
+      }
+      const currentRegionPolicy = policies.filter(regionFilter);
       return {
         currentRegionPolicy,
         secretExists: currentRegionPolicy.length > 0,
