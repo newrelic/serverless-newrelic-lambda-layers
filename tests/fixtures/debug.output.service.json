@@ -53,7 +53,7 @@
       "events": [{ "schedule": "rate(5 minutes)" }],
       "handler": "newrelic-lambda-wrapper.handler",
       "layers": [
-        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS14X:89"
+        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS14X:90"
       ],
       "package": {
         "exclude": ["./**", "!newrelic-wrapper-helper.js"],
@@ -75,7 +75,7 @@
       "events": [{ "schedule": "rate(5 minutes)" }],
       "handler": "newrelic-lambda-wrapper.handler",
       "layers": [
-        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS16X:36"
+        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS16X:37"
       ],
       "package": {
         "exclude": ["./**", "!newrelic-wrapper-helper.js"],
