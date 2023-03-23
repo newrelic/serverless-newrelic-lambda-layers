@@ -94,7 +94,7 @@ custom:
   newRelic:
     apiKey: your-api-key-here
 ```
-If your function's source is committed to version control, you can avoid committing your license key by including it in your serverless.yml as a variable. See [the Serverless docs on template variables](https://www.serverless.com/framework/docs/providers/aws/guide/variables/) for more information.  
+If your function's source is committed to version control, you can avoid committing your license key by including it in your serverless.yml as a variable. See [the Serverless docs on template variables](https://www.serverless.com/framework/docs/providers/aws/guide/variables/) for more information.
 
 #### `nrRegion` (required for EU; optional for US)
 
@@ -109,7 +109,7 @@ custom:
 #### `linkedAccount` (optional)
 
 A label for the New Relic Linked Account. This is how this integration will
-appear in New Relic. If not set, it will default to "New Relic Lambda Integration - 
+appear in New Relic. If not set, it will default to "New Relic Lambda Integration -
 <AWS ACcount ID>".
 
 ```yaml
@@ -150,7 +150,7 @@ custom:
 ```
 #### `enableFunctionLogs` (optional)
 
-Allows your function to deliver all of your function logs to New Relic via AWS Lambda Extension. This would eliminate the need for a CloudWatch log subscription + the NR log ingestion Lambda function. This method of log ingestion is lower-cost, and offers faster time to glass.  
+Allows your function to deliver all of your function logs to New Relic via AWS Lambda Extension. This would eliminate the need for a CloudWatch log subscription + the NR log ingestion Lambda function. This method of log ingestion is lower-cost, and offers faster time to glass.
 
 ```yaml
 custom:
@@ -160,7 +160,7 @@ custom:
 
 #### `enableExtensionLogs` (optional)
 
-The New Relic Lambda Extension writes diagnostic logs by default. If you'd prefer to mute them, set this to `false`. (Defaults to `true`.) 
+The New Relic Lambda Extension writes diagnostic logs by default. If you'd prefer to mute them, set this to `false`. (Defaults to `true`.)
 
 ```yaml
 custom:
@@ -175,7 +175,7 @@ Enables logging when using CloudWatch-based telemetry transport with the newreli
 
 #### `enableIntegration` (optional)
 
-Allows the creation of New Relic aws cloud integration when absent. Defaults to `false`. If an integration already exists for your AWS account,you can omit this. 
+Allows the creation of New Relic aws cloud integration when absent. Defaults to `false`. If an integration already exists for your AWS account,you can omit this.
 
 ```yaml
 custom:
@@ -343,6 +343,15 @@ This plugin makes various HTTP requests to public APIs in order to retrieve data
 custom:
   newRelic:
     proxy: http://yourproxy.com:8080
+```
+#### `enableDistributedTracing` (optional)
+
+Enables distributed tracing. Defaults to `false`.
+
+```yaml
+custom:
+  newRelic:
+    enableDistributedTracing: true
 ```
 
 ## Supported Runtimes
