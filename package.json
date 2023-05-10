@@ -50,7 +50,6 @@
   },
   "peerDependencies": {
     "@types/serverless": "^3.12.7",
-    "fs-extra": "^10.0.1",
     "https-proxy-agent": "^5.0.0",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
