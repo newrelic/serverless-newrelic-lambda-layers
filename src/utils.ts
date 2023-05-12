@@ -1,4 +1,4 @@
-import { promises as fsPromises } from "fs";
+import { readFile } from "fs/promises";
 import * as _ from "lodash";
 import * as path from "path";
 
@@ -36,7 +36,7 @@ export const waitForStatus = async (
 };
 
 export const fetchPolicy = async (templatePolicy: string) => {
-  const policy = await fsPromises.readFile(
+  const policy = await readFile(
     path.resolve(__dirname, "..", "templates", templatePolicy),
     { encoding: "utf8" }
   );
