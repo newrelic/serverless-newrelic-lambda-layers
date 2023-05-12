@@ -37,7 +37,8 @@ export const waitForStatus = async (
 
 export const fetchPolicy = async (templatePolicy: string) => {
   const policy = await fsPromises.readFile(
-    path.resolve(__dirname, "..", "templates", templatePolicy)
+    path.resolve(__dirname, "..", "templates", templatePolicy),
+    { encoding: "utf8" }
   );
   return policy;
 };
