@@ -27,12 +27,6 @@
   },
   "disabledDeprecations": [],
   "functions": {
-    "layer-nodejs12x": {
-      "events": [{ "schedule": "rate(5 minutes)" }],
-      "handler": "handler.handler",
-      "package": { "exclude": ["./**"], "include": ["handler.js"] },
-      "runtime": "nodejs12.x"
-    },
     "layer-nodejs14x": {
       "events": [{ "schedule": "rate(5 minutes)" }],
       "handler": "handler.handler",
@@ -44,6 +38,12 @@
       "handler": "handler.handler",
       "package": { "exclude": ["./**"], "include": ["handler.js"] },
       "runtime": "nodejs16.x"
+    },
+    "layer-nodejs18x": {
+      "events": [{ "schedule": "rate(5 minutes)" }],
+      "handler": "handler.handler",
+      "package": { "exclude": ["./**"], "include": ["handler.js"] },
+      "runtime": "nodejs18.x"
     }
   }
 }

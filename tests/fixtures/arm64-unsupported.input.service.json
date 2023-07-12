@@ -3,7 +3,7 @@
   "provider": {
     "name": "aws",
     "stage": "prod",
-    "region": "ap-northeast-2",
+    "region": "ap-south-2",
     "architecture": "arm64",
     "stackTags": {
       "environment": "us-testing",
@@ -27,7 +27,7 @@
     }
   },
   "functions": {
-    "layer-nodejs12x": {
+    "layer-nodejs16x": {
       "events": [
         {
           "schedule": "rate(5 minutes)"
@@ -42,7 +42,24 @@
           "handler.js"
         ]
       },
-      "runtime": "nodejs12.x"
+      "runtime": "nodejs16.x"
+    },
+    "layer-nodejs18x": {
+      "events": [
+        {
+          "schedule": "rate(5 minutes)"
+        }
+      ],
+      "handler": "handler.handler",
+      "package": {
+        "exclude": [
+          "./**"
+        ],
+        "include": [
+          "handler.js"
+        ]
+      },
+      "runtime": "nodejs18.x"
     }
   }
 }

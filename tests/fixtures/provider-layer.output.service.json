@@ -2,7 +2,7 @@
   "service": "newrelic-lambda-layers-nodejs-example",
   "provider": {
     "layers": [
-      "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS12X:93"
+      "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS18X:33"
     ],
     "name": "aws",
     "stage": "prod",
@@ -28,10 +28,10 @@
   },
   "disabledDeprecations": [],
   "functions": {
-    "layer-nodejs12x1": {
+    "layer-nodejs18x1": {
       "environment": {
         "NEW_RELIC_ACCOUNT_ID": "${env:NEW_RELIC_ACCOUNT_ID}",
-        "NEW_RELIC_APP_NAME": "layer-nodejs12x1",
+        "NEW_RELIC_APP_NAME": "layer-nodejs18x1",
         "NEW_RELIC_LAMBDA_HANDLER": "handler.handler",
         "NEW_RELIC_NO_CONFIG_FILE": "true",
         "NEW_RELIC_TRUSTED_ACCOUNT_KEY": "${env:NEW_RELIC_ACCOUNT_ID}"
@@ -42,12 +42,12 @@
         "exclude": ["./**", "!newrelic-wrapper-helper.js"],
         "include": ["handler.js"]
       },
-      "runtime": "nodejs12.x"
+      "runtime": "nodejs18.x"
     },
-    "layer-nodejs12x2": {
+    "layer-nodejs18x2": {
       "environment": {
         "NEW_RELIC_ACCOUNT_ID": "${env:NEW_RELIC_ACCOUNT_ID}",
-        "NEW_RELIC_APP_NAME": "layer-nodejs12x2",
+        "NEW_RELIC_APP_NAME": "layer-nodejs18x2",
         "NEW_RELIC_LAMBDA_HANDLER": "handler.handler",
         "NEW_RELIC_NO_CONFIG_FILE": "true",
         "NEW_RELIC_TRUSTED_ACCOUNT_KEY": "${env:NEW_RELIC_ACCOUNT_ID}"
@@ -58,7 +58,7 @@
         "exclude": ["./**", "!newrelic-wrapper-helper.js"],
         "include": ["handler.js"]
       },
-      "runtime": "nodejs12.x"
+      "runtime": "nodejs18.x"
     }
   }
 }

@@ -9,7 +9,7 @@
   },
   "disabledDeprecations": [],
   "functions": {
-    "layer-nodejs12x": {
+    "layer-nodejs16x": {
       "events": [
         {
           "schedule": "rate(5 minutes)"
@@ -24,9 +24,9 @@
           "handler.js"
         ]
       },
-      "runtime": "nodejs12.x"
+      "runtime": "nodejs16.x"
     },
-    "layer-nodejs14x": {
+    "layer-nodejs18x": {
       "events": [
         {
           "schedule": "rate(5 minutes)"
@@ -41,7 +41,7 @@
           "handler.js"
         ]
       },
-      "runtime": "nodejs14.x"
+      "runtime": "nodejs18.x"
     }
   },
   "plugins": [
