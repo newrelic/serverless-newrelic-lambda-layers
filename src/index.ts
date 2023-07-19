@@ -620,7 +620,7 @@ or make sure that you already have Serverless 3.x installed in your project.
       }
 
       if (
-        this.config.enableExtensionLogs &&
+        !_.isUndefined(this.config.enableExtensionLogs) &&
         (this.config.enableExtensionLogs === "false" ||
           this.config.enableExtensionLogs === false)
       ) {
