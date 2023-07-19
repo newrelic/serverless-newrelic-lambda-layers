@@ -26,39 +26,39 @@
   },
   "disabledDeprecations": [],
   "functions": {
-    "layer-nodejs12x": {
+    "layer-nodejs16x": {
       "events": [{ "schedule": "rate(5 minutes)" }],
       "handler": "newrelic-lambda-wrapper.handler",
       "layers": [
-        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS12X:93"
+        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS16X:60"
       ],
       "package": {
         "exclude": ["./**", "!newrelic-wrapper-helper.js"],
         "include": ["handler.js"]
       },
-      "runtime": "nodejs12.x",
+      "runtime": "nodejs16.x",
       "environment": {
         "NEW_RELIC_ACCOUNT_ID": "${env:NEW_RELIC_ACCOUNT_ID}",
-        "NEW_RELIC_APP_NAME": "layer-nodejs12x",
+        "NEW_RELIC_APP_NAME": "layer-nodejs16x",
         "NEW_RELIC_LAMBDA_HANDLER": "handler.handler",
         "NEW_RELIC_NO_CONFIG_FILE": "true",
         "NEW_RELIC_TRUSTED_ACCOUNT_KEY": "${env:NEW_RELIC_TRUSTED_ACCOUNT_KEY}"
       }
     },
-    "layer-nodejs14x": {
+    "layer-nodejs18x": {
       "events": [{ "schedule": "rate(5 minutes)" }],
       "handler": "newrelic-lambda-wrapper.handler",
       "layers": [
-        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS14X:104"
+        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS18X:35"
       ],
       "package": {
         "exclude": ["./**", "!newrelic-wrapper-helper.js"],
         "include": ["handler.js"]
       },
-      "runtime": "nodejs14.x",
+      "runtime": "nodejs18.x",
       "environment": {
         "NEW_RELIC_ACCOUNT_ID": "${env:NEW_RELIC_ACCOUNT_ID}",
-        "NEW_RELIC_APP_NAME": "layer-nodejs14x",
+        "NEW_RELIC_APP_NAME": "layer-nodejs18x",
         "NEW_RELIC_LAMBDA_HANDLER": "handler.handler",
         "NEW_RELIC_NO_CONFIG_FILE": "true",
         "NEW_RELIC_TRUSTED_ACCOUNT_KEY": "${env:NEW_RELIC_TRUSTED_ACCOUNT_KEY}"
