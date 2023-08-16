@@ -27,7 +27,6 @@ const logShim = {
 };
 
 const wrappableRuntimeList = [
-  "nodejs12.x",
   "nodejs14.x",
   "nodejs16.x",
   "nodejs18.x",
