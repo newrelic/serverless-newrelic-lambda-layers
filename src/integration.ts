@@ -56,6 +56,7 @@ export default class Integration {
 
     const match = linkedAccounts.filter((account) => {
       return (
+        account &&
         account.externalId === externalId &&
         account.nrAccountId === parseInt(accountId, 10)
       );
