@@ -1,0 +1,146 @@
+{
+  "paginated": {
+    "first": {
+      "Policies": [
+        {
+          "PolicyName": "FirstPolicyName",
+          "Arn": "arn:aws:iam::123456789:policy/service-role/FirstPolicyName",
+          "Path": "/service-role/"
+        }
+      ],
+      "IsTruncated": true,
+      "Marker": "second"
+    },
+    "second": {
+      "Policies": [
+        {
+          "PolicyName": "SecondPolicyName",
+          "Arn": "arn:aws:iam::123456789:policy/service-role/SecondPolicyName",
+          "Path": "/service-role/"
+        }
+      ],
+      "IsTruncated": true,
+      "Marker": "third"
+    },
+    "third": {
+      "Policies": [
+        {
+          "PolicyName": "ThirdPolicyName",
+          "Arn": "arn:aws:iam::123456789:policy/service-role/ThirdPolicyName",
+          "Path": "/service-role/"
+        }
+      ],
+      "IsTruncated": true,
+      "Marker": "fourth"
+    },
+    "fourth": {
+      "Policies": [
+        {
+          "PolicyName": "NewRelic-ViewLicenseKey-us-east-1",
+          "Arn": "arn:aws:iam::123456789:policy/NewRelic-ViewLicenseKey-us-east-1",
+          "Path": "/"
+        }
+      ],
+      "IsTruncated": false,
+      "Marker": "end"
+    }
+  },
+  "paginatedNoMatch": {
+    "first": {
+      "Policies": [
+        {
+          "PolicyName": "FirstPolicyName",
+          "Arn": "arn:aws:iam::123456789:policy/service-role/FirstPolicyName",
+          "Path": "/service-role/"
+        }
+      ],
+      "IsTruncated": true,
+      "Marker": "second"
+    },
+    "second": {
+      "Policies": [
+        {
+          "PolicyName": "SecondPolicyName",
+          "Arn": "arn:aws:iam::123456789:policy/service-role/SecondPolicyName",
+          "Path": "/service-role/"
+        }
+      ],
+      "IsTruncated": true,
+      "Marker": "third"
+    },
+    "third": {
+      "Policies": [
+        {
+          "PolicyName": "ThirdPolicyName",
+          "Arn": "arn:aws:iam::123456789:policy/service-role/ThirdPolicyName",
+          "Path": "/service-role/"
+        }
+      ],
+      "IsTruncated": true,
+      "Marker": "fourth"
+    },
+    "fourth": {
+      "Policies": [
+        {
+          "PolicyName": "FourthPolicyName",
+          "Arn": "arn:aws:iam::123456789:policy/FourthPolicyName",
+          "Path": "/"
+        }
+      ],
+      "IsTruncated": false,
+      "Marker": "end"
+    }
+  },
+  "nonPaginated": {
+      "Policies": [
+        {
+          "PolicyName": "FirstPolicyName",
+          "Arn": "arn:aws:iam::123456789:policy/service-role/FirstPolicyName",
+          "Path": "/service-role/"
+        },
+        {
+          "PolicyName": "SecondPolicyName",
+          "Arn": "arn:aws:iam::123456789:policy/service-role/SecondPolicyName",
+          "Path": "/service-role/"
+        },
+        {
+          "PolicyName": "ThirdPolicyName",
+          "Arn": "arn:aws:iam::123456789:policy/service-role/ThirdPolicyName",
+          "Path": "/service-role/"
+        },
+        {
+          "PolicyName": "NewRelic-ViewLicenseKey-us-east-1",
+          "Arn": "arn:aws:iam::123456789:policy/NewRelic-ViewLicenseKey-us-east-1",
+          "Path": "/"
+        }
+      ],
+      "IsTruncated": false,
+      "Marker": "end"
+    },
+    "nonPaginatedNoMatch": {
+        "Policies": [
+          {
+            "PolicyName": "FirstPolicyName",
+            "Arn": "arn:aws:iam::123456789:policy/service-role/FirstPolicyName",
+            "Path": "/service-role/"
+          },
+          {
+            "PolicyName": "SecondPolicyName",
+            "Arn": "arn:aws:iam::123456789:policy/service-role/SecondPolicyName",
+            "Path": "/service-role/"
+          },
+          {
+            "PolicyName": "ThirdPolicyName",
+            "Arn": "arn:aws:iam::123456789:policy/service-role/ThirdPolicyName",
+            "Path": "/service-role/"
+          },
+          {
+            "PolicyName": "FourthPolicyName",
+            "Arn": "arn:aws:iam::123456789:policy/FourthPolicyName",
+            "Path": "/"
+          }
+        ],
+        "IsTruncated": false,
+        "Marker": "end"
+      }
+    }

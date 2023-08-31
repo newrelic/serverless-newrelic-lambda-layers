@@ -5,7 +5,7 @@ orbs:
 
 defaults: &defaults
   docker:
-    - image: circleci/node:16
+    - image: cimg/node:18.17
 
 jobs:
   install:

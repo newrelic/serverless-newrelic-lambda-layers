@@ -9,7 +9,7 @@ const {
   groupBy,
   map,
   reduce,
-  omit
+  omit,
 } = require("ramda");
 const { getInstalledPathSync } = require("get-installed-path");
 const NewRelicLambdaLayerPlugin = require("../src/index");
@@ -23,10 +23,7 @@ const fixturesPath = path.resolve(__dirname, "fixtures");
 
 const buildTestCases = () => {
   const testCaseFiles = fs.readdirSync(fixturesPath);
-  const testCaseFileType = compose(
-    nth(1),
-    split(".")
-  );
+  const testCaseFileType = compose(nth(1), split("."));
   const testCaseContentsFromFiles = reduce((acc: object, fileName: string) => {
     const contents = JSON.parse(
       fs.readFileSync(path.resolve(fixturesPath, fileName))
@@ -35,12 +32,7 @@ const buildTestCases = () => {
     return { ...acc, [fileType]: contents };
   }, {});
 
-  const testCaseFilesByName = groupBy(
-    compose(
-      head,
-      split(".")
-    )
-  )(testCaseFiles);
+  const testCaseFilesByName = groupBy(compose(head, split(".")))(testCaseFiles);
   return map((caseName: string) => {
     const testCaseContents = testCaseContentsFromFiles(
       testCaseFilesByName[caseName]
@@ -72,7 +64,7 @@ describe("NewRelicLambdaLayerPlugin", () => {
         plugin.configureLicenseForExtension = jest.fn(() => {});
 
         try {
-          await plugin.hooks['before:deploy:function:packageFunction']();
+          await plugin.hooks["before:deploy:function:packageFunction"]();
         } catch (err) {}
 
         expect(
@@ -82,7 +74,7 @@ describe("NewRelicLambdaLayerPlugin", () => {
               "package",
               "pluginsData",
               "resources",
-              "serviceObject"
+              "serviceObject",
             ],
             serverless.service
           )

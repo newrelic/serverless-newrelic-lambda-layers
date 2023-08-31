@@ -86,24 +86,39 @@ export default class Integration {
     );
   }
 
+  public async makePaginatedRequest(params, regionFilter) {
+    const results = await this.awsProvider.request(
+      "IAM",
+      "listPolicies",
+      params
+    );
+    const currentRegionPolicy = results?.Policies?.filter(regionFilter);
+
+    if (
+      results.IsTruncated &&
+      (!currentRegionPolicy || currentRegionPolicy.length === 0)
+    ) {
+      params.Marker = results.Marker;
+      return this.makePaginatedRequest(params, regionFilter);
+    }
+    return currentRegionPolicy;
+  }
+
   public async checkForManagedSecretPolicy() {
     const thisRegionPolicy = `NewRelic-ViewLicenseKey-${this.region}`;
     const regionFilter = (policy) => policy.PolicyName.match(thisRegionPolicy);
+    const params = {
+      Scope: `Local`,
+    };
 
     try {
-      const params = {
-        Scope: `Local`,
-      };
-
-      const results = await this.awsProvider.request(
-        "IAM",
-        "listPolicies",
-        params
+      const currentRegionPolicy = await this.makePaginatedRequest(
+        params,
+        regionFilter
       );
-      const currentRegionPolicy = results.Policies.filter(regionFilter);
       return {
         currentRegionPolicy,
-        secretExists: currentRegionPolicy.length > 0,
+        secretExists: currentRegionPolicy?.length > 0,
       };
     } catch (err) {
       this.log.error(
