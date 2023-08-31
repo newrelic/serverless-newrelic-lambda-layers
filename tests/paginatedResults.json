@@ -1,0 +1,47 @@
+{
+  "first": {
+    "Policies": [
+      {
+        "PolicyName": "FirstPolicyName",
+        "Arn": "arn:aws:iam::123456789:policy/service-role/FirstPolicyName-uuid",
+        "Path": "/service-role/"
+      }
+    ],
+    "IsTruncated": true,
+    "Marker": "second"
+  },
+  "second": {
+    "Policies": [
+      {
+        "PolicyName": "SecondPolicyName",
+        "Arn": "arn:aws:iam::123456789:policy/service-role/SecondPolicyName-uuid",
+        "Path": "/service-role/"
+      }
+    ],
+    "IsTruncated": true,
+    "Marker": "third"
+  },
+  "third": {
+    "Policies": [
+      {
+        "PolicyName": "ThirdPolicyName",
+        "Arn": "arn:aws:iam::123456789:policy/service-role/ThirdPolicyName-uuid",
+        "Path": "/service-role/"
+      }
+    ],
+    "IsTruncated": true,
+    "Marker": "fourth"
+  },
+  "fourth": {
+    "Policies": [
+      {
+        "PolicyName": "NewRelic-ViewLicenseKey-us-east-1",
+        "PolicyId": "0987654321",
+        "Arn": "arn:aws:iam::123456789:policy/NewRelic-ViewLicenseKey-us-east-1",
+        "Path": "/"
+      }
+    ],
+    "IsTruncated": false,
+    "Marker": "end"
+  }
+}
