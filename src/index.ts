@@ -628,8 +628,13 @@ or make sure that you already have Serverless 3.x installed in your project.
     }
 
     funcDef.environment = environment;
-    funcDef.handler = this.getHandlerWrapper(runtime, handler);
-    funcDef.package = this.updatePackageExcludes(runtime, pkg);
+
+    // Skip auto-wrapping if the function code is wrapped manually and manualWrapping is true
+    // It's assumed that manually-wrapped functions still use the layer, env vars, and permissions
+    if (!this.config.manualWrapping || this.config.manualWrapping === "false") {
+      funcDef.handler = this.getHandlerWrapper(runtime, handler);
+      funcDef.package = this.updatePackageExcludes(runtime, pkg);
+    }
   }
 
   private shouldSkipPlugin() {
@@ -744,11 +749,7 @@ or make sure that you already have Serverless 3.x installed in your project.
   }
 
   private getHandlerWrapper(runtime: string, handler: string) {
-    if (
-      ["nodejs12.x", "nodejs14.x", "nodejs16.x", "nodejs18.x"].indexOf(
-        runtime
-      ) !== -1
-    ) {
+    if (["nodejs14.x", "nodejs16.x", "nodejs18.x"].indexOf(runtime) !== -1) {
       return "newrelic-lambda-wrapper.handler";
     }
 
