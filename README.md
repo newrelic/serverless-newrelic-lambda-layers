@@ -204,6 +204,17 @@ Logging configuration is considered in the following order:
 3. custom newRelic `logLevel` property
 4. custom newRelic `debug` flag
 
+
+#### `manualWrapping` (optional)
+
+Functions with many dependencies may experience longer cold start times with dynamic wrapping. One possible remediation is to [wrap the function manually[(https://docs.newrelic.com/docs/serverless-function-monitoring/aws-lambda-monitoring/enable-lambda-monitoring/enable-serverless-monitoring-aws-lambda-legacy/#node), and bypass the no-code-change wrapping. If you enable this option, you'll need to `require` (or, for ESM, `import`) the New Relic Node Agent, and wrap the body of your handler function. You would still be able to take advantage of the easy installation of the agent via Lambda Layers, and still have telemetry transported to New Relic via the Lambda Extension. We recommend that you include the New Relic Node Agent as a devDependency for local development, and omit it from the dependencies you deploy.  Defaults to `false`. 
+
+```yaml
+custom:
+  newRelic:
+    manualWrapping: true
+```
+
 #### `customRolePolicy` (optional)
 
 Specify an alternative IAM role policy ARN for this integration here if you do not want to use the default role policy.
