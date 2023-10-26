@@ -36,6 +36,7 @@ const wrappableRuntimeList = [
   "python3.10",
   "python3.11",
   "java11",
+  "java17",
   "java8.al2",
 ];
 
@@ -757,7 +758,7 @@ or make sure that you already have Serverless 3.x installed in your project.
       return "newrelic_lambda_wrapper.handler";
     }
 
-    if (["java11", "java8.al2"].indexOf(runtime) !== -1) {
+    if (["java17", "java11", "java8.al2"].indexOf(runtime) !== -1) {
       return `com.newrelic.java.HandlerWrapper::${this.javaNewRelicHandler}`;
     }
 
