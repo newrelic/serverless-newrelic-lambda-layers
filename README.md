@@ -362,7 +362,6 @@ custom:
 
 This plugin currently supports the following AWS runtimes:
 
-- nodejs14.x
 - nodejs16.x
 - nodejs18.x
 - nodejs20.x
