@@ -5,7 +5,6 @@ import * as semver from "semver";
 import * as Serverless from "serverless";
 import { fetchLicenseKey, nerdgraphFetch } from "./api";
 import Integration from "./integration";
-import { waitForStatus } from "./utils";
 
 const enum JavaHandler {
   handleRequest = "handleRequest",

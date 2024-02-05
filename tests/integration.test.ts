@@ -38,11 +38,11 @@ const returnPaginatedNoMatchAwsRequest = (service, method, params) => {
   }
   return fixture.paginatedNoMatch[params.Marker];
 };
-const returnNonPaginatedAwsRequest = (service, method, params) => {
+const returnNonPaginatedAwsRequest = (service, method) => {
   const { fixture } = setRequestEnv(service, method)
   return fixture.nonPaginated;
 };
-const returnNonPaginatedNoMatchAwsRequest = (service, method, params) => {
+const returnNonPaginatedNoMatchAwsRequest = (service, method) => {
   const { fixture } = setRequestEnv(service, method)
   return fixture.nonPaginatedNoMatch;
 };
