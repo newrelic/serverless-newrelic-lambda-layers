@@ -1,0 +1,120 @@
+{
+  "paginated": {
+    "first": {
+      "Functions": [
+        {
+          "FunctionName": "FirstFunctionName",
+          "FunctionArn": "arn:aws:lambda:us-east-1:123456789:function:FirstFunctionName"
+        }
+      ],
+      "NextMarker": "second"
+    },
+    "second": {
+      "Functions": [
+        {
+          "FunctionName": "SecondFunctionName",
+          "FunctionArn": "arn:aws:lambda:us-east-1:123456789:function:SecondFunctionName"
+        }
+      ],
+      "NextMarker": "third"
+    },
+    "third": {
+      "Functions": [
+        {
+          "FunctionName": "ThirdFunctionName",
+          "FunctionArn": "arn:aws:lambda:us-east-1:123456789:function:ThirdFunctionName"
+        }
+      ],
+      "NextMarker": "fourth"
+    },
+    "fourth": {
+      "Functions": [
+        {
+          "FunctionName": "newrelic-log-ingestion-0123456789ab",
+          "FunctionArn": "arn:aws:lambda:us-east-1:123456789:function:newrelic-log-ingestion-0123456789ab"
+        }
+      ]
+    }
+  },
+  "paginatedNoMatch": {
+    "first": {
+      "Functions": [
+        {
+          "FunctionName": "FirstFunctionName",
+          "FunctionArn": "arn:aws:lambda:us-east-1:123456789:function:FirstFunctionName"
+        }
+      ],
+      "NextMarker": "second"
+    },
+    "second": {
+      "Functions": [
+        {
+          "FunctionName": "SecondFunctionName",
+          "FunctionArn": "arn:aws:lambda:us-east-1:123456789:function:SecondFunctionName"
+        }
+      ],
+      "NextMarker": "third"
+    },
+    "third": {
+      "Functions": [
+        {
+          "FunctionName": "ThirdFunctionName",
+          "FunctionArn": "arn:aws:lambda:us-east-1:123456789:function:ThirdFunctionName"
+        }
+      ],
+      "NextMarker": "fourth"
+    },
+    "fourth": {
+      "Functions": [
+        {
+          "FunctionName": "FourthFunctionName",
+          "FunctionArn": "arn:aws:lambda:us-east-1:123456789:policy/FourthFunctionName"
+        }
+      ]
+    }
+  },
+  "nonPaginated": {
+    "Functions": [
+      {
+        "FunctionName": "FirstFunctionName",
+        "FunctionArn": "arn:aws:lambda:us-east-1:123456789:function:FirstFunctionName"
+      },
+      {
+        "FunctionName": "SecondFunctionName",
+        "FunctionArn": "arn:aws:lambda:us-east-1:123456789:function:SecondFunctionName"
+      },
+      {
+        "FunctionName": "ThirdFunctionName",
+        "FunctionArn": "arn:aws:lambda:us-east-1:123456789:function:ThirdFunctionName"
+      },
+      {
+        "FunctionName": "newrelic-log-ingestion-0123456789ab",
+        "FunctionArn": "arn:aws:lambda:us-east-1:123456789:function:newrelic-log-ingestion-0123456789ab"
+      }
+    ]
+  },
+  "nonPaginatedNoMatch": {
+    "Functions": [
+      {
+        "FunctionName": "FirstFunctionName",
+        "FunctionArn": "arn:aws:lambda:us-east-1:123456789:function:FirstFunctionName",
+        "Path": "/service-role/"
+      },
+      {
+        "FunctionName": "SecondFunctionName",
+        "FunctionArn": "arn:aws:lambda:us-east-1:123456789:function:SecondFunctionName",
+        "Path": "/service-role/"
+      },
+      {
+        "FunctionName": "ThirdFunctionName",
+        "FunctionArn": "arn:aws:lambda:us-east-1:123456789:function:ThirdFunctionName",
+        "Path": "/service-role/"
+      },
+      {
+        "FunctionName": "FourthFunctionName",
+        "FunctionArn": "arn:aws:lambda:us-east-1:123456789:policy/FourthFunctionName",
+        "Path": "/"
+      }
+    ]
+  }
+}
