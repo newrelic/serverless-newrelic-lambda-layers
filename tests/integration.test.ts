@@ -13,25 +13,38 @@ const logShim = {
 };
 
 // for simulating AWS ListPolicies, just one per page in this test
-const requestResults = require("./paginatedResults.json");
+const policiesFixture = require("./paginatedPoliciesList.json");
+const functionsFixture = require("./paginatedFunctionsList.json");
+
+const setRequestEnv = (service, method) => {
+  let fixture = policiesFixture
+  if (service === 'Lambda' || method === 'listFunctions') {
+    fixture = functionsFixture
+  }
+  return { fixture }
+}
 
 const returnPaginatedAwsRequest = (service, method, params) => {
+  const { fixture } = setRequestEnv(service, method)
   if (!params.Marker) {
-    return requestResults.paginated.first;
+    return fixture.paginated.first;
   }
-  return requestResults.paginated[params.Marker];
+  return fixture.paginated[params.Marker];
 };
 const returnPaginatedNoMatchAwsRequest = (service, method, params) => {
+  const { fixture } = setRequestEnv(service, method)
   if (!params.Marker) {
-    return requestResults.paginatedNoMatch.first;
+    return fixture.paginatedNoMatch.first;
   }
-  return requestResults.paginatedNoMatch[params.Marker];
+  return fixture.paginatedNoMatch[params.Marker];
 };
-const returnNonPaginatedAwsRequest = (service, method, params) => {
-  return requestResults.nonPaginated;
+const returnNonPaginatedAwsRequest = (service, method) => {
+  const { fixture } = setRequestEnv(service, method)
+  return fixture.nonPaginated;
 };
-const returnNonPaginatedNoMatchAwsRequest = (service, method, params) => {
-  return requestResults.nonPaginatedNoMatch;
+const returnNonPaginatedNoMatchAwsRequest = (service, method) => {
+  const { fixture } = setRequestEnv(service, method)
+  return fixture.nonPaginatedNoMatch;
 };
 
 describe("Integration functions", () => {
@@ -66,7 +79,7 @@ describe("Integration functions", () => {
         "PolicyName",
       ]);
       expect(existingPolicy.currentRegionPolicy[0].PolicyName).toEqual(
-        requestResults.paginated.fourth.Policies[0].PolicyName
+          policiesFixture.paginated.fourth.Policies[0].PolicyName
       );
       expect(existingPolicy.secretExists).toBeTruthy();
     });
@@ -82,7 +95,7 @@ describe("Integration functions", () => {
         "PolicyName",
       ]);
       expect(existingPolicy.currentRegionPolicy[0].PolicyName).toEqual(
-        requestResults.paginated.fourth.Policies[0].PolicyName
+          policiesFixture.paginated.fourth.Policies[0].PolicyName
       );
       expect(existingPolicy.secretExists).toBeTruthy();
     });
@@ -105,6 +118,42 @@ describe("Integration functions", () => {
       expect(existingPolicy).toHaveProperty("currentRegionPolicy");
       expect(existingPolicy.currentRegionPolicy).toHaveLength(0);
       expect(existingPolicy.secretExists).toBeFalsy();
+    });
+  });
+  describe("search for existing log ingestion function", () => {
+    it("correctly finds match in multiple pages of results", async () => {
+      awsProvider.request = jest.fn(returnPaginatedAwsRequest);
+      pluginMock.awsProvider = { ...awsProvider };
+      const slsIntegration = new Integration(pluginMock);
+      const existingIngestScript = await slsIntegration.getDestinationArn('newrelic-log-ingestion');
+      expect(existingIngestScript).toBeDefined();
+      expect(existingIngestScript).toEqual(
+          functionsFixture.paginated.fourth.Functions[0].FunctionArn
+      );
+    });
+    it("correctly finds match in non-paginated results", async () => {
+      awsProvider.request = jest.fn(returnNonPaginatedAwsRequest);
+      pluginMock.awsProvider = { ...awsProvider };
+      const slsIntegration = new Integration(pluginMock);
+      const existingIngestScript = await slsIntegration.getDestinationArn('newrelic-log-ingestion');
+      expect(existingIngestScript).toBeDefined();
+      expect(existingIngestScript).toEqual(
+          functionsFixture.paginated.fourth.Functions[0].FunctionArn
+      );
+    });
+    it("correctly handles paginated results with no match", async () => {
+      awsProvider.request = jest.fn(returnPaginatedNoMatchAwsRequest);
+      pluginMock.awsProvider = { ...awsProvider };
+      const slsIntegration = new Integration(pluginMock);
+      const existingIngestScript = await slsIntegration.getDestinationArn('newrelic-log-ingestion');
+      expect(existingIngestScript).toBeFalsy();
+    });
+    it("correctly handles non-paginated results with no match", async () => {
+      awsProvider.request = jest.fn(returnNonPaginatedNoMatchAwsRequest);
+      pluginMock.awsProvider = { ...awsProvider };
+      const slsIntegration = new Integration(pluginMock);
+      const existingIngestScript = await slsIntegration.getDestinationArn('newrelic-log-ingestion');
+      expect(existingIngestScript).toBeFalsy();
     });
   });
 });
