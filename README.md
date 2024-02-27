@@ -16,7 +16,7 @@ observability using [AWS Lambda Layers](https://docs.aws.amazon.com/lambda/lates
 - Supports Node.js, Python and Java runtimes (more runtimes to come)
 - No code change required to enable New Relic
 - Bundles New Relic's agent in a single layer
-- Configures CloudWatch subscription filters automatically 
+- Configures CloudWatch subscription filters automatically
 
 ## Install
 
