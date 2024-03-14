@@ -4,6 +4,7 @@ on: [push, workflow_dispatch]
 
 jobs:
   lint:
+    name: Lint
     runs-on: ubuntu-latest
 
     strategy:
@@ -22,7 +23,7 @@ jobs:
       - name: Inspect Lockfile
         run: npm run lint:lockfile
   test:
-    name: Test
+    name: Snapshot Test
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
