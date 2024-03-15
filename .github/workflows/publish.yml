@@ -18,7 +18,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: 'https://registry.npmjs.org'
-      - run: cp .npmrc-ci .npmrc
       - run: npm ci
       - run: npm run build
       - run: npm publish --access public
