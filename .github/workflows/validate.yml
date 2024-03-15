@@ -1,6 +1,6 @@
 name: Validate
 
-on: [push, workflow_dispatch]
+on: [push, pull_request, workflow_dispatch]
 
 jobs:
   lint:
@@ -41,3 +41,8 @@ jobs:
         run: npm run build
       - name: Run Snapshot Tests
         run: npm test
+      - name: Archive Unit Test Coverage
+        uses: actions/upload-artifact@v3
+        with:
+          name: snapshot-tests
+          path: ./coverage/lcov.info
