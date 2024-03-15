@@ -44,5 +44,24 @@ jobs:
       - name: Archive Unit Test Coverage
         uses: actions/upload-artifact@v3
         with:
-          name: snapshot-tests
+          name: unit-tests
           path: ./coverage/lcov.info
+
+  codecov:
+    needs: [test]
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [lts/*]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+      - name: Post Snapshot Test Coverage
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./coverage
+          flags: unit-tests
