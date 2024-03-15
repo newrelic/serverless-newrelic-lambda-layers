@@ -46,22 +46,11 @@ jobs:
         with:
           name: unit-tests
           path: ./coverage/lcov.info
-
-  codecov:
-    needs: [test]
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [lts/*]
-
-    steps:
-      - uses: actions/checkout@v3
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
-      - name: Post Snapshot Test Coverage
+      - name: Upload Unit Test Coverage
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          directory: ./coverage
+          directory: ./coverage/
+          fail_ci_if_error: true
+          verbose: true
           flags: unit-tests
