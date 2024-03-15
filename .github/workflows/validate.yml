@@ -41,16 +41,11 @@ jobs:
         run: npm run build
       - name: Run Snapshot Tests
         run: npm test
-      - name: Archive Unit Test Coverage
-        uses: actions/upload-artifact@v3
-        with:
-          name: unit-tests
-          path: ./coverage/lcov.info
       - name: Upload Unit Test Coverage
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          directory: ./coverage/
+          file: ./coverage/lcov.info
           fail_ci_if_error: true
           verbose: true
           flags: unit-tests
