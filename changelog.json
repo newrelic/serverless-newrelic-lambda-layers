@@ -1,0 +1,729 @@
+{
+  "repository": "newrelic/serverless-newrelic-lambda-layers",
+  "entries": [
+    {
+      "version": "5.0.1",
+      "changes": {
+        "security": [],
+        "bugfixes": [
+          "Updated check for existing `newrelic-log-ingestion` script to handle variable suffix."
+        ],
+        "features": []
+      }
+    },
+    {
+      "version": "5.0.0",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Dropped support for deployment of Node 14 Lambda functions."
+        ]
+      }
+    },
+    {
+      "version": "4.3.0",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Added support for Lambda functions using Node 20 runtime.",
+          "Updated dependencies"
+        ]
+      }
+    },
+    {
+      "version": "4.2.0",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Added support for Java 17 layer (thank you to @michjacobs!)",
+          "Updated dependencies"
+        ]
+      }
+    },
+    {
+      "version": "4.1.0",
+      "changes": {
+        "security": [],
+        "bugfixes": [
+          "Updated integration to iterate over paginated ListPolicies results"
+        ],
+        "features": [
+          "Added manualWrapping flag to skip wrapper helper, but still instrument functions with the latest layer-installed agent."
+        ]
+      }
+    },
+    {
+      "version": "4.0.0",
+      "changes": {
+        "security": [],
+        "bugfixes": [
+          "Handle when null account values are returned from NR API (thank you, @sethawright !)",
+          "Fix boolean test for enableExtensionLogs (thank you @nr-swilloughby !)"
+        ],
+        "features": [
+          "Dropped support for Node 12 and Python 3.6",
+          "Added support for Python 3.11"
+        ]
+      }
+    },
+    {
+      "version": "3.5.0",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Added support for Python 3.10"
+        ]
+      }
+    },
+    {
+      "version": "3.4.3",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Updated dependencies"
+        ]
+      }
+    },
+    {
+      "version": "3.4.0",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Added support for Node 18. Thank you @Engerim !"
+        ]
+      }
+    },
+    {
+      "version": "3.3.7",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Merge layers instead of overriding them when the serverless.yml has layers defined in provider or global as well as in specific functions. Thank you to @alexmchardy for the PR!",
+          "Added codecov to measure test coverage. Thank you to @jmartin4563 !"
+        ]
+      }
+    },
+    {
+      "version": "3.3.6",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Updated dependencies",
+          "Changed peer dependency versions to use the ^ specifier instead of ~. Thanks to @wrumsby for pointing it out, and @ran-j for submitting a PR to fix."
+        ]
+      }
+    },
+    {
+      "version": "3.3.5",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "This release updates the ReadMe to emphasize that this plugin should be last in the plugins section of the serverless.yml. Thank you to @sebastianmarines for pinpointing this as a cause of Node 16 functions being unable to find the NR handler."
+        ]
+      }
+    },
+    {
+      "version": "3.3.3",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Corrected serverless.yml in the Java example"
+        ]
+      }
+    },
+    {
+      "version": "3.3.2",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Set stderr log output for Python agent",
+          "Updated newrelic-log-ingestion script stack name to comply with the CLI."
+        ]
+      }
+    },
+    {
+      "version": "3.3.1",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Restored the NEW_RELIC_LOG_ENABLED env var when logEnabled is set in serverless.yml."
+        ]
+      }
+    },
+    {
+      "version": "3.3.0",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Added support for Node 16"
+        ]
+      }
+    },
+    {
+      "version": "3.2.0",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Added support for provider layers. (Thank you to @Shereef for the contribution!)",
+          "Moved project dependencies to peer dependencies"
+        ]
+      }
+    },
+    {
+      "version": "3.1.1",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Added Fallback logging for developers running Serverless 2.x, or running 3.x in environments that don't have local Serverless 3.x."
+        ]
+      }
+    },
+    {
+      "version": "3.1.0",
+      "changes": {
+        "security": [],
+        "bugfixes": [
+          "Improved support for logging in v3",
+          "Handling error state when deploying account is unable to list policies",
+          "Ensuring that API polling integration is created when enableIntegration is set to true"
+        ],
+        "features": [
+          "Added support for `enableExtensionLogs` boolean",
+          "Dependency updates"
+        ]
+      }
+    },
+    {
+      "version": "3.0.0",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Added support for Serverless 3.x."
+        ]
+      }
+    },
+    {
+      "version": "2.4.1",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Updated dependencies",
+          "This is the last 2.x.x release."
+        ]
+      }
+    },
+    {
+      "version": ".2.4.0",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Updated dependencies"
+        ]
+      }
+    },
+    {
+      "version": "2.2.2",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Changed the conditions under which the plugin NOOPs. If the serverless.yml specifies an architecture that doesn't yet have a compatible layer, the plugin skips integration. Similarly, the plugin skips if no API key is specified.",
+          "Removed a dependency on the deprecated request package (thank you to @Engerim !)",
+          "Updated log4j version references in Java examples."
+        ]
+      }
+    },
+    {
+      "version": "2.2.1",
+      "changes": {
+        "security": [],
+        "bugfixes": [
+          "Changed how the plugin detects NR-AWS integration. If any integration exists, the plugin skips creating any integration, and so avoids creating a polling integration when there's a current streaming integration. The integration code still requests specific integration names from AWS, but that's a backstop which happens after a request to NerdGraph."
+        ],
+        "features": []
+      }
+    },
+    {
+      "version": "2.2.0",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Added support for Lambda ARM64/Graviton2 architecture.",
+          "Updated serverless to 2.66, and Jest to 27",
+          "Removed Node 10 from example serverless.yml"
+        ]
+      }
+    },
+    {
+      "version": "2.1.4",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Updated Serverless to 2.59.0"
+        ]
+      }
+    },
+    {
+      "version": "2.1.3",
+      "changes": {
+        "security": [],
+        "bugfixes": [
+          "Fixed trusted account key handling"
+        ],
+        "features": [
+          "Added logging",
+          "updated test fixtures"
+        ]
+      }
+    },
+    {
+      "version": "2.1.1",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Updated Serverless to 2.57.0",
+          "Updated CI/CD image to Node 10"
+        ]
+      }
+    },
+    {
+      "version": "2.1.0",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Added support for Python 3.9",
+          "Removed support for Node 8"
+        ]
+      }
+    },
+    {
+      "version": "1.1.8",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Added 'proxy' option in order to allow this plugin to work behind an HTTP proxy #144 (thanks @CalMlynarczyk)"
+        ]
+      }
+    },
+    {
+      "version": "1.1.7",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Updated dependencies"
+        ]
+      }
+    },
+    {
+      "version": "1.1.6",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Added support for java layer"
+        ]
+      }
+    },
+    {
+      "version": "1.1.5",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Added disableLicenseKeySecret flag"
+        ]
+      }
+    },
+    {
+      "version": "1.1.4",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Added support for Node 14",
+          "New Relic Distributed Tracing can be enabled in the custom.newRelic block of the serverless.yml by setting enableDistributedTracing to true"
+        ]
+      }
+    },
+    {
+      "version": "1.1.2",
+      "changes": {
+        "security": [],
+        "bugfixes": [
+          "Fix for string accountId values not matching number value returned by integration validation."
+        ],
+        "features": []
+      }
+    },
+    {
+      "version": ".1.1.1",
+      "changes": {
+        "security": [],
+        "bugfixes": [
+          "Corrected constructor in handling fallback to default region. (Thank you, @vishalraghav94!)"
+        ],
+        "features": []
+      }
+    },
+    {
+      "version": "1.1.0",
+      "changes": {
+        "security": [],
+        "bugfixes": [
+          "Corrected CloudFormation template for automatic creation of the appropriate managed secret in AWS, and corresponding access policy, attached to the function execution role",
+          "More obvious messaging if the New Relic License Key can't be retrieved from New Relic"
+        ],
+        "features": [
+          "Updates to the serverless module"
+        ]
+      }
+    },
+    {
+      "version": "1.0.0",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Added deployment to non-US regions from US-based NR accounts",
+          "Added automatic creation and attachment of access policy for authenticating the NR Extension instead of log subscription/ingest (unless the extension is explicitly not enabled)",
+          "Updated Serverless and Jest"
+        ]
+      }
+    },
+    {
+      "version": "0.4.1",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Bumped package.json version for release pipeline"
+        ]
+      }
+    },
+    {
+      "version": "0.4.0",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Added support for log ingestion via New Relic Lambda Extension. ",
+          "Added option for extension to be disabled via serverless.yml config",
+          "Updated dependencies"
+        ]
+      }
+    },
+    {
+      "version": "0.3.0",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Added support for the New Relic Lambda Extension ([#81](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/81))"
+        ]
+      }
+    },
+    {
+      "version": "0.2.5",
+      "changes": {
+        "security": [],
+        "bugfixes": [
+          "Fix to include templates in NPM package ([#76](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/76))",
+          "Fix request handling of JSON response ([#77](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/77))"
+        ],
+        "features": []
+      }
+    },
+    {
+      "version": "0.2.4",
+      "changes": {
+        "security": [],
+        "bugfixes": [
+          "Fix undefined error in integration module ([#74](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/74))"
+        ],
+        "features": []
+      }
+    },
+    {
+      "version": "0.2.3",
+      "changes": {
+        "security": [],
+        "bugfixes": [
+          "Fixed missing fetch dependency error ([#72](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/72))"
+        ],
+        "features": []
+      }
+    },
+    {
+      "version": "0.2.2",
+      "changes": {
+        "security": [],
+        "bugfixes": [
+          "Fixed an integration check binding bug ([#70](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/70))"
+        ],
+        "features": []
+      }
+    },
+    {
+      "version": "0.2.1",
+      "changes": {
+        "security": [],
+        "bugfixes": [
+          "Fixed a reference error for getCallerIdentity ([#69](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/69))"
+        ],
+        "features": []
+      }
+    },
+    {
+      "version": "0.2.0",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Added installation of the New Relic Lambda integration and log ingestion function ([#61](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/61))",
+          "Some functionality now requires the newRelic.apiKey to be set"
+        ]
+      }
+    },
+    {
+      "version": "0.1.2.0",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Moved plugin skipping to constructor (thanks @karopolopoulos) ([#60](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/60))"
+        ]
+      }
+    },
+    {
+      "version": "0.1.19",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Added config option to specify stages for layer deployment (thanks @karopolopoulos) ([#56](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/56))"
+        ]
+      }
+    },
+    {
+      "version": "0.1.18",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Updated the New Relic Layers API to layers.newrelic-external.com, deprecating nr-layers.iopipe.com"
+        ]
+      }
+    },
+    {
+      "version": "0.1.17",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Optimized async HTTP requests the plugin makes during instrumentation ([#49](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/49))"
+        ]
+      }
+    },
+    {
+      "version": "0.1.16",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Added RequestId log filter pattern"
+        ]
+      }
+    },
+    {
+      "version": "0.1.15",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Added include configuration for wrapping functions",
+          "Added tslint-on-commit",
+          "Updated ReadMe"
+        ]
+      }
+    },
+    {
+      "version": "0.1.14",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Addressed tslint complaints"
+        ]
+      }
+    },
+    {
+      "version": "0.1.13",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Added customizable log level",
+          "Added jest test"
+        ]
+      }
+    },
+    {
+      "version": "0.1.12",
+      "changes": {
+        "security": [],
+        "bugfixes": [
+          "Updated the log filter subscription pattern so that the filter string is only wrapped once, and passes pattern validation."
+        ],
+        "features": []
+      }
+    },
+    {
+      "version": "0.1.11",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Updated the log subscription pattern to capture timeouts ([#37](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/37))"
+        ]
+      }
+    },
+    {
+      "version": "0.1.10",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Added warning if competing log subscription filter detected ([#33](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/33))"
+        ]
+      }
+    },
+    {
+      "version": "0.1.9",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Added ability to disable auto subscription",
+          "Added log ingestion function parameterization",
+          "Replaced forEach with for ... of. Thank you to @kamaz !"
+        ]
+      }
+    },
+    {
+      "version": "0.1.8",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Fixed forEach async bug [#24](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/24) (thanks @kamaz)"
+        ]
+      }
+    },
+    {
+      "version": "0.1.7",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Forced new version to keep package.json in sync with release.",
+          "Merged pull request #22 from iopipe/issue/20-need-new-tags-for-ci"
+        ]
+      }
+    },
+    {
+      "version": "0.1.6",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Bumped plugin version"
+        ]
+      }
+    },
+    {
+      "version": "0.1.5",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Corrected the plugin name reference in ordering check."
+        ]
+      }
+    },
+    {
+      "version": "0.1.4",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Added python3.8 Runtime Support [#16](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/16)"
+        ]
+      }
+    },
+    {
+      "version": "0.1.3",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Added cloudWatchFilter option to customize the CloudWatch Log Filter [#11](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/11) (thanks @justinrcs)",
+          "Added support for the nodejs12.x runtime [#12](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/12)"
+        ]
+      }
+    },
+    {
+      "version": "0.1.2",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Bumped version to pass CircleCI builds"
+        ]
+      }
+    },
+    {
+      "version": "0.1.1",
+      "changes": {
+        "security": [],
+        "bugfixes": [],
+        "features": [
+          "Fixed typo"
+        ]
+      }
+    },
+    {
+      "version": "0.1.0",
+      "changes": {
+        "security": [],
+        "bugfixes": [
+          "Fix Circle CI config typo"
+        ],
+        "features": []
+      }
+    }
+  ]
+}
