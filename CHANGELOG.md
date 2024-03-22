@@ -1,11 +1,3 @@
-#### Features
-#### Miscellaneous chores
-#### Tests
-#### Code refactoring
-#### Bug fixes
-#### ⚠ BREAKING CHANGES
-
-
 ### v5.0.1 (2024-02-13)
 
 #### Bug fixes
