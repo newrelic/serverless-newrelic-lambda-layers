@@ -328,11 +328,11 @@ Removed support for Node 8
 ### v0.1.15 (2020-03-02)
 
 #### Features
-* Added include configuration for wrapping functions, 
+* Added include configuration for wrapping functions 
 * Added tslint-on-commit
-* 
+
 #### Miscellaneous chores
-* updated ReadMe
+* Updated ReadMe
 
 ### v0.1.14 (2020-02-24)
 
@@ -364,7 +364,7 @@ Updated the log filter subscription pattern so that the filter string is only wr
 ### v0.1.9 (2019-12-17)
 
 #### Features
-* Added ability to disable auto subscription, 
+* Added ability to disable auto subscription
 * Added log ingestion function parameterization
 
 #### Code refactoring
