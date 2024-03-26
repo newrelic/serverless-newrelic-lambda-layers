@@ -2,6 +2,16 @@
   "repository": "newrelic/serverless-newrelic-lambda-layers",
   "entries": [
     {
+      "version": "5.1.0",
+      "changes": {
+        "security": [],
+        "bugfixes": [
+          "Added GitHub Actions workflows for validate (lint, test), and publish"
+        ],
+        "features": []
+      }
+    },
+    {
       "version": "5.0.1",
       "changes": {
         "security": [],

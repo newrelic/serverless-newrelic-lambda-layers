@@ -1,3 +1,49 @@
+### v5.1.0 (2024-03-26)
+
+#### Bug fixes
+
+* Added GitHub Actions workflows for validate (lint, test), and publish ([#412](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/412)) ([99a396b](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/99a396bd02910d1b9db9956ef5866f73d3bd2ff3))
+    * Signed-off-by: mrickard <maurice@mauricerickard.com>
+
+#### Miscellaneous chores
+
+* Added pull_request trigger and uploading test coverage ([#412](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/412)) ([c51fb96](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/c51fb96f695e8f7c07e807eab64aae9e885553cb))
+    * Signed-off-by: mrickard <maurice@mauricerickard.com>
+* Added test coverage upload ([#412](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/412)) ([4361a03](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/4361a030dd6dbd893a33538ed4491e804e34ff02))
+    * Signed-off-by: mrickard <maurice@mauricerickard.com>
+* adds a workflow to add any new issues or prs to our GH engineering board ([#419](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/419)) ([bbe45c2](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/bbe45c2c241cbb221b54c7b520aac68731587499))
+* Bumped version ([#407](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/407)) ([d66dedc](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/d66dedcf85e5f2d21a909e7ceeb21bcd5ca26781))
+    * Signed-off-by: mrickard <maurice@mauricerickard.com>
+* **ci:** Added changelog.json to unblock release ([#423](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/423)) ([6fbc27b](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/6fbc27b6a7a08b37ef5fae04fd1c372a5a4a0323))
+* **ci:** Automated release creation ([#421](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/421)) ([9a05e0b](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/9a05e0b4b7e28adb83c782ec2eceb639d168a8b0))
+    * Signed-off-by: mrickard <maurice@mauricerickard.com>
+* **ci:** Reverted ci to GHA v3 ([#425](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/425)) ([757e07f](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/757e07f453da7433bcbc8eefa548b96b9d6e1b77))
+    * Signed-off-by: mrickard <maurice@mauricerickard.com>
+* **deps-dev:** bump follow-redirects in /examples/python ([#413](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/413)) ([4cce79e](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/4cce79e3b9341ce903ae5cf1399779e49b116578))
+    * Bumps [follow-redirects](https://github.com/follow-redirects/follow-redirects) from 1.15.4 to 1.15.6. - [Release notes](https://github.com/follow-redirects/follow-redirects/releases) - [Commits](https://github.com/follow-redirects/follow-redirects/compare/v1.15.4...v1.15.6)
+* **deps:** bump es5-ext from 0.10.62 to 0.10.64 ([#407](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/407)) ([6984edc](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/6984edcc0b1c891fc1f0ec0c9daf259ab7cf843b))
+    * Bumps [es5-ext](https://github.com/medikoo/es5-ext) from 0.10.62 to 0.10.64. - [Release notes](https://github.com/medikoo/es5-ext/releases) - [Changelog](https://github.com/medikoo/es5-ext/blob/main/CHANGELOG.md) - [Commits](https://github.com/medikoo/es5-ext/compare/v0.10.62...v0.10.64)
+* Fix for test coverage upload ([#412](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/412)) ([bde102b](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/bde102bad1f790fd38b509d3b758d5ee11719a90))
+    * Signed-off-by: mrickard <maurice@mauricerickard.com>
+* Fix for test coverage upload ([#412](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/412)) ([d80805f](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/d80805f3ad0780ea341d3b2bb573987608cf9fa0))
+    * Signed-off-by: mrickard <maurice@mauricerickard.com>
+* Removed .npmrc-ci ([#412](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/412)) ([1a75756](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/1a757565e54c795fba49e7ce20fa3f984895fac3))
+    * Signed-off-by: mrickard <maurice@mauricerickard.com>
+* Removed CircleCI jobs, in favor of GitHub Actions ([#412](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/412)) ([7439422](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/743942285af51a0749f867e671573421b990a550))
+    * Signed-off-by: mrickard <maurice@mauricerickard.com>
+* Removed verbose for codecov ([#412](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/412)) ([9dd7d9a](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/9dd7d9a903655854798f08c6f952dce13fd5ca58))
+    * Signed-off-by: mrickard <maurice@mauricerickard.com>
+* Tweaked GHA job names ([#412](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/412)) ([cd546d4](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/cd546d4d9aa4cebd11c6ec899708f2cdbd92faf6))
+    * Signed-off-by: mrickard <maurice@mauricerickard.com>
+* Updated follow-redirects ([#418](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/418)) ([f633a93](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/f633a933ce8a6b164129d3286c3f95958bf9ccdb))
+    * Signed-off-by: mrickard <maurice@mauricerickard.com>
+* Updated test fixtures ([#412](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/412)) ([92e1cf0](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/92e1cf0d8ea6908097b95d64dbf6a879cbfcb42f))
+    * Signed-off-by: mrickard <maurice@mauricerickard.com>
+* Updated test fixtures ([#407](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/407)) ([b5fce25](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/b5fce25df9004b5207f39c9fd9d09a4bd8eb7972))
+    * Signed-off-by: mrickard <maurice@mauricerickard.com>
+* Whitespace added to trigger CI ([#407](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/407)) ([216fedf](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/216fedfa5674635d2647496ee7d88bae05608004))
+    * Signed-off-by: mrickard <maurice@mauricerickard.com>
+
 ### v5.0.1 (2024-02-13)
 
 #### Bug fixes
