@@ -545,7 +545,8 @@ or make sure that you already have Serverless 3.x installed in your project.
       environment.CORECLR_ENABLE_PROFILING = "1";
       environment.CORECLR_PROFILER = "{36032161-FFC0-4B61-B559-F6C5D41BAE5A}";
       environment.CORECLR_NEWRELIC_HOME = "/opt/lib/newrelic-dotnet-agent";
-      environment.CORECLR_PROFILER_PATH = "/opt/lib/newrelic-dotnet-agent/libNewRelicProfiler.so";
+      environment.CORECLR_PROFILER_PATH =
+        "/opt/lib/newrelic-dotnet-agent/libNewRelicProfiler.so";
     }
 
     const extensionDisabled =
