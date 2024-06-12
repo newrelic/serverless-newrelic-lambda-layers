@@ -1,3 +1,13 @@
+### v5.2.1 (2024-06-12)
+
+#### Miscellaneous chores
+
+* removed add-to-board which adds issues/PRs to Node.js agent team github board ([#446](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/446)) ([8162697](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/8162697ae3f31214e8835b2613914f28d886039f))
+
+#### Continuous integration
+
+* Updated create release to pass in `build: true` ([#450](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/450)) ([4fd4ea3](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/4fd4ea31c248c68122a9d8e84f3e5a706d35e35c))
+
 ### v5.2.0 (2024-06-11)
 
 #### Features
