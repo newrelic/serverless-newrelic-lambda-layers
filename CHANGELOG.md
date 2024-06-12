@@ -1,3 +1,10 @@
+### v5.3.0 (2024-06-12)
+
+#### Features
+
+* Add support for .NET agent lambdas using the layer. ([#440](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/440)) ([7bd2621](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/7bd262130608ca4db9b2951768c25f371ff4d802))
+    * Co-authored-by: Alex Hemsath <ahemsath@newrelic.com> Co-authored-by: Alex Hemsath <57361211+nr-ahemsath@users.noreply.github.com>
+
 ### v5.2.1 (2024-06-12)
 
 #### Miscellaneous chores
