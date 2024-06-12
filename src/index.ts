@@ -32,6 +32,9 @@ const wrappableRuntimeList = [
   "java11",
   "java17",
   "java21",
+  "dotnet6",
+  "dotnet7",
+  "dotnet8",
 ];
 
 export default class NewRelicLambdaLayerPlugin {
@@ -536,6 +539,15 @@ or make sure that you already have Serverless 3.x installed in your project.
 
     if (runtime.match("python")) {
       environment.NEW_RELIC_SERVERLESS_MODE_ENABLED = "true";
+    }
+
+    // Uses same layer as CLI so the paths will be the same
+    if (runtime.match("dotnet")) {
+      environment.CORECLR_ENABLE_PROFILING = "1";
+      environment.CORECLR_PROFILER = "{36032161-FFC0-4B61-B559-F6C5D41BAE5A}";
+      environment.CORECLR_NEWRELIC_HOME = "/opt/lib/newrelic-dotnet-agent";
+      environment.CORECLR_PROFILER_PATH =
+        "/opt/lib/newrelic-dotnet-agent/libNewRelicProfiler.so";
     }
 
     const extensionDisabled =
