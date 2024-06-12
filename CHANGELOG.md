@@ -11,36 +11,10 @@
 #### Miscellaneous chores
 
 * **ci:** Removed redundant publish.yml workflow ([#427](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/427)) ([b392bdc](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/b392bdcfc1e6160cc3e9dd374ad9aca764d20d52))
-* release v5.1.1 ([#435](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/435)) ([22216dd](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/22216dda1257be4f65ecaa3a214eb1c006f912f6))
-    * Co-authored-by: mrickard <gh-actions-mrickard@github.com> Co-authored-by: Saket Chaudhary <118331906+chaudharysaket@users.noreply.github.com>
 
 #### Tests
 
 * **layer:** upgrade Lambda layer version in tests NR-278207 ([#442](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/442)) ([1b7a6f7](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/1b7a6f75fd69c8058c42367c8ceffaa978f0c038))
-    * Merging and closing
-* Updated ARNs to contain latest layer versions ([#432](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/432)) ([8414422](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/8414422f70307397485860ab47e4149511e67042))
-
-#### Continuous integration
-
-* Removed `use_new_release` input from prepare release workflow ([#430](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/430)) ([e339d48](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/e339d4802b8779f1968c88c9b7c298d35ffc2aaf))
-* removed changelog.json file ([#429](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/429)) ([924c798](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/924c798f800c67e5a5be14760df45e7c94d6068f))
-
-### v5.1.1 (2024-04-29)
-
-#### Features
-
-* Added python 3.12 ([#434](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/434)) ([a429cde](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/a429cde681122945d5d5008ef573236a31fac724))
-
-#### Security improvements
-
-* **deps:** bump tar from 6.1.13 to 6.2.1 ([#431](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/431)) ([92fa210](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/92fa210a1caac612979cb7fb34c4e78e5532c416))
-
-#### Miscellaneous chores
-
-* **ci:** Removed redundant publish.yml workflow ([#427](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/427)) ([b392bdc](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/b392bdcfc1e6160cc3e9dd374ad9aca764d20d52))
-
-#### Tests
-
 * Updated ARNs to contain latest layer versions ([#432](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/432)) ([8414422](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/8414422f70307397485860ab47e4149511e67042))
 
 #### Continuous integration
