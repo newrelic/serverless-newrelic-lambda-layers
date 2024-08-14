@@ -376,6 +376,7 @@ This plugin currently supports the following AWS runtimes:
 - java17
 - java21
 - provided.al2
+- provided.al2023
 
 ## Contributing
 
