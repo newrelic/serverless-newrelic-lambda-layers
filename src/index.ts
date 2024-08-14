@@ -36,6 +36,7 @@ const wrappableRuntimeList = [
   "dotnet7",
   "dotnet8",
   "provided.al2",
+  "provided.al2023",
 ];
 
 export default class NewRelicLambdaLayerPlugin {
