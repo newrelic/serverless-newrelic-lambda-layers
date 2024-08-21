@@ -358,6 +358,17 @@ custom:
     proxy: http://yourproxy.com:8080
 ```
 
+#### `manualLicenseKeyManagement` (optional)
+
+Removal of manual license key injection through either environment variables or secrets.
+You must either configure the new relic secret or `NEW_RELIC_LICENSE_KEY` variable to correct values.
+
+```yaml
+custom:
+  newRelic:
+    manualLicenseKeyManagement: false
+```
+
 ## Supported Runtimes
 
 This plugin currently supports the following AWS runtimes:
