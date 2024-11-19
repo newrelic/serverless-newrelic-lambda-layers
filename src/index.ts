@@ -35,6 +35,7 @@ const wrappableRuntimeList = [
   "dotnet6",
   "dotnet7",
   "dotnet8",
+  "dotnet9",
   "provided.al2",
   "provided.al2023",
 ];
