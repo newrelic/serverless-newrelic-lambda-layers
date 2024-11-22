@@ -7,7 +7,7 @@ observability using [AWS Lambda Layers](https://docs.aws.amazon.com/lambda/lates
 
 ## Requirements
 
-- [serverless](https://github.com/serverless/serverless) >= 3.x (v3.x of this plugin has been tested to work with Serverless v2, but future compatibility is not guaranteed.)
+- [serverless](https://github.com/serverless/serverless) v3.x & v4.x (This plugin has been tested to work with Serverless Framework v3 & v4)
 - [Node](https://nodejs.org/) >= 14.x (if using Serverless version 3)
 
 ## Features
@@ -375,6 +375,8 @@ This plugin currently supports the following AWS runtimes:
 - java11
 - java17
 - java21
+- provided.al2
+- provided.al2023
 
 ## Contributing
 
