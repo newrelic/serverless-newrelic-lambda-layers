@@ -333,7 +333,15 @@ custom:
   newRelic:
     disableLicenseKeySecret: true
 ```
+#### `enableDistributedTracing` (optional)
 
+Only required if you want to disable distributed tracing.
+
+```yaml
+custom:
+  newRelic:
+  enableDistributedTracing: false
+```
 #### `javaNewRelicHandler` (optional)
 
 **Java runtimes only**. Only required if you are implementing the `RequestStreamHandler` interface.
