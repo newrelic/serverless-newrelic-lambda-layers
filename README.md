@@ -340,7 +340,7 @@ Only required if you want to disable distributed tracing.
 ```yaml
 custom:
   newRelic:
-  enableDistributedTracing: false
+     enableDistributedTracing: false
 ```
 #### `javaNewRelicHandler` (optional)
 
