@@ -28,6 +28,7 @@ const wrappableRuntimeList = [
   "python3.10",
   "python3.11",
   "python3.12",
+  "python3.13",
   "java8.al2",
   "java11",
   "java17",
