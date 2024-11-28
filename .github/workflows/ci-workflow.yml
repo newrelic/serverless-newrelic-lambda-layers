@@ -42,7 +42,7 @@ jobs:
       - name: Run Snapshot Tests
         run: npm test
       - name: Upload Unit Test Coverage
-        uses: codecov/codecov-action@v4.4.1
+        uses: codecov/codecov-action@5.0.7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage/lcov.info
