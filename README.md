@@ -7,7 +7,7 @@ observability using [AWS Lambda Layers](https://docs.aws.amazon.com/lambda/lates
 
 ## Requirements
 
-- [serverless](https://github.com/serverless/serverless) >= 3.x (v3.x of this plugin has been tested to work with Serverless v2, but future compatibility is not guaranteed.)
+- [serverless](https://github.com/serverless/serverless) v3.x & v4.x (This plugin has been tested to work with Serverless Framework v3 & v4)
 - [Node](https://nodejs.org/) >= 14.x (if using Serverless version 3)
 
 ## Features
@@ -207,7 +207,7 @@ Logging configuration is considered in the following order:
 
 #### `manualWrapping` (optional)
 
-Functions with many dependencies may experience longer cold start times with dynamic wrapping. One possible remediation is to [wrap the function manually[(https://docs.newrelic.com/docs/serverless-function-monitoring/aws-lambda-monitoring/enable-lambda-monitoring/enable-serverless-monitoring-aws-lambda-legacy/#node), and bypass the no-code-change wrapping. If you enable this option, you'll need to `require` (or, for ESM, `import`) the New Relic Node Agent, and wrap the body of your handler function. You would still be able to take advantage of the easy installation of the agent via Lambda Layers, and still have telemetry transported to New Relic via the Lambda Extension. We recommend that you include the New Relic Node Agent as a devDependency for local development, and omit it from the dependencies you deploy.  Defaults to `false`. 
+Functions with many dependencies may experience longer cold start times with dynamic wrapping. One possible remediation is to [wrap the function manually](https://docs.newrelic.com/docs/serverless-function-monitoring/aws-lambda-monitoring/enable-lambda-monitoring/enable-serverless-monitoring-aws-lambda-legacy/#node), and bypass the no-code-change wrapping. If you enable this option, you'll need to `require` (or, for ESM, `import`) the New Relic Node Agent, and wrap the body of your handler function. You would still be able to take advantage of the easy installation of the agent via Lambda Layers, and still have telemetry transported to New Relic via the Lambda Extension. We recommend that you include the New Relic Node Agent as a devDependency for local development, and omit it from the dependencies you deploy.  Defaults to `false`. 
 
 ```yaml
 custom:
@@ -333,7 +333,15 @@ custom:
   newRelic:
     disableLicenseKeySecret: true
 ```
+#### `enableDistributedTracing` (optional)
 
+Only required if you want to disable distributed tracing.
+
+```yaml
+custom:
+  newRelic:
+     enableDistributedTracing: false
+```
 #### `javaNewRelicHandler` (optional)
 
 **Java runtimes only**. Only required if you are implementing the `RequestStreamHandler` interface.
@@ -381,10 +389,14 @@ This plugin currently supports the following AWS runtimes:
 - python3.9
 - python3.10
 - python3.11
+- python3.12
+- python3.13
 - java8.al2
 - java11
 - java17
 - java21
+- provided.al2
+- provided.al2023
 
 ## Contributing
 
