@@ -22,6 +22,7 @@ const wrappableRuntimeList = [
   "nodejs16.x",
   "nodejs18.x",
   "nodejs20.x",
+  "nodejs22.x",
   "python3.7",
   "python3.8",
   "python3.9",
