@@ -75,6 +75,23 @@
         ]
       },
       "runtime": "nodejs20.x"
+    },
+    "layer-nodejs22x": {
+      "events": [
+        {
+          "schedule": "rate(5 minutes)"
+        }
+      ],
+      "handler": "handler.handler",
+      "package": {
+        "exclude": [
+          "./**"
+        ],
+        "include": [
+          "handler.js"
+        ]
+      },
+      "runtime": "nodejs22.x"
     }
   }
 }
