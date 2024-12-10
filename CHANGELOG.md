@@ -1,3 +1,24 @@
+### v5.6.0 (2024-12-10)
+
+#### Features
+
+* Added support for Python 3.13 runtime ([#480](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/480)) ([a64bac5](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/a64bac5dfbd4c1d71b87172905f4e89e2a67f1e3))
+* Adding support to Node js v22 runtime and updating test cases. ([#483](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/483)) ([b6fb279](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/b6fb279ba7aa10e265c9214ecc37bf2d3d9e0254))
+* updating code cov version ([#481](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/481)) ([632bed9](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/632bed9f1dc1f6502b118e783609ba4243d11801))
+
+#### Bug fixes
+
+* Fix markdown link in manualWrapping option ([#437](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/437)) ([12b06f3](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/12b06f374b1092f0e03f1088558e8538d82799e5))
+    * Co-authored-by: Chodavarapu Naga Viswanadha Avinash <aavinash@newrelic.com>
+
+#### Documentation
+
+* update readme as per latest release ([#479](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/479)) ([6a9463f](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/6a9463f2c354c57b14c48bcd9ebb701bff927dbb))
+
+#### Miscellaneous chores
+
+* Update README.md ([#482](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/482)) ([a6cf48c](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/a6cf48cec0ee8c2940e0d7941acce184498756ef))
+
 ### v5.5.0 (2024-11-21)
 
 #### Features
