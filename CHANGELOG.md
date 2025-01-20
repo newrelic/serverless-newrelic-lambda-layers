@@ -1,3 +1,9 @@
+### v5.6.1 (2025-01-20)
+
+#### Miscellaneous chores
+
+* Fixing handler not updating for Node.js runtime 22 ([#489](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/489)) ([0161b3b](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/0161b3bd1ad25e55fa45f9efa78dbb36183be089))
+
 ### v5.6.0 (2024-12-10)
 
 #### Features
