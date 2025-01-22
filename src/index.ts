@@ -143,6 +143,13 @@ export default class NewRelicLambdaLayerPlugin {
     return JavaHandler.handleRequest;
   }
 
+  get manualLicenseKeyManagement() {
+    return (
+      this.config.manualLicenseKeyManagement &&
+      this.config.manualLicenseKeyManagement === "boolean"
+    )
+  }
+
   get functions() {
     return Object.assign.apply(
       null,
@@ -217,29 +224,31 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
 
       let managedSecret;
 
-      if (secretAccess && secretAccess.secretExists) {
-        this.managedSecretConfigured = true;
-      } else {
-        // Secret doesn't exist, so create it
-        managedSecret = await new Integration(this).createManagedSecret();
-        if (managedSecret && managedSecret.policyArn) {
+      if (!this.manualLicenseKeyManagement) {
+        if (secretAccess && secretAccess.secretExists) {
           this.managedSecretConfigured = true;
+        } else {
+          // Secret doesn't exist, so create it
+          managedSecret = await new Integration(this).createManagedSecret();
+          if (managedSecret && managedSecret.policyArn) {
+            this.managedSecretConfigured = true;
+          }
         }
-      }
 
-      if (
-        secretAccess &&
-        secretAccess.currentRegionPolicy &&
-        secretAccess.currentRegionPolicy.length &&
-        secretAccess.currentRegionPolicy.length > 0
-      ) {
-        const policyArn = secretAccess.currentRegionPolicy[0].Arn;
-        this.mgdPolicyArns = [...this.managedPolicyArns, policyArn];
-      } else if (this.managedSecretConfigured) {
-        this.mgdPolicyArns = [
-          ...this.managedPolicyArns,
-          managedSecret.policyArn,
-        ];
+        if (
+          secretAccess &&
+          secretAccess.currentRegionPolicy &&
+          secretAccess.currentRegionPolicy.length &&
+          secretAccess.currentRegionPolicy.length > 0
+        ) {
+          const policyArn = secretAccess.currentRegionPolicy[0].Arn;
+          this.mgdPolicyArns = [...this.managedPolicyArns, policyArn];
+        } else if (this.managedSecretConfigured) {
+          this.mgdPolicyArns = [
+            ...this.managedPolicyArns,
+            managedSecret.policyArn,
+          ];
+        }
       }
     }
 
@@ -342,17 +351,19 @@ or make sure that you already have Serverless 3.x installed in your project.
       this.log.notice(`HTTP proxy set to ${this.config.proxy}`);
     }
 
-    if (!this.licenseKeySecretDisabled) {
-      // before adding layer, attach secret access policy
-      // to each function's execution role:
-      const resources = this.resources;
-      Object.keys(resources)
-        .filter(
-          (resourceName) => resources[resourceName].Type === `AWS::IAM::Role`
-        )
-        .forEach((roleResource) =>
-          this.applyPolicies(resources[roleResource].Properties)
-        );
+    if (!this.manualLicenseKeyManagement) {
+      if (!this.licenseKeySecretDisabled) {
+        // before adding layer, attach secret access policy
+        // to each function's execution role:
+        const resources = this.resources;
+        Object.keys(resources)
+          .filter(
+            (resourceName) => resources[resourceName].Type === `AWS::IAM::Role`
+          )
+          .forEach((roleResource) =>
+            this.applyPolicies(resources[roleResource].Properties)
+          );
+      }
     }
 
     const funcs = this.functions;
@@ -562,8 +573,10 @@ or make sure that you already have Serverless 3.x installed in your project.
     if (extensionDisabled) {
       environment.NEW_RELIC_LAMBDA_EXTENSION_ENABLED = "false";
     } else {
-      if (!this.managedSecretConfigured && this.licenseKey) {
-        environment.NEW_RELIC_LICENSE_KEY = this.licenseKey;
+      if (!this.manualLicenseKeyManagement) {
+        if (!this.managedSecretConfigured && this.licenseKey) {
+          environment.NEW_RELIC_LICENSE_KEY = this.licenseKey;
+        }
       }
 
       if (
