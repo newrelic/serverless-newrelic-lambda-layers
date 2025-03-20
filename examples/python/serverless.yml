@@ -20,31 +20,11 @@ custom:
   newRelic:
     accountId: ${env:NEW_RELIC_ACCOUNT_ID}
     apiKey: ${env:NEW_RELIC_PERSONAL_API_KEY}
+    
     debug: true
 
 functions:
-  layer-python36:
-    events:
-      - schedule: rate(5 minutes)
-    handler: handler.handler
-    package:
-      exclude:
-        - ./**
-      include:
-        - handler.py
-    runtime: python3.6
-
-  layer-python37:
-    events:
-      - schedule: rate(5 minutes)
-    handler: handler.handler
-    package:
-      exclude:
-        - ./**
-      include:
-        - handler.py
-    runtime: python3.7
-
+  
   layer-python38:
     events:
       - schedule: rate(5 minutes)
@@ -66,3 +46,47 @@ functions:
       include:
         - handler.py
     runtime: python3.9
+
+  layer-python310:
+    events:
+      - schedule: rate(5 minutes)
+    handler: handler.handler
+    package:
+      exclude:
+        - ./**
+      include:
+        - handler.py
+    runtime: python3.10
+
+  layer-python311:
+    events:
+      - schedule: rate(5 minutes)
+    handler: handler.handler
+    package:
+      exclude:
+        - ./**
+      include:
+        - handler.py
+    runtime: python3.11
+
+  layer-python312:
+    events:
+      - schedule: rate(5 minutes)
+    handler: handler.handler
+    package:
+      exclude:
+        - ./**
+      include:
+        - handler.py
+    runtime: python3.12
+  
+  layer-python313:
+    events:
+      - schedule: rate(5 minutes)
+    handler: handler.handler
+    package:
+      exclude:
+        - ./**
+      include:
+        - handler.py
+    runtime: python3.13
