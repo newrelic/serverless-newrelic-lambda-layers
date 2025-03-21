@@ -4,7 +4,7 @@ provider:
   name: aws
   stage: test
   region: us-east-1
-  runtime: python3.6
+  runtime: python3.13
 
 plugins:
   - serverless-python-requirements
@@ -13,13 +13,14 @@ plugins:
 custom:
   newRelic:
     accountId: ${env:NEW_RELIC_ACCOUNT_ID}
+    apiKey: ${env:NEW_RELIC_PERSONAL_API_KEY}
     debug: true
   pythonRequirements:
     dockerizePip: true
     layer: true
 
 functions:
-  layer-python36:
+  layer-python313:
     events:
       - schedule: rate(5 minutes)
     handler: sample_app.handlers.handler
