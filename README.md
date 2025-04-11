@@ -170,6 +170,22 @@ custom:
     enableExtensionLogs: false
 ```
 
+#### `nrTags` (optional)
+Specify tags to be added to all log events. Optional. Each tag is composed of a colon-delimited key and value. Multiple key-value pairs are semicolon-delimited; for example, env:prod;team:myTeam.
+```yaml
+custom:
+  newRelic:
+    nrTags:'env:prod;team:myTeam'
+```
+
+#### `nrEnvDelimiter` (optional)
+Some users in UTF-8 environments might face difficulty in defining strings of `NR_TAGS` delimited by the semicolon `;` character. Use NR_ENV_DELIMITER, to set custom delimiter for `NR_TAGS`.
+```yaml
+custom:
+  newRelic:
+    nrEnvDelimiter:','
+```
+
 #### `logEnabled` (optional)
 
 Enables logging when using CloudWatch-based telemetry transport with the newrelic-log-ingestion Lambda function. Defaults to `false`
