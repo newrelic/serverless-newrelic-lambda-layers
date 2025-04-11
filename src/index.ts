@@ -559,6 +559,12 @@ or make sure that you already have Serverless 3.x installed in your project.
       (this.config.enableExtension === "false" ||
         this.config.enableExtension === false);
 
+    if (!_.isUndefined(this.config.nrTags)) {
+      environment.NR_TAGS = this.config.nrTags;
+    }
+    if (!_.isUndefined(this.config.nrEnvDelimiter)) {
+      environment.NR_ENV_DELIMETER = this.config.nrEnvDelimiter;
+    }
     if (extensionDisabled) {
       environment.NEW_RELIC_LAMBDA_EXTENSION_ENABLED = "false";
     } else {
