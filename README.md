@@ -150,6 +150,26 @@ custom:
   newRelic:
     enableExtension: true
 ```
+
+#### `sendFunctionLogs` (optional)
+
+Allows your function to deliver all of your function logs to New Relic via AWS Lambda Extension. The `sendFunctionLogs` config works identically to the older `enableFunctionLogs`. This new config has been introduced for consistency with `sendExtensionLogs`. While the new naming provides improved clarity, `enableFunctionLogs` remains available to ensure backward compatibility.
+
+```yaml
+custom:
+  newRelic:
+    sendFunctionLogs: true
+```
+
+#### `sendExtensionLogs` (optional)
+Allows your function to deliver all of your `extension logs` to New Relic via AWS Lambda Extension. 
+
+```yaml
+custom:
+  newRelic:
+    enableFunctionLogs: true
+```
+
 #### `enableFunctionLogs` (optional)
 
 Allows your function to deliver all of your function logs to New Relic via AWS Lambda Extension. This would eliminate the need for a CloudWatch log subscription + the NR log ingestion Lambda function. This method of log ingestion is lower-cost, and offers faster time to glass.  
