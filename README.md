@@ -167,7 +167,7 @@ Allows your function to deliver all of your `extension logs` to New Relic via AW
 ```yaml
 custom:
   newRelic:
-    enableFunctionLogs: true
+    sendExtensionLogs: true
 ```
 
 #### `enableFunctionLogs` (optional)
