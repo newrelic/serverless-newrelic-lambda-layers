@@ -13,7 +13,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "serverless": "^4.9.0",
+    "serverless": "^4.12.0",
     "serverless-python-requirements": "^5.3.1"
   }
 }
