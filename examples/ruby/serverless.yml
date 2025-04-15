@@ -1,0 +1,27 @@
+service: newrelic-ruby-test
+
+provider:
+  name: aws
+  stage: prod
+  region: us-east-1
+
+plugins:
+  - serverless-newrelic-lambda-layers
+
+custom:
+  newRelic:
+    accountId: ${env:NEW_RELIC_ACCOUNT_ID}
+    apiKey: ${env:NEW_RELIC_PERSONAL_API_KEY}
+    logLevel: debug
+
+functions:
+  layer-ruby33:
+    events:
+      - schedule: rate(5 minutes)
+    handler: app.lambda_handler
+    package:
+      exclude:
+        - ./**
+      include:
+        - app.rb
+    runtime: ruby3.3

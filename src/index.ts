@@ -39,6 +39,8 @@ const wrappableRuntimeList = [
   "dotnet8",
   "provided.al2",
   "provided.al2023",
+  "ruby3.2",
+  "ruby3.3",
 ];
 
 export default class NewRelicLambdaLayerPlugin {
@@ -739,6 +741,9 @@ or make sure that you already have Serverless 3.x installed in your project.
       return "newrelic_lambda_wrapper.handler";
     }
 
+    if (runtime.match("ruby")) {
+      return "newrelic_lambda_wrapper.handler";
+    }
     if (["java21", "java17", "java11", "java8.al2"].indexOf(runtime) !== -1) {
       return `com.newrelic.java.HandlerWrapper::${this.javaNewRelicHandler}`;
     }
