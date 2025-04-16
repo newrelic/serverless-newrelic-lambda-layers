@@ -69,5 +69,8 @@
     "tracing",
     "distributed tracing",
     "layers"
-  ]
+  ],
+  "engines": {
+    "node": ">=16.0.0 <=22.0.0"
+  }
 }
