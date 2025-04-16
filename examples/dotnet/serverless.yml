@@ -1,7 +1,3 @@
-# "org" ensures this Service is used with the correct Serverless Framework Access Key.
-org: avinashtechie21
-# "app" enables Serverless Framework Dashboard features and sharing them with other Services.
-app: nodejs-test
 service: newrelic-serverless-dotnet-example
 
 
