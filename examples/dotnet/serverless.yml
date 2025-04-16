@@ -1,0 +1,31 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: avinashtechie21
+# "app" enables Serverless Framework Dashboard features and sharing them with other Services.
+app: nodejs-test
+service: newrelic-serverless-dotnet-example
+
+
+
+provider:
+  name: aws
+  stage: prod
+  region: us-east-1
+
+package:
+  artifact: 'newrelic-serverless-dotnet-example.zip'
+
+plugins:
+  - serverless-newrelic-lambda-layers
+
+custom:
+  newRelic:
+    accountId: ${env:NEW_RELIC_ACCOUNT_ID}
+    apiKey: ${env:NEW_RELIC_PERSONAL_API_KEY}
+    logLevel: debug
+
+functions:
+  layer-dotnet8:
+    events:
+      - schedule: rate(5 minutes)
+    handler:  NewrelicExample::NewrelicExample.Function::FunctionHandler        
+    runtime: dotnet8
