@@ -1,3 +1,49 @@
+### v5.7.1 (2025-04-22)
+
+#### Features
+
+* add sendFunctionLogs & sendExtensionLogs config params ([#497](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/497)) ([0556094](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/05560943de66746d8df7ee12b58ea1a1deb1c781))
+* added feature to add nrTags and customise nrEnvDelimiter ([#494](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/494)) ([c27b89b](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/c27b89bf7beafe9b4ea89f7be878dd94bd9ca78d))
+* adding ruby runtime support and example ([#509](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/509)) ([f592cac](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/f592cac3995b369ade05e8c41999b4ac0738ee67))
+
+#### Security improvements
+
+* **deps:** bump axios from 1.6.2 to 1.7.7 ([#473](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/473)) ([3174ca2](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/3174ca2a37a48805c91b8714cf9d63c88cba4bc2))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com> Co-authored-by: Chodavarapu Naga Viswanadha Avinash <aavinash@newrelic.com>
+* **deps:** bump axios from 1.7.7 to 1.8.4 ([#498](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/498)) ([0f4fbe0](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/0f4fbe01ebfbe581476a16234d42023e2beb6cd4))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+
+#### Miscellaneous chores
+
+* added dotnet8 example ([#512](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/512)) ([9742d1d](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/9742d1d198aef4bcbd918b786d860d3f9c168493))
+* added engines for package.json ([#511](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/511)) ([271e0d9](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/271e0d980b332012dbe6eb70e37e49c3e6ededac))
+* **deps-dev:** bump axios from 1.6.2 to 1.8.4 in /examples/java ([#500](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/500)) ([52a829d](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/52a829d3cd4d90aa37e07d2782e787d192341887))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+* **deps-dev:** bump axios from 1.6.2 to 1.8.4 in /examples/nodejs ([#499](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/499)) ([55ce0ca](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/55ce0cae52a46cd37105d921bd0eaab27e02dd6d))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+* **deps-dev:** bump axios from 1.6.2 to 1.8.4 in /examples/python ([#508](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/508)) ([8364719](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/8364719cea4293f5d38f9d49defc32cb4aeded1b))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+* **deps-dev:** bump braces from 3.0.2 to 3.0.3 in /examples/java ([#507](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/507)) ([36dd0a9](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/36dd0a94541bcd3f6d0b9c80268c25d29760d28c))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+* **deps-dev:** bump braces from 3.0.2 to 3.0.3 in /examples/nodejs ([#506](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/506)) ([a5be1a0](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/a5be1a0024853fdc27b295252874acacfcd7ea11))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+* **deps-dev:** bump braces from 3.0.2 to 3.0.3 in /examples/python ([#475](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/475)) ([ce4ae6c](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/ce4ae6cca6b593912de4bd5060a058af7452541b))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com> Co-authored-by: Chodavarapu Naga Viswanadha Avinash <aavinash@newrelic.com>
+* **deps-dev:** bump ws from 7.5.7 to 7.5.10 in /examples/java ([#474](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/474)) ([f3d2404](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/f3d2404721162bf58a1eaae9072afce0611fe907))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com> Co-authored-by: Chodavarapu Naga Viswanadha Avinash <aavinash@newrelic.com>
+* **deps-dev:** bump ws from 7.5.7 to 7.5.10 in /examples/nodejs ([#505](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/505)) ([c87e79b](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/c87e79b15984173f58b7dc18f5b9af181bee2c2b))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+* **deps:** bump axios from 1.6.2 to 1.7.7 in /examples/python-requirements ([#472](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/472)) ([23d8e29](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/23d8e299c79e888ce7c59028df23a89f6b44837f))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com> Co-authored-by: Chodavarapu Naga Viswanadha Avinash <aavinash@newrelic.com>
+* **deps:** bump axios from 1.7.7 to 1.8.4 in /examples/python-requirements ([#513](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/513)) ([6f3237e](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/6f3237e90f6b989f39e647321644fb0610a95752))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+* update ci-workflow.yml ([#504](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/504)) ([00e98c2](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/00e98c206418865a07cd5a81fe534a623cc20777))
+* updated dependencies version ([#514](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/514)) ([9f3c45a](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/9f3c45a3538357b9270ca1c1fcf002a87efd8e86))
+* Updated examples with latest versions ([#493](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/493)) ([c9cdafc](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/c9cdafc64be8d5bb99f207b4077cf481e6bde381))
+* Updated Serverless version in examples ([#510](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/510)) ([fe18340](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/fe183405263b21f85cd91da228215ecac1fab874))
+* updated test fixures for the serverless repo with latest layers ([#495](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/495)) ([07c2225](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/07c22250218ce4eaa79c71625f4bca8ba589872e))
+* updating test-fixtures with latest versions ([#501](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/501)) ([2474fe6](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/2474fe6f707279e3c7a2b38d188c375d8861b5aa))
+
 ### v5.7.0 (2025-01-20)
 
 #### Miscellaneous chores
