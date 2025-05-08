@@ -8,12 +8,12 @@ observability using [AWS Lambda Layers](https://docs.aws.amazon.com/lambda/lates
 ## Requirements
 
 - [serverless](https://github.com/serverless/serverless) v3.x & v4.x (This plugin has been tested to work with Serverless Framework v3 & v4)
-- [Node](https://nodejs.org/) >= 14.x (if using Serverless version 3)
+- [Node](https://nodejs.org/) >= 16.x (if using Serverless version 3)
 
 ## Features
 
 - Installs and configures the New Relic AWS Integration
-- Supports Node.js, Python and Java runtimes (more runtimes to come)
+- Supports Node.js, Python, Java, Ruby, Dotnet runtimes 
 - No code change required to enable New Relic
 - Bundles New Relic's agent in a single layer
 - Configures CloudWatch subscription filters automatically
@@ -69,9 +69,14 @@ This plugin wraps your handlers without requiring a code change. If you're curre
 using a New Relic agent, you can remove the wrapping code you currently have and this plugin will
 do it for you automatically.
 
-- [Node.js Instrumentation Guide](https://docs.newrelic.com/docs/agents/nodejs-agent/getting-started/introduction-new-relic-nodejs#extend-instrumentation)
-- [Python Instrumentation Guide](https://docs.newrelic.com/docs/agents/python-agent/custom-instrumentation/python-custom-instrumentation)
-- [Java Instrumentation Guide](https://docs.newrelic.com/docs/agents/java-agent/custom-instrumentation/java-custom-instrumentation)
+- [Node.js Instrumentation Guide](https://docs.newrelic.com/docs/apm/agents/nodejs-agent/getting-started/introduction-new-relic-nodejs)
+- [Python Instrumentation Guide](https://docs.newrelic.com/docs/apm/agents/python-agent/getting-started/introduction-new-relic-python)
+- [Java Instrumentation Guide](https://docs.newrelic.com/docs/apm/agents/java-agent/getting-started/introduction-new-relic-java)
+- [Ruby Instrumentation Guide](https://docs.newrelic.com/docs/apm/agents/ruby-agent/getting-started/introduction-new-relic-ruby)
+- [Dotnet Instrumentation Guide](https://docs.newrelic.com/docs/apm/agents/net-agent/getting-started/introduction-new-relic-net)
+
+Follow the instructions in the guide to implement instrumentation with the [Serverless Framework](https://docs.newrelic.com/docs/serverless-function-monitoring/aws-lambda-monitoring/instrument-lambda-function/instrument-your-own/#serverless) 
+
 
 ## Config
 
@@ -410,7 +415,6 @@ This plugin currently supports the following AWS runtimes:
 - nodejs18.x
 - nodejs20.x
 - nodejs22.x
-- python3.7
 - python3.8
 - python3.9
 - python3.10
@@ -421,6 +425,10 @@ This plugin currently supports the following AWS runtimes:
 - java11
 - java17
 - java21
+- ruby 3.2
+- ruby 3.3
+- dotnet 6
+- dotnet 8
 - provided.al2
 - provided.al2023
 
