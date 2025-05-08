@@ -41,6 +41,7 @@ const wrappableRuntimeList = [
   "provided.al2023",
   "ruby3.2",
   "ruby3.3",
+  "ruby3.4",
 ];
 
 export default class NewRelicLambdaLayerPlugin {
