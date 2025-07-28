@@ -195,6 +195,14 @@ custom:
     enableExtensionLogs: false
 ```
 
+#### `apm` (optional)
+Enable APM Lambda Fusion Mode. This feature is in [Limited Preview](https://docs-preview.newrelic.com/docs/apm-serverless-convergence).
+```yaml
+custom:
+  newRelic:
+    apm: true
+```
+
 #### `nrTags` (optional)
 Specify tags to be added to all log events. Optional. Each tag is composed of a colon-delimited key and value. Multiple key-value pairs are semicolon-delimited; for example, env:prod;team:myTeam.
 ```yaml
