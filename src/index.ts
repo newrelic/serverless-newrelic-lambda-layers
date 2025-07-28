@@ -565,6 +565,12 @@ or make sure that you already have Serverless 3.x installed in your project.
     if (!_.isUndefined(this.config.nrTags)) {
       environment.NR_TAGS = this.config.nrTags;
     }
+    if (
+      !_.isUndefined(this.config.apm) &&
+      (this.config.apm === "true" || this.config.apm === true)
+    ) {
+      environment.NEW_RELIC_APM_LAMBDA_MODE = "true";
+    }
     if (!_.isUndefined(this.config.nrEnvDelimiter)) {
       environment.NR_ENV_DELIMETER = this.config.nrEnvDelimiter;
     }
