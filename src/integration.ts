@@ -65,7 +65,7 @@ export default class Integration {
       this.log.notice("Skipping integration check, using ingest key.");
       return;
     }
-      const integrationData = await nerdgraphFetch(
+    const integrationData = await nerdgraphFetch(
       apiKey,
       nrRegion,
       fetchLinkedAccounts(accountId),
@@ -695,10 +695,10 @@ export default class Integration {
   private async formatFunctionVariables() {
     const { logEnabled } = this.config;
     let licenseKey = this.licenseKey;
-    if (!licenseKey){
-      if(this.config.ingestKey) {
+    if (!licenseKey) {
+      if (this.config.ingestKey) {
         licenseKey = this.config.ingestKey;
-      }else{
+      } else {
         licenseKey = await this.retrieveLicenseKey();
       }
     }
