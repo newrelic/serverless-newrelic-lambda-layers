@@ -202,10 +202,10 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
 
   public async configureLicenseForExtension() {
     if (!this.licenseKey) {
-      if (this.config.ingestKey){
-        this.licenseKey= this.config.ingestKey;
+      if (this.config.ingestKey) {
+        this.licenseKey = this.config.ingestKey;
         this.log.notice("Using ingest key as license key.");
-      }else{
+      } else {
         this.licenseKey = await this.retrieveLicenseKey();
       }
       if (!this.licenseKey) {
