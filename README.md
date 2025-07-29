@@ -54,7 +54,13 @@ custom:
     accountId: your-new-relic-account-id-here
     apiKey: your-new-relic-personal-api-key-here
 ```
-
+ or 
+```yaml
+custom:
+  newRelic:
+    accountId: your-new-relic-account-id-here
+    ingestKey: your-new-relic-personal-ingest-key-here
+```
 Deploy:
 
 ```bash
@@ -102,6 +108,16 @@ custom:
     apiKey: your-api-key-here
 ```
 If your function's source is committed to version control, you can avoid committing your license key by including it in your serverless.yml as a variable. See [the Serverless docs on template variables](https://www.serverless.com/framework/docs/providers/aws/guide/variables/) for more information.  
+
+#### `ingestKey` (required)
+
+Your [New Relic Personal API Key](https://docs.newrelic.com/docs/apis/get-started/intro-apis/types-new-relic-api-keys#personal-api-key).
+
+```yaml
+custom:
+  newRelic:
+    apiKey: your-ingest-key-here
+```
 
 #### `nrRegion` (required for EU; optional for US)
 
