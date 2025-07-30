@@ -694,14 +694,10 @@ export default class Integration {
 
   private async formatFunctionVariables() {
     const { logEnabled } = this.config;
-    let licenseKey = this.licenseKey;
-    if (!licenseKey) {
-      if (this.config.ingestKey) {
-        licenseKey = this.config.ingestKey;
-      } else {
-        licenseKey = await this.retrieveLicenseKey();
-      }
-    }
+    const licenseKey =
+      this.licenseKey ||
+      this.config.ingestKey ||
+      (await this.retrieveLicenseKey());
     const loggingVar = logEnabled ? "True" : "False";
 
     return [
