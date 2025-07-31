@@ -1,3 +1,15 @@
+### v5.9.0 (2025-07-31)
+
+#### Features
+
+* apm fusion mode ([#524](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/524)) ([d6149e3](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/d6149e3950c244a93f603c9a80a4e5093c4afcaa))
+* Support for Ingest Key ([#526](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/526)) ([f703457](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/f70345764ad53d2777f7edf02f941515f0a55e37))
+* support to ruby 3.4 ([#520](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/520)) ([c3bed4b](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/c3bed4b1d6f87a0b944a0c820cfd212ad3fcb39f))
+
+#### Miscellaneous chores
+
+* updated README.md ([#519](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/519)) ([b4ada3d](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/b4ada3d108f6e0117942a9ca64c1529dc6aa12e3))
+
 ### v5.8.0 (2025-04-23)
 
 #### Features
