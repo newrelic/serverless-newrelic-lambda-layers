@@ -82,4 +82,231 @@ describe("NewRelicLambdaLayerPlugin", () => {
       });
     });
   });
+  describe("ingest key functionality", () => {
+    it("should use ingest key as license key when provided", async () => {
+      const serverless = new Serverless(config);
+      Object.assign(serverless.service, {
+        service: "test-service",
+        custom: {
+          newRelic: {
+            ingestKey: "test-ingest-key",
+            accountId: "12345"
+          }
+        },
+        functions: {
+          testFunction: {
+            handler: "index.handler",
+            runtime: "nodejs18.x"
+          }
+        }
+      });
+      serverless.cli = new CLI(serverless);
+      serverless.config.servicePath = os.tmpdir();
+      serverless.setProvider("aws", new AwsProvider(serverless, config));
+      
+      const plugin = new NewRelicLambdaLayerPlugin(serverless, config);
+      plugin.checkForSecretPolicy = jest.fn(() => {});
+      plugin.regionPolicyValid = jest.fn(() => true);
+      plugin.retrieveLicenseKey = jest.fn(() => "fallback-license-key");
+
+      await plugin.configureLicenseForExtension();
+
+      expect(plugin.licenseKey).toBe("test-ingest-key");
+      expect(plugin.retrieveLicenseKey).not.toHaveBeenCalled();
+    });
+
+    it("should fallback to retrieveLicenseKey when no ingest key provided", async () => {
+      const serverless = new Serverless(config);
+      Object.assign(serverless.service, {
+        service: "test-service",
+        custom: {
+          newRelic: {
+            accountId: "12345"
+          }
+        },
+        functions: {
+          testFunction: {
+            handler: "index.handler",
+            runtime: "nodejs18.x"
+          }
+        }
+      });
+      serverless.cli = new CLI(serverless);
+      serverless.config.servicePath = os.tmpdir();
+      serverless.setProvider("aws", new AwsProvider(serverless, config));
+      
+      const plugin = new NewRelicLambdaLayerPlugin(serverless, config);
+      plugin.checkForSecretPolicy = jest.fn(() => {});
+      plugin.regionPolicyValid = jest.fn(() => true);
+      plugin.retrieveLicenseKey = jest.fn(() => "retrieved-license-key");
+
+      await plugin.configureLicenseForExtension();
+
+      expect(plugin.retrieveLicenseKey).toHaveBeenCalled();
+      expect(plugin.licenseKey).toBe("retrieved-license-key");
+    });
+  });
+
+  describe("API key validation", () => {
+    it("should not error when ingestKey is provided but apiKey is missing", async () => {
+      const serverless = new Serverless(config);
+      Object.assign(serverless.service, {
+        service: "test-service",
+        custom: {
+          newRelic: {
+            ingestKey: "test-ingest-key",
+            accountId: "12345"
+          }
+        },
+        functions: {
+          testFunction: {
+            handler: "index.handler",
+            runtime: "nodejs18.x"
+          }
+        }
+      });
+      serverless.cli = new CLI(serverless);
+      serverless.config.servicePath = os.tmpdir();
+      serverless.setProvider("aws", new AwsProvider(serverless, config));
+      
+      const plugin = new NewRelicLambdaLayerPlugin(serverless, config);
+      plugin.checkForSecretPolicy = jest.fn(() => {});
+      plugin.regionPolicyValid = jest.fn(() => true);
+      plugin.configureLicenseForExtension = jest.fn(() => {});
+
+      await expect(plugin.hooks["before:deploy:function:packageFunction"]()).resolves.not.toThrow();
+    });
+
+    it("should error when neither apiKey nor ingestKey is provided", async () => {
+      const serverless = new Serverless(config);
+      Object.assign(serverless.service, {
+        service: "test-service",
+        custom: {
+          newRelic: {
+            accountId: "12345"
+          }
+        },
+        functions: {
+          testFunction: {
+            handler: "index.handler",
+            runtime: "nodejs18.x"
+          }
+        }
+      });
+      serverless.cli = new CLI(serverless);
+      serverless.config.servicePath = os.tmpdir();
+      serverless.setProvider("aws", new AwsProvider(serverless, config));
+      
+      const plugin = new NewRelicLambdaLayerPlugin(serverless, config);
+      plugin.checkForSecretPolicy = jest.fn(() => {});
+      plugin.regionPolicyValid = jest.fn(() => true);
+      plugin.configureLicenseForExtension = jest.fn(() => {});
+
+      const logErrorSpy = jest.spyOn(plugin.log, 'error');
+
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+
+      expect(logErrorSpy).toHaveBeenCalledWith(
+        expect.stringContaining("Please use a valid New Relic API key")
+      );
+    });
+  });
+
+  describe("APM Lambda Mode", () => {
+    it("should set NEW_RELIC_APM_LAMBDA_MODE when apm is true (boolean)", async () => {
+      const serverless = new Serverless(config);
+      Object.assign(serverless.service, {
+        service: "test-service",
+        custom: {
+          newRelic: {
+            apiKey: "test-api-key",
+            accountId: "12345",
+            apm: true
+          }
+        },
+        functions: {
+          testFunction: {
+            handler: "index.handler",
+            runtime: "nodejs18.x"
+          }
+        }
+      });
+      serverless.cli = new CLI(serverless);
+      serverless.config.servicePath = os.tmpdir();
+      serverless.setProvider("aws", new AwsProvider(serverless, config));
+      
+      const plugin = new NewRelicLambdaLayerPlugin(serverless, config);
+      plugin.checkForSecretPolicy = jest.fn(() => {});
+      plugin.regionPolicyValid = jest.fn(() => true);
+      plugin.configureLicenseForExtension = jest.fn(() => {});
+
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+
+      expect(serverless.service.functions.testFunction.environment?.NEW_RELIC_APM_LAMBDA_MODE).toBe("true");
+    });
+
+    it("should set NEW_RELIC_APM_LAMBDA_MODE when apm is 'true' (string)", async () => {
+      const serverless = new Serverless(config);
+      Object.assign(serverless.service, {
+        service: "test-service",
+        custom: {
+          newRelic: {
+            apiKey: "test-api-key",
+            accountId: "12345",
+            apm: "true"
+          }
+        },
+        functions: {
+          testFunction: {
+            handler: "index.handler",
+            runtime: "nodejs18.x"
+          }
+        }
+      });
+      serverless.cli = new CLI(serverless);
+      serverless.config.servicePath = os.tmpdir();
+      serverless.setProvider("aws", new AwsProvider(serverless, config));
+      
+      const plugin = new NewRelicLambdaLayerPlugin(serverless, config);
+      plugin.checkForSecretPolicy = jest.fn(() => {});
+      plugin.regionPolicyValid = jest.fn(() => true);
+      plugin.configureLicenseForExtension = jest.fn(() => {});
+
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+
+      expect(serverless.service.functions.testFunction.environment?.NEW_RELIC_APM_LAMBDA_MODE).toBe("true");
+    });
+
+    it("should not set NEW_RELIC_APM_LAMBDA_MODE when apm is false", async () => {
+      const serverless = new Serverless(config);
+      Object.assign(serverless.service, {
+        service: "test-service",
+        custom: {
+          newRelic: {
+            apiKey: "test-api-key",
+            accountId: "12345",
+            apm: false
+          }
+        },
+        functions: {
+          testFunction: {
+            handler: "index.handler",
+            runtime: "nodejs18.x"
+          }
+        }
+      });
+      serverless.cli = new CLI(serverless);
+      serverless.config.servicePath = os.tmpdir();
+      serverless.setProvider("aws", new AwsProvider(serverless, config));
+      
+      const plugin = new NewRelicLambdaLayerPlugin(serverless, config);
+      plugin.checkForSecretPolicy = jest.fn(() => {});
+      plugin.regionPolicyValid = jest.fn(() => true);
+      plugin.configureLicenseForExtension = jest.fn(() => {});
+
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+
+      expect(serverless.service.functions.testFunction.environment?.NEW_RELIC_APM_LAMBDA_MODE).toBeUndefined();
+    });
+  });
 });

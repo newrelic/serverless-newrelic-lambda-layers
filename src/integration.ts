@@ -61,6 +61,10 @@ export default class Integration {
     const { accountId, enableIntegration, apiKey, nrRegion, proxy } =
       this.config;
 
+    if (!apiKey && this.config.ingestKey) {
+      this.log.notice("Skipping integration check, using ingest key.");
+      return;
+    }
     const integrationData = await nerdgraphFetch(
       apiKey,
       nrRegion,
@@ -564,9 +568,9 @@ export default class Integration {
       if (err.providerError) {
         this.log.error(err.providerError.message);
       }
-      if (!apiKey) {
+      if (!apiKey && this.config.ingestKey) {
         this.log.error(
-          "Unable to create newrelic-log-ingestion because New Relic API key not configured."
+          "Unable to create newrelic-log-ingestion because New Relic API key or Ingest Key not configured."
         );
         return;
       }
@@ -690,9 +694,10 @@ export default class Integration {
 
   private async formatFunctionVariables() {
     const { logEnabled } = this.config;
-    const licenseKey = this.licenseKey
-      ? this.licenseKey
-      : await this.retrieveLicenseKey();
+    const licenseKey =
+      this.licenseKey ||
+      this.config.ingestKey ||
+      (await this.retrieveLicenseKey());
     const loggingVar = logEnabled ? "True" : "False";
 
     return [

@@ -202,7 +202,12 @@ https://blog.newrelic.com/product-news/aws-lambda-extensions-integrations/
 
   public async configureLicenseForExtension() {
     if (!this.licenseKey) {
-      this.licenseKey = await this.retrieveLicenseKey();
+      if (this.config.ingestKey) {
+        this.licenseKey = this.config.ingestKey;
+        this.log.notice("Using ingest key as license key.");
+      } else {
+        this.licenseKey = await this.retrieveLicenseKey();
+      }
       if (!this.licenseKey) {
         this.config.enableExtension = false;
         this.extFellBackToCW = true;
@@ -311,7 +316,7 @@ or make sure that you already have Serverless 3.x installed in your project.
       return;
     }
 
-    if (!this.config.apiKey) {
+    if (!this.config.apiKey && !this.config.ingestKey) {
       this.log.error(
         `Please use a valid New Relic API key as your apiKey value; skipping.`
       );
@@ -321,7 +326,7 @@ or make sure that you already have Serverless 3.x installed in your project.
     const { exclude = [], include = [] } = this.config;
     if (!_.isEmpty(exclude) && !_.isEmpty(include)) {
       this.log.error(
-        "exclude and include options are mutually exclusive; skipping."
+        "exclude and include options are mutually exclusive or a valid New Relic Ingest Key as ingestKey; skipping."
       );
       return;
     }
