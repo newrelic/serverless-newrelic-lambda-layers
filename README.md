@@ -59,7 +59,7 @@ custom:
 custom:
   newRelic:
     accountId: your-new-relic-account-id-here
-    ingestKey: your-new-relic-personal-ingest-key-here
+    ingestKey: your-new-relic-ingest-key-here
 ```
 Deploy:
 
@@ -211,13 +211,6 @@ custom:
     enableExtensionLogs: false
 ```
 
-#### `apm` (optional)
-Enable APM Lambda Fusion Mode. This feature is in [Limited Preview](https://docs-preview.newrelic.com/docs/apm-serverless-convergence).
-```yaml
-custom:
-  newRelic:
-    apm: true
-```
 
 #### `nrTags` (optional)
 Specify tags to be added to all log events. Optional. Each tag is composed of a colon-delimited key and value. Multiple key-value pairs are semicolon-delimited; for example, env:prod;team:myTeam.
@@ -431,30 +424,41 @@ custom:
     proxy: http://yourproxy.com:8080
 ```
 
+## APM + Serverless Convergence
+
+[APM + Serverless Convergence](https://docs-preview.newrelic.com/docs/apm-serverless-convergence) enables you to upgrade existing Lambda functions or instrument new functions to monitor them in the New Relic APM interface with minimal effort.
+
+#### `apm`
+Enable `APM Lambda Fusion Mode` 
+```yaml
+custom:
+  newRelic:
+    apm: true
+```
+
+#### Provider Tags
+
+Add `NR.Apm.Lambda.Mode` tag 
+
+```yaml
+provider:
+  tags:
+    NR.Apm.Lambda.Mode: true
+```
+
+
 ## Supported Runtimes
 
 This plugin currently supports the following AWS runtimes:
 
-- nodejs16.x
-- nodejs18.x
-- nodejs20.x
-- nodejs22.x
-- python3.8
-- python3.9
-- python3.10
-- python3.11
-- python3.12
-- python3.13
-- java8.al2
-- java11
-- java17
-- java21
-- ruby 3.2
-- ruby 3.3
-- dotnet 6
-- dotnet 8
-- provided.al2
-- provided.al2023
+| Runtime     | Versions               |
+|-------------|------------------------|
+| Python      | `python3.8`, `python3.9`, `python3.10`, `python3.11`, `python3.12`, `python3.13` |
+| Node.js     | `nodejs16.x`, `nodejs18.x`, `nodejs20.x`, `nodejs22.x` |
+| .NET   | `dotnet3.1`, `dotnet6`, `dotnet8`              |
+| Java        | `java8.al2`, `java11`, `java17`, `java21`      |
+| Provided    | `provided.al2`, `provided.al2023`         |
+| Ruby        | `ruby3.2`, `ruby3.3`, `ruby3.4`          |
 
 ## Contributing
 
