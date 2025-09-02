@@ -84,6 +84,16 @@ do it for you automatically.
 Follow the instructions in the guide to implement instrumentation with the [Serverless Framework](https://docs.newrelic.com/docs/serverless-function-monitoring/aws-lambda-monitoring/instrument-lambda-function/instrument-your-own/#serverless) 
 
 
+### Provider Tags
+
+Add `NR.Apm.Lambda.Mode: true` tag is required for [APM + Serverless Convergence](https://docs-preview.newrelic.com/docs/apm-serverless-convergence).
+
+```yaml
+provider:
+  tags:
+    NR.Apm.Lambda.Mode: true
+```
+
 ## Config
 
 The following config options are available via the `newRelic` section of the `custom` section of your `serverless.yml`:
