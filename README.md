@@ -69,8 +69,6 @@ sls deploy
 
 And you're all set.
 
-
-
 ## Usage
 
 This plugin wraps your handlers without requiring a code change. If you're currently
@@ -84,8 +82,6 @@ do it for you automatically.
 - [Dotnet Instrumentation Guide](https://docs.newrelic.com/docs/apm/agents/net-agent/getting-started/introduction-new-relic-net)
 
 Follow the instructions in the guide to implement instrumentation with the [Serverless Framework](https://docs.newrelic.com/docs/serverless-function-monitoring/aws-lambda-monitoring/instrument-lambda-function/instrument-your-own/#serverless) 
-
-
 
 
 ## Config
@@ -214,7 +210,6 @@ custom:
   newRelic:
     enableExtensionLogs: false
 ```
-
 
 
 #### `nrTags` (optional)
