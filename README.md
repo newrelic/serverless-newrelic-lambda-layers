@@ -69,27 +69,6 @@ sls deploy
 
 And you're all set.
 
-## APM + Serverless Convergence
-
-[APM + Serverless Convergence](https://docs-preview.newrelic.com/docs/apm-serverless-convergence) enables you to upgrade existing Lambda functions or instrument new functions to monitor them in the New Relic APM interface with minimal effort.
-
-#### `apm`
-Enable `APM Lambda Fusion Mode` 
-```yaml
-custom:
-  newRelic:
-    apm: true
-```
-
-#### Provider Tags
-
-Add `NR.Apm.Lambda.Mode` tag 
-
-```yaml
-provider:
-  tags:
-    NR.Apm.Lambda.Mode: true
-```
 
 
 ## Usage
@@ -449,6 +428,29 @@ custom:
   newRelic:
     proxy: http://yourproxy.com:8080
 ```
+
+## APM + Serverless Convergence
+
+[APM + Serverless Convergence](https://docs-preview.newrelic.com/docs/apm-serverless-convergence) enables you to upgrade existing Lambda functions or instrument new functions to monitor them in the New Relic APM interface with minimal effort.
+
+#### `apm`
+Enable `APM Lambda Fusion Mode` 
+```yaml
+custom:
+  newRelic:
+    apm: true
+```
+
+#### Provider Tags
+
+Add `NR.Apm.Lambda.Mode` tag 
+
+```yaml
+provider:
+  tags:
+    NR.Apm.Lambda.Mode: true
+```
+
 
 ## Supported Runtimes
 
