@@ -483,4 +483,3 @@ npm run generate:test:case
 # Example
 npm run test
 ```
-some
