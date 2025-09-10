@@ -328,6 +328,17 @@ custom:
     layerArn: arn:aws:lambda:us-east-1:451483290750:layer:NewRelicPython37:2
 ```
 
+#### `slim` (optional)
+
+slim adds Node.js layer without OpenTelemetry dependencies, resulting in a lighter size.
+
+```yaml
+custom:
+  newRelic:
+    slim: true
+```
+
+
 #### `cloudWatchFilter` (optional)
 
 Provide a list of quoted filter terms for the CloudWatch log subscription to the newrelic-log-ingestion Lambda. Combines all terms into an OR filter. Defaults to "NR_LAMBDA_MONITORING" if not set. Use "\*" to capture all logs
