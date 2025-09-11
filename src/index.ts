@@ -728,6 +728,16 @@ or make sure that you already have Serverless 3.x installed in your project.
           );
           return false;
         }
+        const wantSlim = this.config?.slim;
+        const slimLayer =
+          wantSlim &&
+          compatibleLayers.find((l: any) => /-slim/i.test(l.LayerVersionArn));
+        if (slimLayer) {
+          this.log.notice(
+            `[newrelic] Using slim layer: ${slimLayer.LayerVersionArn}`
+          );
+          return slimLayer.LayerVersionArn;
+        }
         return compatibleLayers[0].LayerVersionArn;
       })
       .catch((reason) => {

@@ -310,3 +310,83 @@ describe("NewRelicLambdaLayerPlugin", () => {
     });
   });
 });
+describe("slim layer selection", () => {
+    it("selects slim layer when slim=true and both slim & full exist", async () => {
+      const stage = "dev";
+      const commands = [];
+      const config = { commands, options: { stage }, log };
+
+      const serverless = new Serverless(config);
+      Object.assign(serverless.service, {
+        service: "test-service",
+        plugins: ["serverless-newrelic-lambda-layers"],
+        provider: { name: "aws", region: "us-east-1", architecture: "arm64" },
+        custom: {
+          newRelic: {
+            apiKey: "test-api-key",
+            accountId: "12345",
+            slim: true,
+            logLevel: "debug"
+          }
+        },
+        functions: {
+          slimFunc: {
+            handler: "handler.handler",
+            runtime: "nodejs20.x",
+            package: { exclude: ["./**"], include: ["handler.js"] }
+          }
+        }
+      });
+
+      serverless.cli = new CLI(serverless);
+      serverless.config.servicePath = os.tmpdir();
+      serverless.setProvider("aws", new AwsProvider(serverless, config));
+      const plugin = new NewRelicLambdaLayerPlugin(serverless, config);
+
+      plugin.checkForSecretPolicy = jest.fn();
+      plugin.regionPolicyValid = jest.fn(() => true);
+      plugin.configureLicenseForExtension = jest.fn();
+
+      const fullArn = "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS20X:999";
+      const slimArn = "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS20X-slim:7";
+
+      const noticeSpy = jest.spyOn(plugin.log, "notice");
+
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          layers: [
+            {
+              LayerVersionArn: fullArn,
+              Version: 999,
+              CompatibleRuntimes: ["nodejs20.x"],
+              CompatibleArchitectures: ["arm64"]
+            },
+            {
+              LayerVersionArn: slimArn,
+              Version: 7,
+              CompatibleRuntimes: ["nodejs20.x"],
+              CompatibleArchitectures: ["arm64"]
+            }
+          ]
+        })
+      });
+
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+      const chosenLayer =
+        serverless.service.functions.slimFunc.layers?.[0] ||
+        serverless.service.provider.layers?.[0];
+
+      expect(chosenLayer).toBeDefined();
+      expect(chosenLayer).toMatch(/NewRelicNodeJS20X.*-slim:/);
+      expect(serverless.service.functions.slimFunc.handler).toBe("newrelic-lambda-wrapper.handler");
+      expect(serverless.service.functions.slimFunc.environment.NEW_RELIC_LAMBDA_HANDLER).toBe("handler.handler");
+      expect(
+        noticeSpy.mock.calls.some(c =>
+          /Using slim layer: arn:aws:lambda:[^:]+:\d+:layer:NewRelicNodeJS20X.*-slim:\d+/.test(String(c[0]))
+        )
+      ).toBe(true);
+
+      delete global.fetch;
+    });
+  });
