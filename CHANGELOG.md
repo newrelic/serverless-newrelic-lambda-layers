@@ -1,3 +1,12 @@
+### v5.10.0 (2025-09-15)
+
+#### Features
+
+* added slim layer support ([#532](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/532)) ([ca5fa67](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/ca5fa67cd4611838e5c59f296fa56beee0b755e0))
+* updated README ([#529](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/529)) ([9f2f412](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/9f2f412c334f31adf1a9749562c730646f1fe23e))
+* updated Readme file ([#533](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/533)) ([41afa0a](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/41afa0abb6e13f851b6e0cc4a47538f826340e2e))
+* Updated Readme for Provider Tags ([#530](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/530)) ([11fee78](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/11fee7850f3c44f7de7415e84525567b29de9fac))
+
 ### v5.9.0 (2025-07-31)
 
 #### Features
