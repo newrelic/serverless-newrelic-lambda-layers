@@ -700,7 +700,18 @@ or make sure that you already have Serverless 3.x installed in your project.
 
   private async getLayerArn(runtime: string, architecture?: string) {
     const url = `https://${this.region}.layers.newrelic-external.com/get-layers?CompatibleRuntime=${runtime}`;
-    return fetch(url)
+    
+    const fetchWithRetry = async () => {
+      try {
+        return await fetch(url);
+      } catch (error) {
+        this.log.warning("New Relic layers API request failed, retrying in 1 second...");
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return await fetch(url);
+      }
+    };
+    
+    return fetchWithRetry()
       .then(async (response) => {
         const awsResp = await response.json();
         const layers = _.get(awsResp, "Layers", []);
