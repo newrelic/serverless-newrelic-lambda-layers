@@ -313,7 +313,7 @@ describe("NewRelicLambdaLayerPlugin", () => {
 describe("slim layer selection", () => {
     it("selects slim layer when slim=true and both slim & full exist", async () => {
       const stage = "dev";
-      const commands = [];
+      const commands: any[] = [];
       const config = { commands, options: { stage }, log };
 
       const serverless = new Serverless(config);
@@ -352,24 +352,27 @@ describe("slim layer selection", () => {
 
       const noticeSpy = jest.spyOn(plugin.log, "notice");
 
+      // Provide proper shape expected by getLayerArn (Layers -> LatestMatchingVersion)
       global.fetch = jest.fn().mockResolvedValue({
         ok: true,
         json: async () => ({
-          layers: [
+          Layers: [
             {
-              LayerVersionArn: fullArn,
-              Version: 999,
-              CompatibleRuntimes: ["nodejs20.x"],
-              CompatibleArchitectures: ["arm64"]
+              LatestMatchingVersion: {
+                LayerVersionArn: fullArn,
+                CompatibleRuntimes: ["nodejs20.x"],
+                CompatibleArchitectures: ["arm64"],
+              },
             },
             {
-              LayerVersionArn: slimArn,
-              Version: 7,
-              CompatibleRuntimes: ["nodejs20.x"],
-              CompatibleArchitectures: ["arm64"]
-            }
-          ]
-        })
+              LatestMatchingVersion: {
+                LayerVersionArn: slimArn,
+                CompatibleRuntimes: ["nodejs20.x"],
+                CompatibleArchitectures: ["arm64"],
+              },
+            },
+          ],
+        }),
       });
 
       await plugin.hooks["before:deploy:function:packageFunction"]();
@@ -387,6 +390,77 @@ describe("slim layer selection", () => {
         )
       ).toBe(true);
 
-      delete global.fetch;
+      // cleanup
+      // @ts-ignore
+      delete (global as any).fetch;
+    });
+  });
+
+  // Focused retry coverage test (no changes to src/index.ts)
+  describe("getLayerArn retry catch coverage", () => {
+    it("fires warning and retries after first fetch failure", async () => {
+      // We must mock the node-fetch module itself because src/index.ts captures its import locally.
+      jest.resetModules();
+
+      const fetchMock: any = jest.fn()
+        .mockRejectedValueOnce(new Error("synthetic failure"))
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            Layers: [
+              {
+                LatestMatchingVersion: {
+                  LayerVersionArn: "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS20X:901",
+                  CompatibleArchitectures: ["x86_64"],
+                },
+              },
+            ],
+          }),
+        });
+
+      // Mock node-fetch before re-requiring plugin
+      jest.doMock("node-fetch", () => ({ __esModule: true, default: fetchMock }));
+
+      const stage = "dev";
+      const retryConfig = { options: { stage }, log };
+      // Minimal fake serverless instance sufficient for getLayerArn
+      const fakeServerless: any = {
+        getVersion: () => "3.0.0",
+        getProvider: () => ({}),
+        service: {
+          service: "retry-catch-test",
+          custom: { newRelic: { accountId: "12345", apiKey: "abc" } },
+          provider: { name: "aws", region: "us-east-1", runtime: "nodejs20.x" },
+          functions: { tempFn: { handler: "handler.handler", runtime: "nodejs20.x" } },
+          getAllFunctions: () => ["tempFn"],
+          getFunction: (name: string) => fakeServerless.service.functions[name],
+        },
+      };
+      const Plugin = require("../src/index");
+      const plugin = new Plugin(fakeServerless, retryConfig);
+      plugin.checkForSecretPolicy = jest.fn();
+      plugin.regionPolicyValid = jest.fn(() => true);
+      plugin.configureLicenseForExtension = jest.fn();
+
+      const warnSpy = jest.spyOn(plugin.log, "warning");
+
+      jest.useFakeTimers();
+      const arnPromise = (plugin as any).getLayerArn("nodejs20.x");
+      // Allow promise chain to enter catch and schedule retry timeout
+      await Promise.resolve();
+      jest.advanceTimersByTime(1000);
+      const arn = await arnPromise;
+      jest.useRealTimers();
+
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+      expect(warnSpy).toHaveBeenCalledWith(
+        "New Relic layers API request failed, retrying in 1 second..."
+      );
+      expect(arn).toBe(
+        "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicNodeJS20X:901"
+      );
+
+      // Cleanup mocks so other tests are unaffected
+      jest.dontMock("node-fetch");
     });
   });
