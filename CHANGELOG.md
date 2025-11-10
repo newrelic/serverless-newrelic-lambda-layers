@@ -1,3 +1,27 @@
+### v5.11.0 (2025-11-10)
+
+#### Features
+
+* added retry logic for NR layers API fetch ([#541](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/541)) ([4a55108](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/4a551083f407de09e7406b38531eaa574b987bd7))
+
+#### Security improvements
+
+* **deps:** bump brace-expansion ([#536](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/536)) ([c6e2c58](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/c6e2c581027280ce94af302bea6990167f97cd25))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+* **deps:** bump form-data ([#539](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/539)) ([56a90d4](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/56a90d422514c5331fd807e88e1bfee63a8e49da))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+* **deps:** bump tmp and inquirer ([#538](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/538)) ([f8bbd56](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/f8bbd568e8772477e481730b08a7df52db350b94))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+
+#### Miscellaneous chores
+
+* **deps-dev:** bump lockfile-lint-api from 5.4.6 to 5.9.2 ([#522](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/522)) ([5ebb177](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/5ebb1775390d9ad56aad8a8aec27bd0e85e034a1))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+* **deps:** bump form-data in /examples/nodejs ([#523](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/523)) ([55e83d0](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/55e83d028afc5c31906ebce2d73bb26f46197cd6))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+* **deps:** bump tmp and inquirer in /examples/java ([#537](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/537)) ([4769715](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/4769715937436b414232297d5d4f726ca70150f5))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+
 ### v5.10.0 (2025-09-15)
 
 #### Features
