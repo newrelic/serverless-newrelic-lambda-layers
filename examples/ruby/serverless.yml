@@ -15,9 +15,16 @@ custom:
     logLevel: debug
 
 functions:
+  layer-ruby32:
+    handler: app.lambda_handler
+    package:
+      exclude:
+        - ./**
+      include:
+        - app.rb
+    runtime: ruby3.2
+
   layer-ruby33:
-    events:
-      - schedule: rate(5 minutes)
     handler: app.lambda_handler
     package:
       exclude:
@@ -25,3 +32,12 @@ functions:
       include:
         - app.rb
     runtime: ruby3.3
+
+  layer-ruby34:
+    handler: app.lambda_handler
+    package:
+      exclude:
+        - ./**
+      include:
+        - app.rb
+    runtime: ruby3.4

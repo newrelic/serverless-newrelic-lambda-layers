@@ -21,7 +21,5 @@ custom:
 
 functions:
   layer-dotnet8:
-    events:
-      - schedule: rate(5 minutes)
     handler:  NewrelicExample::NewrelicExample.Function::FunctionHandler        
     runtime: dotnet8

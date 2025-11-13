@@ -26,8 +26,6 @@ custom:
 functions:
   
   layer-python38:
-    events:
-      - schedule: rate(5 minutes)
     handler: handler.handler
     package:
       exclude:
@@ -37,8 +35,6 @@ functions:
     runtime: python3.8
 
   layer-python39:
-    events:
-      - schedule: rate(5 minutes)
     handler: handler.handler
     package:
       exclude:
@@ -48,8 +44,6 @@ functions:
     runtime: python3.9
 
   layer-python310:
-    events:
-      - schedule: rate(5 minutes)
     handler: handler.handler
     package:
       exclude:
@@ -59,8 +53,6 @@ functions:
     runtime: python3.10
 
   layer-python311:
-    events:
-      - schedule: rate(5 minutes)
     handler: handler.handler
     package:
       exclude:
@@ -70,8 +62,6 @@ functions:
     runtime: python3.11
 
   layer-python312:
-    events:
-      - schedule: rate(5 minutes)
     handler: handler.handler
     package:
       exclude:
@@ -81,8 +71,6 @@ functions:
     runtime: python3.12
   
   layer-python313:
-    events:
-      - schedule: rate(5 minutes)
     handler: handler.handler
     package:
       exclude:
