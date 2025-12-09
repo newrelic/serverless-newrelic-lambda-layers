@@ -15,9 +15,7 @@
       "product": "aws-lambda"
     }
   },
-  "plugins": [
-    "serverless-newrelic-lambda-layers"
-  ],
+  "plugins": ["serverless-newrelic-lambda-layers"],
   "custom": {
     "newRelic": {
       "accountId": "${env:NEW_RELIC_ACCOUNT_ID}",
@@ -33,12 +31,8 @@
       ],
       "handler": "handler.handler",
       "package": {
-        "exclude": [
-          "./**"
-        ],
-        "include": [
-          "handler.js"
-        ]
+        "exclude": ["./**"],
+        "include": ["handler.js"]
       },
       "runtime": "nodejs16.x"
     },
@@ -50,12 +44,8 @@
       ],
       "handler": "handler.handler",
       "package": {
-        "exclude": [
-          "./**"
-        ],
-        "include": [
-          "handler.js"
-        ]
+        "exclude": ["./**"],
+        "include": ["handler.js"]
       },
       "runtime": "nodejs18.x"
     },
@@ -67,12 +57,8 @@
       ],
       "handler": "handler.handler",
       "package": {
-        "exclude": [
-          "./**"
-        ],
-        "include": [
-          "handler.js"
-        ]
+        "exclude": ["./**"],
+        "include": ["handler.js"]
       },
       "runtime": "nodejs20.x"
     },
@@ -84,14 +70,23 @@
       ],
       "handler": "handler.handler",
       "package": {
-        "exclude": [
-          "./**"
-        ],
-        "include": [
-          "handler.js"
-        ]
+        "exclude": ["./**"],
+        "include": ["handler.js"]
       },
       "runtime": "nodejs22.x"
+    },
+    "layer-nodejs24x": {
+      "events": [
+        {
+          "schedule": "rate(5 minutes)"
+        }
+      ],
+      "handler": "handler.handler",
+      "package": {
+        "exclude": ["./**"],
+        "include": ["handler.js"]
+      },
+      "runtime": "nodejs24.x"
     }
   }
 }
