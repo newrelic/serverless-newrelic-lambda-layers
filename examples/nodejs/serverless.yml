@@ -58,3 +58,12 @@ functions:
       include:
         - handler.js
     runtime: nodejs22.x
+  
+  layer-nodejs24x:
+    handler: handler.handler
+    package:
+      exclude:
+        - ./**
+      include:
+        - handler.js
+    runtime: nodejs24.x

@@ -78,3 +78,12 @@ functions:
       include:
         - handler.py
     runtime: python3.13
+
+  layer-python314:
+    handler: handler.handler
+    package:
+      exclude:
+        - ./**
+      include:
+        - handler.py
+    runtime: python3.14
