@@ -1,3 +1,8 @@
+### v5.13.0 (2025-12-09)
+
+#### Features
+* Adding support to Node js v22 runtime and updating test cases. ([#483](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/483)) ([b6fb279](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/b6fb279ba7aa10e265c9214ecc37bf2d3d9e0254))
+
 ### v5.12.0 (2025-11-12)
 
 #### Features
