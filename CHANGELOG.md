@@ -1,3 +1,10 @@
+### v5.13.0 (2025-12-10)
+
+#### Features
+
+* added support for Node.js 24.x and Python 3.14 ([#560](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/560)) ([7b2830f](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/7b2830f9718336f6b4da3db5422d7d7fac28a519))
+* updated examples to remove event trigger ([#552](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/552)) ([5373c9a](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/5373c9a197e50e976cf6f81ee51ab94f2974dd21))
+
 ### v5.12.0 (2025-11-12)
 
 #### Features
