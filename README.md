@@ -464,8 +464,8 @@ This plugin currently supports the following AWS runtimes:
 
 | Runtime     | Versions               |
 |-------------|------------------------|
-| Python      | `python3.8`, `python3.9`, `python3.10`, `python3.11`, `python3.12`, `python3.13` |
-| Node.js     | `nodejs16.x`, `nodejs18.x`, `nodejs20.x`, `nodejs22.x` |
+| Python      | `python3.8`, `python3.9`, `python3.10`, `python3.11`, `python3.12`, `python3.13` , `python3.14`|
+| Node.js     | `nodejs16.x`, `nodejs18.x`, `nodejs20.x`, `nodejs22.x` , `nodejs24.x`|
 | .NET   | `dotnet3.1`, `dotnet6`, `dotnet8`              |
 | Java        | `java8.al2`, `java11`, `java17`, `java21`      |
 | Provided    | `provided.al2`, `provided.al2023`         |

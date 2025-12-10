@@ -23,6 +23,7 @@ const wrappableRuntimeList = [
   "nodejs18.x",
   "nodejs20.x",
   "nodejs22.x",
+  "nodejs24.x",
   "python3.7",
   "python3.8",
   "python3.9",
@@ -30,6 +31,7 @@ const wrappableRuntimeList = [
   "python3.11",
   "python3.12",
   "python3.13",
+  "python3.14",
   "java8.al2",
   "java11",
   "java17",
@@ -763,9 +765,13 @@ or make sure that you already have Serverless 3.x installed in your project.
 
   private getHandlerWrapper(runtime: string, handler: string) {
     if (
-      ["nodejs16.x", "nodejs18.x", "nodejs20.x", "nodejs22.x"].indexOf(
-        runtime
-      ) !== -1
+      [
+        "nodejs16.x",
+        "nodejs18.x",
+        "nodejs20.x",
+        "nodejs22.x",
+        "nodejs24.x",
+      ].indexOf(runtime) !== -1
     ) {
       return "newrelic-lambda-wrapper.handler";
     }
