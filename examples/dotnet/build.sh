@@ -17,4 +17,4 @@ fi
 
 dotnet restore
 # update the dotnet framework as per your project and ensure the global tools path is accessible
-dotnet lambda package --configuration Debug --framework net8.0 --output-package newrelic-serverless-dotnet-example.zip
+dotnet lambda package --configuration Debug --framework net10.0 --output-package newrelic-serverless-dotnet-example.zip

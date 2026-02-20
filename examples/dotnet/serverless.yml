@@ -22,4 +22,4 @@ custom:
 functions:
   layer-dotnet8:
     handler:  NewrelicExample::NewrelicExample.Function::FunctionHandler        
-    runtime: dotnet8
+    runtime: dotnet10

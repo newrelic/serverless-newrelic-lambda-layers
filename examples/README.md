@@ -8,7 +8,7 @@ This is a guide to creating lambdas instrumented with New Relic using Serverless
 |-------------|------------------------|
 | Python      | `python3.8`, `python3.9`, `python3.10`, `python3.11`, `python3.12`, `python3.13` |
 | Node.js     | `nodejs16.x`, `nodejs18.x`, `nodejs20.x`, `nodejs22.x` |
-| .NET   | `dotnet3.1`, `dotnet6`, `dotnet8`              |
+| .NET   | `dotnet3.1`, `dotnet6`, `dotnet8`, `dotnet10`              |
 | Java        | `java8.al2`, `java11`, `java17`, `java21`      |
 | Provided    | `provided.al2`, `provided.al2023`         |
 | Ruby        | `ruby3.2`, `ruby3.3`, `ruby3.4`          |
@@ -213,7 +213,7 @@ chmod +x build.sh
 sls deploy
 ```
 
-**Supported Runtimes:** `dotnet6`, `dotnet8`
+**Supported Runtimes:** `dotnet6`, `dotnet8`, `dotnet10`
 
 See [`dotnet/readme.md`](./dotnet/readme.md) for detailed instructions.
 

@@ -39,6 +39,7 @@ const wrappableRuntimeList = [
   "dotnet6",
   "dotnet7",
   "dotnet8",
+  "dotnet10",
   "provided.al2",
   "provided.al2023",
   "ruby3.2",
