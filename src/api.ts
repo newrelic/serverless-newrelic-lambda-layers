@@ -19,7 +19,7 @@ export const nerdgraphFetch = async (
     typeof proxy === "undefined" ? null : new HttpsProxyAgent(proxy);
 
   const res = await fetch(gqlUrl, {
-    agent,
+    agent: agent as any,
     body: JSON.stringify({ query }),
     headers: {
       "API-Key": apiKey,
@@ -27,8 +27,13 @@ export const nerdgraphFetch = async (
     },
     method: "POST",
   }).catch((e) => {
-    context.log.error(`Error fetching from NerdGraph; ${context.caller}`);
-    context.log.error(e);
+    const log = context?.log || {
+      error: console.error,
+      warning: console.log,
+      notice: console.log,
+    };
+    log.error(`Error fetching from NerdGraph; ${context?.caller || "unknown"}`);
+    log.error(e);
     return null;
   });
   return res.json();

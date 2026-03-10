@@ -614,6 +614,14 @@ or make sure that you already have Serverless 3.x installed in your project.
       }
 
       if (
+        this.config.sendPlatformLogs &&
+        this.config.sendPlatformLogs !== "false"
+      ) {
+        environment.NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS = "true";
+        this.config.disableAutoSubscription = true;
+      }
+
+      if (
         !_.isUndefined(this.config.enableExtensionLogs) &&
         (this.config.enableExtensionLogs === "false" ||
           this.config.enableExtensionLogs === false)
