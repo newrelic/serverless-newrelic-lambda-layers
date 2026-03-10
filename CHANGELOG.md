@@ -1,3 +1,9 @@
+### v5.13.1 (2026-03-10)
+
+#### Features
+
+* added support for DOTNET 10 ([#576](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/576)) ([34fe8ef](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/34fe8efcf68eead6f5d7091a2abe2e655af3dc1d))
+
 ### v5.13.0 (2025-12-10)
 
 #### Features
