@@ -28,9 +28,9 @@ export const nerdgraphFetch = async (
     method: "POST",
   }).catch((e) => {
     const log = context?.log || {
-      error: console.error,
-      warning: console.log,
-      notice: console.log,
+      error: console.error, // tslint:disable-line:no-console
+      warning: console.log, // tslint:disable-line:no-console
+      notice: console.log, // tslint:disable-line:no-console
     };
     log.error(`Error fetching from NerdGraph; ${context?.caller || "unknown"}`);
     log.error(e);
