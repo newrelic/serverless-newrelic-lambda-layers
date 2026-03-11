@@ -191,6 +191,15 @@ custom:
     sendExtensionLogs: true
 ```
 
+#### `sendPlatformLogs` (optional)
+Allows your function to deliver all of your `platform logs` to New Relic via AWS Lambda Extension. 
+
+```yaml
+custom:
+  newRelic:
+    sendPlatformLogs: true
+```
+
 #### `enableFunctionLogs` (optional)
 
 Allows your function to deliver all of your function logs to New Relic via AWS Lambda Extension. This would eliminate the need for a CloudWatch log subscription + the NR log ingestion Lambda function. This method of log ingestion is lower-cost, and offers faster time to glass.  
