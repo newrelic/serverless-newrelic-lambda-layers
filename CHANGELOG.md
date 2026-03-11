@@ -1,3 +1,15 @@
+### v5.14.0 (2026-03-11)
+
+#### Features
+
+* add support for sending platform logs ([#578](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/578)) ([6e41336](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/6e4133636f6e929e6a57ad54230b9969b9893510))
+* added support for DOTNET 10 ([#576](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/576)) ([34fe8ef](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/34fe8efcf68eead6f5d7091a2abe2e655af3dc1d))
+
+#### Miscellaneous chores
+
+*  bump up dependencies with nodejs24 package lock changes for release ([#580](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/580)) ([8a10666](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/8a1066699a05bd4a4bf715c8c10a9854254bba58))
+* release v5.13.1 ([#579](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/579)) ([c4b1fd1](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/c4b1fd151725d1fb925d5ba57bc534524cf3a04c))
+
 ### v5.13.1 (2026-03-10)
 
 #### Features
