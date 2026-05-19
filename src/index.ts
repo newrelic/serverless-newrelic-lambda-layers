@@ -523,7 +523,9 @@ or make sure that you already have Serverless 3.x installed in your project.
       }
     }
 
-    environment.NEW_RELIC_LAMBDA_HANDLER = handler;
+    if (!(runtime.match("java") && this.config.javaAgent === true)) {
+      environment.NEW_RELIC_LAMBDA_HANDLER = handler;
+    }
 
     if (this.config.logEnabled === true || this.config.logEnabled === "true") {
       this.logLevel(environment, runtime);
@@ -554,6 +556,10 @@ or make sure that you already have Serverless 3.x installed in your project.
 
     if (runtime.match("python")) {
       environment.NEW_RELIC_SERVERLESS_MODE_ENABLED = "true";
+    }
+
+    if (runtime.match("java") && this.config.javaAgent === true) {
+      environment.AWS_LAMBDA_EXEC_WRAPPER = "/opt/newrelic-java-handler";
     }
 
     // Uses same layer as CLI so the paths will be the same
@@ -726,7 +732,16 @@ or make sure that you already have Serverless 3.x installed in your project.
       .then(async (response) => {
         const awsResp = await response.json();
         const layers = _.get(awsResp, "Layers", []);
+        const isJavaRuntime = typeof runtime === "string" && runtime.startsWith("java");
+        const wantAgentLayer = isJavaRuntime && this.config.javaAgent === true;
         const compatibleLayers = layers
+          .filter((layer: any) => {
+            const isAgentLayer = /^NewRelicAgent/i.test(layer.LayerName);
+            if (isJavaRuntime) {
+              return wantAgentLayer ? isAgentLayer : !isAgentLayer;
+            }
+            return true;
+          })
           .map((layer) => {
             const latestLayer = layer.LatestMatchingVersion;
             const latestArch = latestLayer.CompatibleArchitectures;
@@ -793,6 +808,9 @@ or make sure that you already have Serverless 3.x installed in your project.
       return "newrelic_lambda_wrapper.handler";
     }
     if (["java21", "java17", "java11", "java8.al2"].indexOf(runtime) !== -1) {
+      if (this.config.javaAgent === true) {
+        return handler;
+      }
       return `com.newrelic.java.HandlerWrapper::${this.javaNewRelicHandler}`;
     }
 
