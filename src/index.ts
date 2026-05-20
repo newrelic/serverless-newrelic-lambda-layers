@@ -732,7 +732,8 @@ or make sure that you already have Serverless 3.x installed in your project.
       .then(async (response) => {
         const awsResp = await response.json();
         const layers = _.get(awsResp, "Layers", []);
-        const isJavaRuntime = typeof runtime === "string" && runtime.startsWith("java");
+        const isJavaRuntime =
+          typeof runtime === "string" && runtime.startsWith("java");
         const wantAgentLayer = isJavaRuntime && this.config.javaAgent === true;
         const compatibleLayers = layers
           .filter((layer: any) => {
