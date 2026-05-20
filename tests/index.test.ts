@@ -1,3 +1,4 @@
+export {};
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
@@ -11,14 +12,49 @@ const {
   reduce,
   omit,
 } = require("ramda");
-const { getInstalledPathSync } = require("get-installed-path");
 const NewRelicLambdaLayerPlugin = require("../src/index");
-const log = require("@serverless/utils/log");
+const log = { error: console.error, warning: console.warn, notice: console.log };
 
-const serverlessPath = getInstalledPathSync("serverless", { local: true });
-const AwsProvider = require(`${serverlessPath}/lib/plugins/aws/provider`);
-const CLI = require(`${serverlessPath}/lib/classes/cli`);
-const Serverless = require(`${serverlessPath}/lib/serverless`);
+class MockService {
+  service: string = "mock-service";
+  provider: any = { name: "aws", region: "us-east-1" };
+  functions: Record<string, any> = {};
+  custom: any = {};
+  plugins: any[] = [];
+  configValidationMode: string = "warn";
+  disabledDeprecations: any[] = [];
+  getAllFunctions() { return Object.keys(this.functions || {}); }
+  getFunction(name: string) { return (this.functions || {})[name]; }
+}
+class MockServerless {
+  service: MockService = new MockService();
+  cli: any = null;
+  config: any = { servicePath: "/tmp" };
+  private _providers: Record<string, any> = {};
+  constructor(_config?: any) {}
+  setProvider(name: string, provider: any) { this._providers[name] = provider; }
+  getProvider(name: string) { return this._providers[name]; }
+  getVersion() { return "3.0.0"; }
+}
+class MockAwsProvider {
+  serverless: any;
+  options: any;
+  request: (...args: any[]) => any;
+  constructor(serverless: any, options?: any) {
+    this.serverless = serverless;
+    this.options = options || {};
+    this.request = () => Promise.resolve({});
+  }
+}
+class MockCLI {
+  serverless: any;
+  constructor(serverless: any) { this.serverless = serverless; }
+  log(_msg: any) {}
+}
+const Serverless = MockServerless;
+const AwsProvider = MockAwsProvider;
+const CLI = MockCLI;
+
 const fixturesPath = path.resolve(__dirname, "fixtures");
 
 const buildTestCases = () => {
@@ -464,3 +500,134 @@ describe("slim layer selection", () => {
       jest.dontMock("node-fetch");
     });
   });
+
+describe("javaAgent support", () => {
+  const stage = "dev";
+  const commands: any[] = [];
+  const config = { commands, options: { stage }, log };
+
+  const javaService = (javaAgentVal?: boolean) => ({
+    service: "java-test-service",
+    plugins: ["serverless-newrelic-lambda-layers"],
+    provider: { name: "aws", region: "us-east-1" },
+    custom: {
+      newRelic: {
+        apiKey: "test-api-key",
+        accountId: "12345",
+        ...(javaAgentVal !== undefined ? { javaAgent: javaAgentVal } : {}),
+      },
+    },
+    functions: {
+      javaFn: { handler: "com.example.Handler::handleRequest", runtime: "java21" },
+    },
+  });
+
+  const regularLayerArn = "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicJava21:20";
+  const agentLayerArn   = "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicAgentJava:4";
+
+  const mockFetch = (arns: Array<{ LayerName: string; LayerVersionArn: string }>) => {
+    (global as any).fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        Layers: arns.map(({ LayerName, LayerVersionArn }) => ({
+          LayerName,
+          LatestMatchingVersion: { LayerVersionArn },
+        })),
+      }),
+    });
+  };
+
+  afterEach(() => { delete (global as any).fetch; });
+
+  it("sets AWS_LAMBDA_EXEC_WRAPPER and skips NEW_RELIC_LAMBDA_HANDLER when javaAgent is true", async () => {
+    mockFetch([{ LayerName: "NewRelicAgentJava", LayerVersionArn: agentLayerArn }]);
+
+    const serverless = new Serverless(config);
+    Object.assign(serverless.service, javaService(true));
+    serverless.cli = new CLI(serverless);
+    serverless.config.servicePath = os.tmpdir();
+    serverless.setProvider("aws", new AwsProvider(serverless, config));
+
+    const plugin = new NewRelicLambdaLayerPlugin(serverless, config);
+    plugin.checkForSecretPolicy = jest.fn(() => {});
+    plugin.regionPolicyValid = jest.fn(() => true);
+    plugin.configureLicenseForExtension = jest.fn(() => {});
+
+    await plugin.hooks["before:deploy:function:packageFunction"]();
+
+    const fn = serverless.service.functions.javaFn;
+    expect(fn.environment.AWS_LAMBDA_EXEC_WRAPPER).toBe("/opt/newrelic-java-handler");
+    expect(fn.environment.NEW_RELIC_LAMBDA_HANDLER).toBeUndefined();
+    expect(fn.handler).toBe("com.example.Handler::handleRequest");
+  });
+
+  it("sets NEW_RELIC_LAMBDA_HANDLER and wraps handler when javaAgent is not set", async () => {
+    mockFetch([{ LayerName: "NewRelicJava21", LayerVersionArn: regularLayerArn }]);
+
+    const serverless = new Serverless(config);
+    Object.assign(serverless.service, javaService());
+    serverless.cli = new CLI(serverless);
+    serverless.config.servicePath = os.tmpdir();
+    serverless.setProvider("aws", new AwsProvider(serverless, config));
+
+    const plugin = new NewRelicLambdaLayerPlugin(serverless, config);
+    plugin.checkForSecretPolicy = jest.fn(() => {});
+    plugin.regionPolicyValid = jest.fn(() => true);
+    plugin.configureLicenseForExtension = jest.fn(() => {});
+
+    await plugin.hooks["before:deploy:function:packageFunction"]();
+
+    const fn = serverless.service.functions.javaFn;
+    expect(fn.environment.NEW_RELIC_LAMBDA_HANDLER).toBe("com.example.Handler::handleRequest");
+    expect(fn.environment.AWS_LAMBDA_EXEC_WRAPPER).toBeUndefined();
+    expect(fn.handler).toBe("com.newrelic.java.HandlerWrapper::handleRequest");
+  });
+
+  it("selects NewRelicAgent layer when javaAgent is true", async () => {
+    mockFetch([
+      { LayerName: "NewRelicJava21",   LayerVersionArn: regularLayerArn },
+      { LayerName: "NewRelicAgentJava", LayerVersionArn: agentLayerArn },
+    ]);
+
+    const serverless = new Serverless(config);
+    Object.assign(serverless.service, javaService(true));
+    serverless.cli = new CLI(serverless);
+    serverless.config.servicePath = os.tmpdir();
+    serverless.setProvider("aws", new AwsProvider(serverless, config));
+
+    const plugin = new NewRelicLambdaLayerPlugin(serverless, config);
+    plugin.checkForSecretPolicy = jest.fn(() => {});
+    plugin.regionPolicyValid = jest.fn(() => true);
+    plugin.configureLicenseForExtension = jest.fn(() => {});
+
+    await plugin.hooks["before:deploy:function:packageFunction"]();
+
+    const fn = serverless.service.functions.javaFn;
+    const chosen = fn.layers?.[0] ?? serverless.service.provider.layers?.[0];
+    expect(chosen).toBe(agentLayerArn);
+  });
+
+  it("excludes NewRelicAgent layer when javaAgent is not set", async () => {
+    mockFetch([
+      { LayerName: "NewRelicJava21",   LayerVersionArn: regularLayerArn },
+      { LayerName: "NewRelicAgentJava", LayerVersionArn: agentLayerArn },
+    ]);
+
+    const serverless = new Serverless(config);
+    Object.assign(serverless.service, javaService());
+    serverless.cli = new CLI(serverless);
+    serverless.config.servicePath = os.tmpdir();
+    serverless.setProvider("aws", new AwsProvider(serverless, config));
+
+    const plugin = new NewRelicLambdaLayerPlugin(serverless, config);
+    plugin.checkForSecretPolicy = jest.fn(() => {});
+    plugin.regionPolicyValid = jest.fn(() => true);
+    plugin.configureLicenseForExtension = jest.fn(() => {});
+
+    await plugin.hooks["before:deploy:function:packageFunction"]();
+
+    const fn = serverless.service.functions.javaFn;
+    const chosen = fn.layers?.[0] ?? serverless.service.provider.layers?.[0];
+    expect(chosen).toBe(regularLayerArn);
+  });
+});

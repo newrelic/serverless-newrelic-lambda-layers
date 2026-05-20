@@ -1,10 +1,38 @@
-const { getInstalledPathSync } = require("get-installed-path");
-const log = require("@serverless/utils/log");
-
-const serverlessPath = getInstalledPathSync("serverless", { local: true });
-const AwsProvider = require(`${serverlessPath}/lib/plugins/aws/provider`);
-const Serverless = require(`${serverlessPath}/lib/serverless`);
+export {};
+const log = { error: console.error, warning: console.warn, notice: console.log };
 const Integration = require("../src/integration").default;
+
+class MockService {
+  service: string = "mock-service";
+  provider: any = { name: "aws", region: "us-east-1" };
+  functions: Record<string, any> = {};
+  custom: any = {};
+  plugins: any[] = [];
+  getAllFunctions() { return Object.keys(this.functions || {}); }
+  getFunction(name: string) { return (this.functions || {})[name]; }
+}
+class MockServerless {
+  service: MockService = new MockService();
+  cli: any = null;
+  config: any = { servicePath: "/tmp" };
+  private _providers: Record<string, any> = {};
+  constructor(_config?: any) {}
+  setProvider(name: string, provider: any) { this._providers[name] = provider; }
+  getProvider(name: string) { return this._providers[name]; }
+  getVersion() { return "3.0.0"; }
+}
+class MockAwsProvider {
+  serverless: any;
+  options: any;
+  request: (...args: any[]) => any;
+  constructor(serverless: any, options?: any) {
+    this.serverless = serverless;
+    this.options = options || {};
+    this.request = () => Promise.resolve({});
+  }
+}
+const Serverless = MockServerless;
+const AwsProvider = MockAwsProvider;
 
 const logShim = {
     error: console.error, // tslint:disable-line
