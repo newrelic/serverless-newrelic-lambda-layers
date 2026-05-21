@@ -1,3 +1,49 @@
+### v5.15.0 (2026-05-21)
+
+#### Features
+
+* add javaAgent support for New Relic Java Agent layer ([#589](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/589)) ([a96f551](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/a96f551821221f24f12a388440c75453cac9c57f))
+
+#### Security improvements
+
+* **deps:** bump js-yaml ([#555](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/555)) ([b4134b0](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/b4134b00eea1850214859b8ce6eedb9f4557d0bc))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+* **deps:** bump lodash from 4.17.21 to 4.18.1 ([#572](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/572)) ([d35d306](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/d35d306b147d38977477fc4a2801bac9cc05b27a))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+* **deps:** bump qs from 6.11.0 to 6.15.2 ([#565](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/565)) ([e21f80f](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/e21f80f03721ecb99cb9527468a78904a86e6c07))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+* **deps:** bump tar and serverless ([#573](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/573)) ([f2e4fc8](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/f2e4fc83c8cd7b75b0134458ce446266beace414))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+
+#### Miscellaneous chores
+
+* **deps-dev:** bump axios from 1.8.4 to 1.16.1 in /examples/java ([#588](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/588)) ([a7f2ce4](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/a7f2ce4987a87b6e8226b42a02ef1b50f2ef0288))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+* **deps-dev:** bump lodash from 4.17.21 to 4.17.23 in /examples/dotnet ([#570](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/570)) ([d815731](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/d815731deecf3e078dc85a72cf035cc42cc24d41))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+* **deps-dev:** bump lodash from 4.17.21 to 4.18.1 in /examples/python ([#571](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/571)) ([aad3847](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/aad384792f685726466c1f660dcc0f16deb43c04))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+* **deps:** bump axios from 1.10.0 to 1.16.1 in /examples/nodejs ([#587](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/587)) ([34548bd](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/34548bd7da20aaf62110780f9fa38317916d22a8))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+* **deps:** bump form-data from 4.0.2 to 4.0.4 in /examples/dotnet ([#545](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/545)) ([5d155fa](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/5d155fa1e08ee71ad8d46880ad1ffdb2fdd18f2c))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+* **deps:** bump form-data from 4.0.2 to 4.0.5 in /examples/python-requirements ([#543](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/543)) ([e50cab0](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/e50cab04e5457e32cef5541553be42bcfa966cd3))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+* **deps:** bump form-data in /examples/java ([#547](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/547)) ([6c0bcd2](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/6c0bcd2b48c9c0cb2e4b86ac990fcd0c8d302da4))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+* **deps:** bump glob from 10.4.5 to 10.5.0 in /examples/dotnet ([#566](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/566)) ([27443b1](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/27443b13b996ad5d3367ee1211ff287a55f3fea4))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+* **deps:** bump glob from 10.4.5 to 10.5.0 in /examples/nodejs ([#575](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/575)) ([07b1817](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/07b18174f5b3de9f3611089cc848fbdba54169e7))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+* **deps:** bump glob from 10.4.5 to 10.5.0 in /examples/ruby ([#557](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/557)) ([4b3fa36](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/4b3fa365d4b4b13081ad3b67c9d4bd82d3db0424))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+* **deps:** bump js-yaml in /examples/java ([#554](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/554)) ([f05b320](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/f05b3206b9b8908a4cc86634f4cd4db9b7f85406))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+* **deps:** bump lodash from 4.17.21 to 4.18.1 in /examples/java ([#569](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/569)) ([57e2cf0](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/57e2cf02f4d7fe7c7fe0d26c96b1dd2294f2dd00))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+* **deps:** bump org.apache.logging.log4j:log4j-core from 2.24.3 to 2.25.4 in /examples/java ([#564](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/564)) ([29a947b](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/29a947b91ce32b325c9120a5039555a55fcf30eb))
+    * Signed-off-by: dependabot[bot] <support@github.com> Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+
 ### v5.14.0 (2026-03-11)
 
 #### Features
