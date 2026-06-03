@@ -1,3 +1,9 @@
+### v5.16.0 (2026-06-03)
+
+#### Features
+
+* add appName config option to set NEW_RELIC_APP_NAME ([#593](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/593)) ([879e0e3](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/879e0e3086298687eab109bd3f2d03cc1b5fd828))
+
 ### v5.15.0 (2026-05-21)
 
 #### Features
