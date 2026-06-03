@@ -537,6 +537,8 @@ or make sure that you already have Serverless 3.x installed in your project.
 
     environment.NEW_RELIC_APP_NAME = environment.NEW_RELIC_APP_NAME
       ? environment.NEW_RELIC_APP_NAME
+      : this.config.appName
+      ? String(this.config.appName)
       : name || funcName;
 
     environment.NEW_RELIC_ACCOUNT_ID = environment.NEW_RELIC_ACCOUNT_ID

@@ -151,6 +151,18 @@ custom:
     trustedAccountKey: your-parent-account-id
 ```
 
+#### `appName` (optional)
+
+Sets the `NEW_RELIC_APP_NAME` environment variable on all instrumented functions. If not set, the plugin defaults to the function's `name` property or the function key from `serverless.yml`.
+
+You can still override this on a per-function basis by setting `NEW_RELIC_APP_NAME` directly in the function's `environment` block — that takes precedence over this config value.
+
+```yaml
+custom:
+  newRelic:
+    appName: 'my-app-name'
+```
+
 #### `debug` (optional)
 
 Whether or not to enable debug mode. Must be a boolean value. This sets the log level to
@@ -339,13 +351,26 @@ custom:
 
 #### `slim` (optional)
 
-slim adds Node.js layer without OpenTelemetry dependencies, resulting in a lighter size.
+When set to `true`, the plugin selects a `-slim` variant of the New Relic Lambda layer if one is available for selected runtime. Slim layers omit heavier optional dependencies (such as OpenTelemetry), resulting in a smaller layer size and faster cold starts.
+
+**Node.js**: Selects the slim Node.js layer, which excludes OpenTelemetry instrumentation dependencies.
 
 ```yaml
 custom:
   newRelic:
     slim: true
 ```
+
+**Java (with `javaAgent: true`)**: Selects the slim Java Agent layer when available, reducing the layer footprint for Java functions.
+
+```yaml
+custom:
+  newRelic:
+    javaAgent: true
+    slim: true
+```
+
+If no slim layer is available for your runtime, the plugin falls back to the standard layer automatically.
 
 
 #### `cloudWatchFilter` (optional)
@@ -432,6 +457,18 @@ Defaults to `RequestHandler` interface.
 custom:
   newRelic:
     javaNewRelicHandler: handleStreamsRequest
+```
+
+#### `javaAgent` (optional)
+
+**Java runtimes only**. When set to `true`, the plugin uses the New Relic Java Agent layer (`NewRelicAgent*`) instead of the default handler wrapper layer. This sets `AWS_LAMBDA_EXEC_WRAPPER` to `/opt/newrelic-java-handler` and leaves your function handler unchanged — no handler wrapping is applied.
+
+Use this when you want full Java APM instrumentation via the agent rather than the lightweight Lambda handler wrapper.
+
+```yaml
+custom:
+  newRelic:
+    javaAgent: true
 ```
 
 #### `proxy` (optional)

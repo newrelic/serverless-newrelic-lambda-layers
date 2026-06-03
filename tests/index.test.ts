@@ -501,6 +501,142 @@ describe("slim layer selection", () => {
     });
   });
 
+describe("appName config", () => {
+  const stage = "dev";
+  const commands: any[] = [];
+  const config = { commands, options: { stage }, log };
+
+  it("sets NEW_RELIC_APP_NAME from appName config string", async () => {
+    const serverless = new Serverless(config);
+    Object.assign(serverless.service, {
+      service: "test-service",
+      custom: {
+        newRelic: {
+          apiKey: "test-api-key",
+          accountId: "12345",
+          appName: "my-custom-app-name",
+        },
+      },
+      functions: {
+        testFunction: { handler: "index.handler", runtime: "nodejs18.x" },
+      },
+    });
+    serverless.cli = new CLI(serverless);
+    serverless.config.servicePath = os.tmpdir();
+    serverless.setProvider("aws", new AwsProvider(serverless, config));
+
+    const plugin = new NewRelicLambdaLayerPlugin(serverless, config);
+    plugin.checkForSecretPolicy = jest.fn(() => {});
+    plugin.regionPolicyValid = jest.fn(() => true);
+    plugin.configureLicenseForExtension = jest.fn(() => {});
+
+    await plugin.hooks["before:deploy:function:packageFunction"]();
+
+    expect(
+      serverless.service.functions.testFunction.environment.NEW_RELIC_APP_NAME
+    ).toBe("my-custom-app-name");
+  });
+
+  it("function-level NEW_RELIC_APP_NAME takes precedence over appName config", async () => {
+    const serverless = new Serverless(config);
+    Object.assign(serverless.service, {
+      service: "test-service",
+      custom: {
+        newRelic: {
+          apiKey: "test-api-key",
+          accountId: "12345",
+          appName: "config-app-name",
+        },
+      },
+      functions: {
+        testFunction: {
+          handler: "index.handler",
+          runtime: "nodejs18.x",
+          environment: { NEW_RELIC_APP_NAME: "function-level-app-name" },
+        },
+      },
+    });
+    serverless.cli = new CLI(serverless);
+    serverless.config.servicePath = os.tmpdir();
+    serverless.setProvider("aws", new AwsProvider(serverless, config));
+
+    const plugin = new NewRelicLambdaLayerPlugin(serverless, config);
+    plugin.checkForSecretPolicy = jest.fn(() => {});
+    plugin.regionPolicyValid = jest.fn(() => true);
+    plugin.configureLicenseForExtension = jest.fn(() => {});
+
+    await plugin.hooks["before:deploy:function:packageFunction"]();
+
+    expect(
+      serverless.service.functions.testFunction.environment.NEW_RELIC_APP_NAME
+    ).toBe("function-level-app-name");
+  });
+
+  it("function-level NEW_RELIC_ACCOUNT_ID takes precedence over accountId config", async () => {
+    const serverless = new Serverless(config);
+    Object.assign(serverless.service, {
+      service: "test-service",
+      custom: {
+        newRelic: {
+          apiKey: "test-api-key",
+          accountId: "12345",
+        },
+      },
+      functions: {
+        testFunction: {
+          handler: "index.handler",
+          runtime: "nodejs18.x",
+          environment: { NEW_RELIC_ACCOUNT_ID: "99999" },
+        },
+      },
+    });
+    serverless.cli = new CLI(serverless);
+    serverless.config.servicePath = os.tmpdir();
+    serverless.setProvider("aws", new AwsProvider(serverless, config));
+
+    const plugin = new NewRelicLambdaLayerPlugin(serverless, config);
+    plugin.checkForSecretPolicy = jest.fn(() => {});
+    plugin.regionPolicyValid = jest.fn(() => true);
+    plugin.configureLicenseForExtension = jest.fn(() => {});
+
+    await plugin.hooks["before:deploy:function:packageFunction"]();
+
+    expect(
+      serverless.service.functions.testFunction.environment.NEW_RELIC_ACCOUNT_ID
+    ).toBe("99999");
+  });
+
+  it("defaults NEW_RELIC_APP_NAME to function key when appName is not set", async () => {
+    const serverless = new Serverless(config);
+    Object.assign(serverless.service, {
+      service: "test-service",
+      custom: {
+        newRelic: {
+          apiKey: "test-api-key",
+          accountId: "12345",
+        },
+      },
+      functions: {
+        myFunction: { handler: "index.handler", runtime: "nodejs18.x" },
+      },
+    });
+    serverless.cli = new CLI(serverless);
+    serverless.config.servicePath = os.tmpdir();
+    serverless.setProvider("aws", new AwsProvider(serverless, config));
+
+    const plugin = new NewRelicLambdaLayerPlugin(serverless, config);
+    plugin.checkForSecretPolicy = jest.fn(() => {});
+    plugin.regionPolicyValid = jest.fn(() => true);
+    plugin.configureLicenseForExtension = jest.fn(() => {});
+
+    await plugin.hooks["before:deploy:function:packageFunction"]();
+
+    expect(
+      serverless.service.functions.myFunction.environment.NEW_RELIC_APP_NAME
+    ).toBe("myFunction");
+  });
+});
+
 describe("javaAgent support", () => {
   const stage = "dev";
   const commands: any[] = [];
