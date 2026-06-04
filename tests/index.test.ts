@@ -658,7 +658,7 @@ describe("javaAgent support", () => {
     },
   });
 
-  const regularLayerArn = "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicJava21:21";
+  const regularLayerArn = "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicJava21:22";
   const agentLayerArn   = "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicAgentJava:6";
 
   const mockFetch = (arns: Array<{ LayerName: string; LayerVersionArn: string }>) => {
