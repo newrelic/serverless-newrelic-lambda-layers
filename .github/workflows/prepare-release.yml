@@ -1,5 +1,11 @@
 name: Prepare Release PR
 
+# Since we are reusing a workflow, we must match the permissions that
+# upstream workflow requires.
+permissions:
+  contents: write
+  pull-requests: write
+
 on:
   workflow_dispatch:
     inputs:
