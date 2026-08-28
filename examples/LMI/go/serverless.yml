@@ -1,0 +1,68 @@
+service: lmi-go-example
+frameworkVersion: '4'
+
+provider:
+  name: aws
+  runtime: provided.al2023
+  region: ${opt:region, env:AWS_REGION}
+  stage: ${opt:stage, 'dev'}
+  architecture: x86_64
+
+plugins:
+  - serverless-newrelic-lambda-layers
+
+custom:
+  newRelic:
+    accountId: ${env:NEW_RELIC_ACCOUNT_ID}
+    apiKey: ${env:NEW_RELIC_LICENSE_KEY}
+
+  capacityProvider:
+    name: ${opt:capacityProviderName, 'lmi-example-cp'}
+    operatorRoleArn: ${env:CAPACITY_PROVIDER_OPERATOR_ROLE_ARN}
+    subnetIds: ${split(',', env:CAPACITY_PROVIDER_SUBNET_IDS)}
+    securityGroupIds: ${split(',', env:CAPACITY_PROVIDER_SECURITY_GROUP_IDS)}
+    maxVCpuCount: ${env:CAPACITY_PROVIDER_MAX_VCPU_COUNT, 48}
+    perExecutionEnvironmentMaxConcurrency: ${env:CAPACITY_PROVIDER_PER_ENV_MAX_CONCURRENCY, 8}
+
+functions:
+  app:
+    handler: bootstrap
+    timeout: 30
+    memorySize: 2048
+    environment:
+      NEW_RELIC_ACCOUNT_ID: ${env:NEW_RELIC_ACCOUNT_ID}
+      NEW_RELIC_LICENSE_KEY: ${env:NEW_RELIC_LICENSE_KEY}
+      NEW_RELIC_APM_LAMBDA_MODE: 'true'
+      NEW_RELIC_EXTENSION_SEND_LOGS: 'function,platform'
+
+resources:
+  Resources:
+    LmiCapacityProvider:
+      Type: AWS::Lambda::CapacityProvider
+      Properties:
+        CapacityProviderName: ${self:custom.capacityProvider.name}
+        PermissionsConfig:
+          CapacityProviderOperatorRoleArn: ${self:custom.capacityProvider.operatorRoleArn}
+        VpcConfig:
+          SubnetIds: ${self:custom.capacityProvider.subnetIds}
+          SecurityGroupIds: ${self:custom.capacityProvider.securityGroupIds}
+        InstanceRequirements:
+          Architectures:
+            - x86_64
+        CapacityProviderScalingConfig:
+          ScalingMode: Auto
+          MaxVCpuCount: ${self:custom.capacityProvider.maxVCpuCount}
+
+  extensions:
+    AppLambdaFunction:
+      Properties:
+        CapacityProviderConfig:
+          LambdaManagedInstancesCapacityProviderConfig:
+            CapacityProviderArn:
+              Fn::GetAtt: [LmiCapacityProvider, Arn]
+            PerExecutionEnvironmentMaxConcurrency: ${self:custom.capacityProvider.perExecutionEnvironmentMaxConcurrency}
+
+package:
+  patterns:
+    - src/**
+    - '!node_modules/**'

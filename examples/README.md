@@ -2,6 +2,12 @@
 
 This is a guide to creating lambdas instrumented with New Relic using Serverless-plugin
 
+> [!TIP]
+> **New: Lambda Managed Instances (LMI) support.** See [`LMI/`](./LMI) for deployable
+> examples (Python, Node.js, Java, .NET, Go). LMI always runs in APM mode — there's no
+> serverless-telemetry-mode option on LMI — and you configure the layer the same way you
+> would for a standard APM Lambda function.
+
 ## Supported Runtimes
 
 | Runtime     | Versions               |
