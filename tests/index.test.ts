@@ -659,7 +659,7 @@ describe("javaAgent support", () => {
   });
 
   const regularLayerArn = "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicJava21:26";
-  const agentLayerArn   = "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicAgentJava:9";
+  const agentLayerArn   = "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicAgentJava:10";
 
   const mockFetch = (arns: Array<{ LayerName: string; LayerVersionArn: string }>) => {
     (global as any).fetch = jest.fn().mockResolvedValue({

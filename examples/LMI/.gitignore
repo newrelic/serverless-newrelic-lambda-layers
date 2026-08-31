@@ -1,0 +1,22 @@
+# Serverless build artifacts
+**/.serverless/
+
+# .NET build output
+**/bin/
+**/obj/
+
+# Java build output
+**/target/
+
+# Python bytecode/cache
+**/__pycache__/
+**/*.pyc
+
+# Go local build binaries
+**/lmi-test-go
+
+# Local npm install artifacts
+**/node_modules/
+
+# macOS metadata
+**/.DS_Store

@@ -5,6 +5,26 @@
 A [Serverless](https://serverless.com) plugin to add [New Relic](https://www.newrelic.com)
 observability using [AWS Lambda Layers](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html) without requiring a code change.
 
+## New: Lambda Managed Instances (LMI) Support
+
+This plugin now supports deploying to [AWS Lambda Managed Instances (LMI)](https://docs.aws.amazon.com/lambda/latest/dg/lambda-managed-instances.html)
+— run your Lambda functions on EC2 instances you control (instance type, VPC placement,
+EC2 Savings Plans/Reserved Instances) while AWS still manages scaling, patching, and
+routing for you.
+
+> [!TIP]
+> - **No new layer to learn.** The plugin attaches and configures the same New Relic
+>   layer it already uses for standard Lambda — there's no separate LMI-specific layer.
+> - **LMI always runs in APM mode.** There is no serverless-telemetry-mode option on
+>   LMI; New Relic's Lambda extension detects LMI automatically and forces APM mode.
+> - **Multi-concurrency aware.** LMI can run several invocations at once on the same
+>   execution environment (standard Lambda runs one at a time) — the extension and the
+>   supported agent wrappers already account for this.
+> - Requires New Relic Lambda extension version `2.7.0` or later.
+
+Ready-to-deploy examples for Python, Node.js, Java, .NET, and Go are in
+[`examples/LMI`](examples/LMI).
+
 ## Requirements
 
 - [serverless](https://github.com/serverless/serverless) v3.x & v4.x (This plugin has been tested to work with Serverless Framework v3 & v4)
