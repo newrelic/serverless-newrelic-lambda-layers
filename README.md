@@ -535,7 +535,7 @@ This plugin currently supports the following AWS runtimes:
 | .NET   | `dotnet3.1`, `dotnet6`, `dotnet8`, `dotnet10`              |
 | Java        | `java8.al2`, `java11`, `java17`, `java21`      |
 | Provided    | `provided.al2`, `provided.al2023`         |
-| Ruby        | `ruby3.2`, `ruby3.3`, `ruby3.4`          |
+| Ruby        | `ruby3.2`, `ruby3.3`, `ruby3.4`, `ruby4.0`          |
 
 ## Contributing
 
