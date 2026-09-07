@@ -767,3 +767,106 @@ describe("javaAgent support", () => {
     expect(chosen).toBe(regularLayerArn);
   });
 });
+
+describe("ruby4.0 support", () => {
+  const stage = "dev";
+  const commands: any[] = [];
+  const config = { commands, options: { stage }, log };
+
+  const rubyService = (runtime = "ruby4.0") => ({
+    service: "ruby-test-service",
+    plugins: ["serverless-newrelic-lambda-layers"],
+    provider: { name: "aws", region: "us-east-1" },
+    custom: {
+      newRelic: {
+        apiKey: "test-api-key",
+        accountId: "12345",
+      },
+    },
+    functions: {
+      rubyFn: { handler: "app.lambda_handler", runtime },
+    },
+  });
+
+  const layerArn = "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicRuby40:1";
+  const layerArnArm64 = "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicRuby40ARM64:1";
+
+  const mockFetch = (arn: string) => {
+    (global as any).fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        Layers: [{ LayerName: "NewRelicRuby40", LatestMatchingVersion: { LayerVersionArn: arn } }],
+      }),
+    });
+  };
+
+  afterEach(() => { delete (global as any).fetch; });
+
+  it("attaches the ruby4.0 layer and wraps the handler", async () => {
+    mockFetch(layerArn);
+
+    const serverless = new Serverless(config);
+    Object.assign(serverless.service, rubyService());
+    serverless.cli = new CLI(serverless);
+    serverless.config.servicePath = os.tmpdir();
+    serverless.setProvider("aws", new AwsProvider(serverless, config));
+
+    const plugin = new NewRelicLambdaLayerPlugin(serverless, config);
+    plugin.checkForSecretPolicy = jest.fn(() => {});
+    plugin.regionPolicyValid = jest.fn(() => true);
+    plugin.configureLicenseForExtension = jest.fn(() => {});
+
+    await plugin.hooks["before:deploy:function:packageFunction"]();
+
+    const fn = serverless.service.functions.rubyFn;
+    const chosenLayer = fn.layers?.[0] ?? serverless.service.provider.layers?.[0];
+
+    expect(chosenLayer).toBe(layerArn);
+    expect(fn.handler).toBe("newrelic_lambda_wrapper.handler");
+    expect(fn.environment.NEW_RELIC_LAMBDA_HANDLER).toBe("app.lambda_handler");
+  });
+
+  it("sets NEW_RELIC_ACCOUNT_ID env var for ruby4.0 function", async () => {
+    mockFetch(layerArn);
+
+    const serverless = new Serverless(config);
+    Object.assign(serverless.service, rubyService());
+    serverless.cli = new CLI(serverless);
+    serverless.config.servicePath = os.tmpdir();
+    serverless.setProvider("aws", new AwsProvider(serverless, config));
+
+    const plugin = new NewRelicLambdaLayerPlugin(serverless, config);
+    plugin.checkForSecretPolicy = jest.fn(() => {});
+    plugin.regionPolicyValid = jest.fn(() => true);
+    plugin.configureLicenseForExtension = jest.fn(() => {});
+
+    await plugin.hooks["before:deploy:function:packageFunction"]();
+
+    const fn = serverless.service.functions.rubyFn;
+    expect(fn.environment.NEW_RELIC_ACCOUNT_ID).toBe("12345");
+  });
+
+  it("attaches the arm64 ruby4.0 layer for arm64 architecture", async () => {
+    mockFetch(layerArnArm64);
+
+    const serverless = new Serverless(config);
+    Object.assign(serverless.service, {
+      ...rubyService(),
+      provider: { name: "aws", region: "us-east-1", architecture: "arm64" },
+    });
+    serverless.cli = new CLI(serverless);
+    serverless.config.servicePath = os.tmpdir();
+    serverless.setProvider("aws", new AwsProvider(serverless, config));
+
+    const plugin = new NewRelicLambdaLayerPlugin(serverless, config);
+    plugin.checkForSecretPolicy = jest.fn(() => {});
+    plugin.regionPolicyValid = jest.fn(() => true);
+    plugin.configureLicenseForExtension = jest.fn(() => {});
+
+    await plugin.hooks["before:deploy:function:packageFunction"]();
+
+    const fn = serverless.service.functions.rubyFn;
+    const chosenLayer = fn.layers?.[0] ?? serverless.service.provider.layers?.[0];
+    expect(chosenLayer).toBe(layerArnArm64);
+  });
+});
