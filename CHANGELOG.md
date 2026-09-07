@@ -1,3 +1,14 @@
+### v5.16.1 (2026-09-07)
+
+#### Features
+
+* add Lambda Managed Instances (LMI) examples ([#637](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/637)) ([d8711b9](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/d8711b97cdd3495efef9321cec884688ecd06acf))
+* add ruby4.0 runtime support ([#638](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/638)) ([4b7fd27](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/4b7fd2749fb9d6bfaf9113b610e009ab0e672073))
+
+#### Bug fixes
+
+* add missing permissions to GitHub Actions workflows ([#635](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/635)) ([f3df51f](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/f3df51fd867ca39c23b056ddc2beb98f30b1060d))
+
 ### v5.16.0 (2026-06-03)
 
 #### Features
