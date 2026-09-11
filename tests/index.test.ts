@@ -778,7 +778,7 @@ describe("per-function log control", () => {
     Object.assign(serverless.service, {
       service: "log-control-test",
       custom: { newRelic: { apiKey: "test-key", accountId: "12345", ...newRelicConfig } },
-      functions,
+      functions: JSON.parse(JSON.stringify(functions)),
     });
     serverless.cli = new CLI(serverless);
     serverless.config.servicePath = os.tmpdir();
