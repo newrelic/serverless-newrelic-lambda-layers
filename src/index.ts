@@ -603,7 +603,7 @@ or make sure that you already have Serverless 3.x installed in your project.
         if (Array.isArray(funcNewRelic.enableFunctionLogs)) {
           this.log.warning(
             `enableFunctionLogs on function "${funcName}" is an array — ` +
-            `arrays are only supported at the global level (custom.newRelic.enableFunctionLogs). Ignoring inline value.`
+              `arrays are only supported at the global level (custom.newRelic.enableFunctionLogs). Ignoring inline value.`
           );
         } else {
           environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS =
@@ -619,15 +619,32 @@ or make sure that you already have Serverless 3.x installed in your project.
         const sendFunctionLogs = this.config.sendFunctionLogs;
         const disableFunctionLogs = this.config.disableFunctionLogs;
 
-        if (Array.isArray(disableFunctionLogs) && disableFunctionLogs.includes(funcName)) {
+        if (
+          Array.isArray(disableFunctionLogs) &&
+          disableFunctionLogs.includes(funcName)
+        ) {
           environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS = "false";
-        } else if (Array.isArray(enableFunctionLogs) && enableFunctionLogs.includes(funcName)) {
+        } else if (
+          Array.isArray(enableFunctionLogs) &&
+          enableFunctionLogs.includes(funcName)
+        ) {
           environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS = "true";
-        } else if (Array.isArray(sendFunctionLogs) && sendFunctionLogs.includes(funcName)) {
+        } else if (
+          Array.isArray(sendFunctionLogs) &&
+          sendFunctionLogs.includes(funcName)
+        ) {
           environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS = "true";
-        } else if (enableFunctionLogs && enableFunctionLogs !== "false" && !Array.isArray(enableFunctionLogs)) {
+        } else if (
+          enableFunctionLogs &&
+          enableFunctionLogs !== "false" &&
+          !Array.isArray(enableFunctionLogs)
+        ) {
           environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS = "true";
-        } else if (sendFunctionLogs && sendFunctionLogs !== "false" && !Array.isArray(sendFunctionLogs)) {
+        } else if (
+          sendFunctionLogs &&
+          sendFunctionLogs !== "false" &&
+          !Array.isArray(sendFunctionLogs)
+        ) {
           environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS = "true";
         }
       }
@@ -636,7 +653,7 @@ or make sure that you already have Serverless 3.x installed in your project.
         if (Array.isArray(funcNewRelic.sendExtensionLogs)) {
           this.log.warning(
             `sendExtensionLogs on function "${funcName}" is an array — ` +
-            `arrays are only supported at the global level (custom.newRelic.sendExtensionLogs). Ignoring inline value.`
+              `arrays are only supported at the global level (custom.newRelic.sendExtensionLogs). Ignoring inline value.`
           );
         } else {
           environment.NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS =
@@ -651,12 +668,22 @@ or make sure that you already have Serverless 3.x installed in your project.
         const sendExtensionLogs = this.config.sendExtensionLogs;
         const disableExtensionLogs = this.config.disableExtensionLogs;
 
-        if (Array.isArray(disableExtensionLogs) && disableExtensionLogs.includes(funcName)) {
+        if (
+          Array.isArray(disableExtensionLogs) &&
+          disableExtensionLogs.includes(funcName)
+        ) {
           environment.NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS = "false";
-        } else if (Array.isArray(sendExtensionLogs) && sendExtensionLogs.includes(funcName)) {
+        } else if (
+          Array.isArray(sendExtensionLogs) &&
+          sendExtensionLogs.includes(funcName)
+        ) {
           environment.NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS = "true";
           this.config.disableAutoSubscription = true;
-        } else if (sendExtensionLogs && sendExtensionLogs !== "false" && !Array.isArray(sendExtensionLogs)) {
+        } else if (
+          sendExtensionLogs &&
+          sendExtensionLogs !== "false" &&
+          !Array.isArray(sendExtensionLogs)
+        ) {
           environment.NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS = "true";
           this.config.disableAutoSubscription = true;
         }
@@ -666,7 +693,7 @@ or make sure that you already have Serverless 3.x installed in your project.
         if (Array.isArray(funcNewRelic.sendPlatformLogs)) {
           this.log.warning(
             `sendPlatformLogs on function "${funcName}" is an array — ` +
-            `arrays are only supported at the global level (custom.newRelic.sendPlatformLogs). Ignoring inline value.`
+              `arrays are only supported at the global level (custom.newRelic.sendPlatformLogs). Ignoring inline value.`
           );
         } else {
           environment.NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS =
@@ -681,12 +708,22 @@ or make sure that you already have Serverless 3.x installed in your project.
         const sendPlatformLogs = this.config.sendPlatformLogs;
         const disablePlatformLogs = this.config.disablePlatformLogs;
 
-        if (Array.isArray(disablePlatformLogs) && disablePlatformLogs.includes(funcName)) {
+        if (
+          Array.isArray(disablePlatformLogs) &&
+          disablePlatformLogs.includes(funcName)
+        ) {
           environment.NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS = "false";
-        } else if (Array.isArray(sendPlatformLogs) && sendPlatformLogs.includes(funcName)) {
+        } else if (
+          Array.isArray(sendPlatformLogs) &&
+          sendPlatformLogs.includes(funcName)
+        ) {
           environment.NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS = "true";
           this.config.disableAutoSubscription = true;
-        } else if (sendPlatformLogs && sendPlatformLogs !== "false" && !Array.isArray(sendPlatformLogs)) {
+        } else if (
+          sendPlatformLogs &&
+          sendPlatformLogs !== "false" &&
+          !Array.isArray(sendPlatformLogs)
+        ) {
           environment.NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS = "true";
           this.config.disableAutoSubscription = true;
         }
