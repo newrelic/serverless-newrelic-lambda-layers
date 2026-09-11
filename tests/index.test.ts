@@ -947,6 +947,19 @@ describe("per-function log control", () => {
       await plugin.hooks["before:deploy:function:packageFunction"]();
       expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS).toBe("true");
     });
+
+    it("inline array on function level logs warning and falls through to global config for extension logs", async () => {
+      const { serverless, plugin } = makeServerless(
+        { sendExtensionLogs: true },
+        {
+          funcA: { handler: "index.handler", runtime: "nodejs18.x", newRelic: { sendExtensionLogs: ["funcA"] } },
+        }
+      );
+      const warnSpy = jest.spyOn(plugin.log, "warning");
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("sendExtensionLogs on function"));
+      expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS).toBe("true");
+    });
   });
 
   describe("SEND_PLATFORM_LOGS", () => {
@@ -1005,6 +1018,19 @@ describe("per-function log control", () => {
         }
       );
       await plugin.hooks["before:deploy:function:packageFunction"]();
+      expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS).toBe("true");
+    });
+
+    it("inline array on function level logs warning and falls through to global config for platform logs", async () => {
+      const { serverless, plugin } = makeServerless(
+        { sendPlatformLogs: true },
+        {
+          funcA: { handler: "index.handler", runtime: "nodejs18.x", newRelic: { sendPlatformLogs: ["funcA"] } },
+        }
+      );
+      const warnSpy = jest.spyOn(plugin.log, "warning");
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("sendPlatformLogs on function"));
       expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS).toBe("true");
     });
   });
