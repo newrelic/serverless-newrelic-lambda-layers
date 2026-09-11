@@ -340,6 +340,8 @@ functions:
 | 2 | Disable list | `disableFunctionLogs`, `disableExtensionLogs`, `disablePlatformLogs` |
 | 3 (lowest) | Global enable list or boolean | `sendFunctionLogs: true` or `sendFunctionLogs: [myFunc]` |
 
+> **Note:** All log control configuration (lists, disable lists, and inline overrides) only applies to Lambda functions defined in the `functions` block of your `serverless.yml`. Functions deployed outside this file are not affected.
+
 #### `enableExtensionLogs` (optional)
 
 The New Relic Lambda Extension writes diagnostic logs by default. If you'd prefer to mute them, set this to `false`. (Defaults to `true`.) 
