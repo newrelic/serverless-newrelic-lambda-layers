@@ -768,6 +768,318 @@ describe("javaAgent support", () => {
   });
 });
 
+describe("per-function log control", () => {
+  const stage = "dev";
+  const commands: any[] = [];
+  const config = { commands, options: { stage }, log };
+
+  const makeServerless = (newRelicConfig: any, functions: any) => {
+    const serverless = new Serverless(config);
+    Object.assign(serverless.service, {
+      service: "log-control-test",
+      custom: { newRelic: { apiKey: "test-key", accountId: "12345", ...newRelicConfig } },
+      functions: JSON.parse(JSON.stringify(functions)),
+    });
+    serverless.cli = new CLI(serverless);
+    serverless.config.servicePath = os.tmpdir();
+    serverless.setProvider("aws", new AwsProvider(serverless, config));
+    const plugin = new NewRelicLambdaLayerPlugin(serverless, config);
+    plugin.checkForSecretPolicy = jest.fn(() => {});
+    plugin.regionPolicyValid = jest.fn(() => true);
+    plugin.configureLicenseForExtension = jest.fn(() => {});
+    return { serverless, plugin };
+  };
+
+  const twoFunctions = {
+    funcA: { handler: "index.handler", runtime: "nodejs18.x" },
+    funcB: { handler: "index.handler", runtime: "nodejs18.x" },
+  };
+
+  describe("SEND_FUNCTION_LOGS", () => {
+    it("leaves env var unset when no log config provided", async () => {
+      const { serverless, plugin } = makeServerless({}, twoFunctions);
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+      expect(serverless.service.functions.funcA.environment?.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS).toBeUndefined();
+      expect(serverless.service.functions.funcB.environment?.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS).toBeUndefined();
+    });
+
+    it("sets true for all functions when enableFunctionLogs is boolean true", async () => {
+      const { serverless, plugin } = makeServerless({ enableFunctionLogs: true }, twoFunctions);
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+      expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS).toBe("true");
+      expect(serverless.service.functions.funcB.environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS).toBe("true");
+    });
+
+    it("sets true for all functions when sendFunctionLogs is boolean true (alias)", async () => {
+      const { serverless, plugin } = makeServerless({ sendFunctionLogs: true }, twoFunctions);
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+      expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS).toBe("true");
+      expect(serverless.service.functions.funcB.environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS).toBe("true");
+    });
+
+    it("sets true only for listed function when enableFunctionLogs is a list", async () => {
+      const { serverless, plugin } = makeServerless({ enableFunctionLogs: ["funcA"] }, twoFunctions);
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+      expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS).toBe("true");
+      expect(serverless.service.functions.funcB.environment?.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS).toBeUndefined();
+    });
+
+    it("sets true only for listed function when sendFunctionLogs is a list (alias)", async () => {
+      const { serverless, plugin } = makeServerless({ sendFunctionLogs: ["funcA"] }, twoFunctions);
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+      expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS).toBe("true");
+      expect(serverless.service.functions.funcB.environment?.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS).toBeUndefined();
+    });
+
+    it("disable list beats global boolean — listed function gets false, others get true", async () => {
+      const { serverless, plugin } = makeServerless(
+        { enableFunctionLogs: true, disableFunctionLogs: ["funcA"] },
+        twoFunctions
+      );
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+      expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS).toBe("false");
+      expect(serverless.service.functions.funcB.environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS).toBe("true");
+    });
+
+    it("disable list beats enable list when same function appears in both", async () => {
+      const { serverless, plugin } = makeServerless(
+        { enableFunctionLogs: ["funcA"], disableFunctionLogs: ["funcA"] },
+        twoFunctions
+      );
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+      expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS).toBe("false");
+    });
+
+    it("inline override false beats global boolean true", async () => {
+      const { serverless, plugin } = makeServerless(
+        { enableFunctionLogs: true },
+        {
+          funcA: { handler: "index.handler", runtime: "nodejs18.x", newRelic: { enableFunctionLogs: false } },
+          funcB: { handler: "index.handler", runtime: "nodejs18.x" },
+        }
+      );
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+      expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS).toBe("false");
+      expect(serverless.service.functions.funcB.environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS).toBe("true");
+    });
+
+    it("inline override true beats disable list", async () => {
+      const { serverless, plugin } = makeServerless(
+        { disableFunctionLogs: ["funcA"] },
+        {
+          funcA: { handler: "index.handler", runtime: "nodejs18.x", newRelic: { enableFunctionLogs: true } },
+          funcB: { handler: "index.handler", runtime: "nodejs18.x" },
+        }
+      );
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+      expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS).toBe("true");
+    });
+
+    it("inline array on function level logs warning and falls through to global config", async () => {
+      const { serverless, plugin } = makeServerless(
+        { enableFunctionLogs: true },
+        {
+          funcA: { handler: "index.handler", runtime: "nodejs18.x", newRelic: { enableFunctionLogs: ["funcA"] } },
+        }
+      );
+      const warnSpy = jest.spyOn(plugin.log, "warning");
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("enableFunctionLogs on function"));
+      expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS).toBe("true");
+    });
+  });
+
+  describe("SEND_EXTENSION_LOGS", () => {
+    it("sets true for all functions when sendExtensionLogs is boolean true", async () => {
+      const { serverless, plugin } = makeServerless({ sendExtensionLogs: true }, twoFunctions);
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+      expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS).toBe("true");
+      expect(serverless.service.functions.funcB.environment.NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS).toBe("true");
+    });
+
+    it("sets true only for listed function when sendExtensionLogs is a list", async () => {
+      const { serverless, plugin } = makeServerless({ sendExtensionLogs: ["funcA"] }, twoFunctions);
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+      expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS).toBe("true");
+      expect(serverless.service.functions.funcB.environment?.NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS).toBeUndefined();
+    });
+
+    it("disable list beats global boolean for extension logs", async () => {
+      const { serverless, plugin } = makeServerless(
+        { sendExtensionLogs: true, disableExtensionLogs: ["funcA"] },
+        twoFunctions
+      );
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+      expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS).toBe("false");
+      expect(serverless.service.functions.funcB.environment.NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS).toBe("true");
+    });
+
+    it("disable list beats enable list for extension logs when same function appears in both", async () => {
+      const { serverless, plugin } = makeServerless(
+        { sendExtensionLogs: ["funcA"], disableExtensionLogs: ["funcA"] },
+        twoFunctions
+      );
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+      expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS).toBe("false");
+    });
+
+    it("inline override false beats global boolean true for extension logs", async () => {
+      const { serverless, plugin } = makeServerless(
+        { sendExtensionLogs: true },
+        {
+          funcA: { handler: "index.handler", runtime: "nodejs18.x", newRelic: { sendExtensionLogs: false } },
+          funcB: { handler: "index.handler", runtime: "nodejs18.x" },
+        }
+      );
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+      expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS).toBe("false");
+      expect(serverless.service.functions.funcB.environment.NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS).toBe("true");
+    });
+
+    it("inline override true beats disable list for extension logs", async () => {
+      const { serverless, plugin } = makeServerless(
+        { disableExtensionLogs: ["funcA"] },
+        {
+          funcA: { handler: "index.handler", runtime: "nodejs18.x", newRelic: { sendExtensionLogs: true } },
+          funcB: { handler: "index.handler", runtime: "nodejs18.x" },
+        }
+      );
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+      expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS).toBe("true");
+    });
+
+    it("inline array on function level logs warning and falls through to global config for extension logs", async () => {
+      const { serverless, plugin } = makeServerless(
+        { sendExtensionLogs: true },
+        {
+          funcA: { handler: "index.handler", runtime: "nodejs18.x", newRelic: { sendExtensionLogs: ["funcA"] } },
+        }
+      );
+      const warnSpy = jest.spyOn(plugin.log, "warning");
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("sendExtensionLogs on function"));
+      expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS).toBe("true");
+    });
+  });
+
+  describe("SEND_PLATFORM_LOGS", () => {
+    it("sets true for all functions when sendPlatformLogs is boolean true", async () => {
+      const { serverless, plugin } = makeServerless({ sendPlatformLogs: true }, twoFunctions);
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+      expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS).toBe("true");
+      expect(serverless.service.functions.funcB.environment.NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS).toBe("true");
+    });
+
+    it("sets true only for listed function when sendPlatformLogs is a list", async () => {
+      const { serverless, plugin } = makeServerless({ sendPlatformLogs: ["funcA"] }, twoFunctions);
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+      expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS).toBe("true");
+      expect(serverless.service.functions.funcB.environment?.NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS).toBeUndefined();
+    });
+
+    it("disable list beats global boolean for platform logs", async () => {
+      const { serverless, plugin } = makeServerless(
+        { sendPlatformLogs: true, disablePlatformLogs: ["funcA"] },
+        twoFunctions
+      );
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+      expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS).toBe("false");
+      expect(serverless.service.functions.funcB.environment.NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS).toBe("true");
+    });
+
+    it("disable list beats enable list for platform logs when same function appears in both", async () => {
+      const { serverless, plugin } = makeServerless(
+        { sendPlatformLogs: ["funcA"], disablePlatformLogs: ["funcA"] },
+        twoFunctions
+      );
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+      expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS).toBe("false");
+    });
+
+    it("inline override false beats global boolean true for platform logs", async () => {
+      const { serverless, plugin } = makeServerless(
+        { sendPlatformLogs: true },
+        {
+          funcA: { handler: "index.handler", runtime: "nodejs18.x", newRelic: { sendPlatformLogs: false } },
+          funcB: { handler: "index.handler", runtime: "nodejs18.x" },
+        }
+      );
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+      expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS).toBe("false");
+      expect(serverless.service.functions.funcB.environment.NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS).toBe("true");
+    });
+
+    it("inline override true beats disable list for platform logs", async () => {
+      const { serverless, plugin } = makeServerless(
+        { disablePlatformLogs: ["funcA"] },
+        {
+          funcA: { handler: "index.handler", runtime: "nodejs18.x", newRelic: { sendPlatformLogs: true } },
+          funcB: { handler: "index.handler", runtime: "nodejs18.x" },
+        }
+      );
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+      expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS).toBe("true");
+    });
+
+    it("inline array on function level logs warning and falls through to global config for platform logs", async () => {
+      const { serverless, plugin } = makeServerless(
+        { sendPlatformLogs: true },
+        {
+          funcA: { handler: "index.handler", runtime: "nodejs18.x", newRelic: { sendPlatformLogs: ["funcA"] } },
+        }
+      );
+      const warnSpy = jest.spyOn(plugin.log, "warning");
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("sendPlatformLogs on function"));
+      expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS).toBe("true");
+    });
+  });
+
+  describe("cross-type independence", () => {
+    it("all three log types are controlled independently", async () => {
+      const { serverless, plugin } = makeServerless(
+        {
+          enableFunctionLogs: ["funcA"],
+          sendExtensionLogs: ["funcB"],
+          sendPlatformLogs: true,
+          disablePlatformLogs: ["funcA"],
+        },
+        twoFunctions
+      );
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+      // funcA: FUNC=true, EXT=unset, PLAT=false
+      expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS).toBe("true");
+      expect(serverless.service.functions.funcA.environment?.NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS).toBeUndefined();
+      expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS).toBe("false");
+      // funcB: FUNC=unset, EXT=true, PLAT=true
+      expect(serverless.service.functions.funcB.environment?.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS).toBeUndefined();
+      expect(serverless.service.functions.funcB.environment.NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS).toBe("true");
+      expect(serverless.service.functions.funcB.environment.NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS).toBe("true");
+    });
+
+    it("all three booleans true with all three disable lists on same function", async () => {
+      const { serverless, plugin } = makeServerless(
+        {
+          enableFunctionLogs: true,
+          sendExtensionLogs: true,
+          sendPlatformLogs: true,
+          disableFunctionLogs: ["funcA"],
+          disableExtensionLogs: ["funcA"],
+          disablePlatformLogs: ["funcA"],
+        },
+        twoFunctions
+      );
+      await plugin.hooks["before:deploy:function:packageFunction"]();
+      expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS).toBe("false");
+      expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS).toBe("false");
+      expect(serverless.service.functions.funcA.environment.NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS).toBe("false");
+      expect(serverless.service.functions.funcB.environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS).toBe("true");
+      expect(serverless.service.functions.funcB.environment.NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS).toBe("true");
+      expect(serverless.service.functions.funcB.environment.NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS).toBe("true");
+    });
+  });
+});
+
 describe("ruby4.0 support", () => {
   const stage = "dev";
   const commands: any[] = [];
@@ -788,8 +1100,8 @@ describe("ruby4.0 support", () => {
     },
   });
 
-  const layerArn = "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicRuby40:1";
-  const layerArnArm64 = "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicRuby40ARM64:1";
+  const layerArn = "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicRuby40:2";
+  const layerArnArm64 = "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicRuby40ARM64:2";
 
   const mockFetch = (arn: string) => {
     (global as any).fetch = jest.fn().mockResolvedValue({

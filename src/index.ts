@@ -465,6 +465,7 @@ or make sure that you already have Serverless 3.x installed in your project.
       ),
       layers,
       package: pkg = {},
+      newRelic: funcNewRelic = {},
     } = funcDef;
 
     if (!this.config.accountId && !environment.NEW_RELIC_ACCOUNT_ID) {
@@ -598,36 +599,147 @@ or make sure that you already have Serverless 3.x installed in your project.
         environment.NEW_RELIC_LICENSE_KEY = this.licenseKey;
       }
 
-      if (
-        this.config.enableFunctionLogs &&
-        this.config.enableFunctionLogs !== "false"
-      ) {
-        environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS = "true";
-        this.config.disableAutoSubscription = true;
+      if (!_.isUndefined(funcNewRelic.enableFunctionLogs)) {
+        if (Array.isArray(funcNewRelic.enableFunctionLogs)) {
+          this.log.warning(
+            `enableFunctionLogs on function "${funcName}" is an array — ` +
+              `arrays are only supported at the global level (custom.newRelic.enableFunctionLogs). Ignoring inline value.`
+          );
+        } else {
+          environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS =
+            funcNewRelic.enableFunctionLogs === false ||
+            funcNewRelic.enableFunctionLogs === "false"
+              ? "false"
+              : "true";
+          if (environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS === "true") {
+            this.config.disableAutoSubscription = true;
+          }
+        }
       }
 
-      if (
-        this.config.sendFunctionLogs &&
-        this.config.sendFunctionLogs !== "false"
-      ) {
-        environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS = "true";
-        this.config.disableAutoSubscription = true;
+      if (!environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS) {
+        const enableFunctionLogs = this.config.enableFunctionLogs;
+        const sendFunctionLogs = this.config.sendFunctionLogs;
+        const disableFunctionLogs = this.config.disableFunctionLogs;
+
+        if (
+          Array.isArray(disableFunctionLogs) &&
+          disableFunctionLogs.includes(funcName)
+        ) {
+          environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS = "false";
+        } else if (
+          Array.isArray(enableFunctionLogs) &&
+          enableFunctionLogs.includes(funcName)
+        ) {
+          environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS = "true";
+          this.config.disableAutoSubscription = true;
+        } else if (
+          Array.isArray(sendFunctionLogs) &&
+          sendFunctionLogs.includes(funcName)
+        ) {
+          environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS = "true";
+          this.config.disableAutoSubscription = true;
+        } else if (
+          enableFunctionLogs &&
+          enableFunctionLogs !== "false" &&
+          !Array.isArray(enableFunctionLogs)
+        ) {
+          environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS = "true";
+          this.config.disableAutoSubscription = true;
+        } else if (
+          sendFunctionLogs &&
+          sendFunctionLogs !== "false" &&
+          !Array.isArray(sendFunctionLogs)
+        ) {
+          environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS = "true";
+          this.config.disableAutoSubscription = true;
+        }
       }
 
-      if (
-        this.config.sendExtensionLogs &&
-        this.config.sendExtensionLogs !== "false"
-      ) {
-        environment.NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS = "true";
-        this.config.disableAutoSubscription = true;
+      if (!_.isUndefined(funcNewRelic.sendExtensionLogs)) {
+        if (Array.isArray(funcNewRelic.sendExtensionLogs)) {
+          this.log.warning(
+            `sendExtensionLogs on function "${funcName}" is an array — ` +
+              `arrays are only supported at the global level (custom.newRelic.sendExtensionLogs). Ignoring inline value.`
+          );
+        } else {
+          environment.NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS =
+            funcNewRelic.sendExtensionLogs === false ||
+            funcNewRelic.sendExtensionLogs === "false"
+              ? "false"
+              : "true";
+          if (environment.NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS === "true") {
+            this.config.disableAutoSubscription = true;
+          }
+        }
       }
 
-      if (
-        this.config.sendPlatformLogs &&
-        this.config.sendPlatformLogs !== "false"
-      ) {
-        environment.NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS = "true";
-        this.config.disableAutoSubscription = true;
+      if (!environment.NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS) {
+        const sendExtensionLogs = this.config.sendExtensionLogs;
+        const disableExtensionLogs = this.config.disableExtensionLogs;
+
+        if (
+          Array.isArray(disableExtensionLogs) &&
+          disableExtensionLogs.includes(funcName)
+        ) {
+          environment.NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS = "false";
+        } else if (
+          Array.isArray(sendExtensionLogs) &&
+          sendExtensionLogs.includes(funcName)
+        ) {
+          environment.NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS = "true";
+          this.config.disableAutoSubscription = true;
+        } else if (
+          sendExtensionLogs &&
+          sendExtensionLogs !== "false" &&
+          !Array.isArray(sendExtensionLogs)
+        ) {
+          environment.NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS = "true";
+          this.config.disableAutoSubscription = true;
+        }
+      }
+
+      if (!_.isUndefined(funcNewRelic.sendPlatformLogs)) {
+        if (Array.isArray(funcNewRelic.sendPlatformLogs)) {
+          this.log.warning(
+            `sendPlatformLogs on function "${funcName}" is an array — ` +
+              `arrays are only supported at the global level (custom.newRelic.sendPlatformLogs). Ignoring inline value.`
+          );
+        } else {
+          environment.NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS =
+            funcNewRelic.sendPlatformLogs === false ||
+            funcNewRelic.sendPlatformLogs === "false"
+              ? "false"
+              : "true";
+          if (environment.NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS === "true") {
+            this.config.disableAutoSubscription = true;
+          }
+        }
+      }
+
+      if (!environment.NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS) {
+        const sendPlatformLogs = this.config.sendPlatformLogs;
+        const disablePlatformLogs = this.config.disablePlatformLogs;
+
+        if (
+          Array.isArray(disablePlatformLogs) &&
+          disablePlatformLogs.includes(funcName)
+        ) {
+          environment.NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS = "false";
+        } else if (
+          Array.isArray(sendPlatformLogs) &&
+          sendPlatformLogs.includes(funcName)
+        ) {
+          environment.NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS = "true";
+          this.config.disableAutoSubscription = true;
+        } else if (
+          sendPlatformLogs &&
+          sendPlatformLogs !== "false" &&
+          !Array.isArray(sendPlatformLogs)
+        ) {
+          environment.NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS = "true";
+          this.config.disableAutoSubscription = true;
+        }
       }
 
       if (

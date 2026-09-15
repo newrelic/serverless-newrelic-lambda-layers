@@ -208,39 +208,139 @@ custom:
 
 Allows your function to deliver all of your function logs to New Relic via AWS Lambda Extension. The `sendFunctionLogs` config works identically to the older `enableFunctionLogs`. This new config has been introduced for consistency with `sendExtensionLogs`. While the new naming provides improved clarity, `enableFunctionLogs` remains available to ensure backward compatibility.
 
+Accepts a boolean (applies to all functions) or a list of function names (applies only to those functions).
+
+```yaml
+custom:
+  newRelic:
+    sendFunctionLogs: true          # enable for all functions
+
+# or target specific functions only
+custom:
+  newRelic:
+    sendFunctionLogs:
+      - myFunction
+      - anotherFunction
+```
+
+#### `disableFunctionLogs` (optional)
+
+Disables `NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS` for specific functions, even when `sendFunctionLogs` or `enableFunctionLogs` is enabled globally. Takes precedence over the global enable setting.
+
 ```yaml
 custom:
   newRelic:
     sendFunctionLogs: true
+    disableFunctionLogs:
+      - myFunction    # this function will have SEND_FUNCTION_LOGS=false
 ```
 
 #### `sendExtensionLogs` (optional)
-Allows your function to deliver all of your `extension logs` to New Relic via AWS Lambda Extension. 
+
+Allows your function to deliver all of your `extension logs` to New Relic via AWS Lambda Extension.
+
+Accepts a boolean (applies to all functions) or a list of function names (applies only to those functions).
+
+```yaml
+custom:
+  newRelic:
+    sendExtensionLogs: true         # enable for all functions
+
+# or target specific functions only
+custom:
+  newRelic:
+    sendExtensionLogs:
+      - myFunction
+```
+
+#### `disableExtensionLogs` (optional)
+
+Disables `NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS` for specific functions, even when `sendExtensionLogs` is enabled globally.
 
 ```yaml
 custom:
   newRelic:
     sendExtensionLogs: true
+    disableExtensionLogs:
+      - myFunction    # this function will have SEND_EXTENSION_LOGS=false
 ```
 
 #### `sendPlatformLogs` (optional)
-Allows your function to deliver all of your `platform logs` to New Relic via AWS Lambda Extension. 
+
+Allows your function to deliver all of your `platform logs` to New Relic via AWS Lambda Extension.
+
+Accepts a boolean (applies to all functions) or a list of function names (applies only to those functions).
+
+```yaml
+custom:
+  newRelic:
+    sendPlatformLogs: true          # enable for all functions
+
+# or target specific functions only
+custom:
+  newRelic:
+    sendPlatformLogs:
+      - myFunction
+```
+
+#### `disablePlatformLogs` (optional)
+
+Disables `NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS` for specific functions, even when `sendPlatformLogs` is enabled globally.
 
 ```yaml
 custom:
   newRelic:
     sendPlatformLogs: true
+    disablePlatformLogs:
+      - myFunction    # this function will have SEND_PLATFORM_LOGS=false
 ```
 
 #### `enableFunctionLogs` (optional)
 
-Allows your function to deliver all of your function logs to New Relic via AWS Lambda Extension. This would eliminate the need for a CloudWatch log subscription + the NR log ingestion Lambda function. This method of log ingestion is lower-cost, and offers faster time to glass.  
+Allows your function to deliver all of your function logs to New Relic via AWS Lambda Extension. This would eliminate the need for a CloudWatch log subscription + the NR log ingestion Lambda function. This method of log ingestion is lower-cost, and offers faster time to glass.
+
+Accepts a boolean (applies to all functions) or a list of function names (applies only to those functions). Identical in behavior to `sendFunctionLogs`.
 
 ```yaml
 custom:
   newRelic:
     enableFunctionLogs: true
 ```
+
+#### Per-function inline overrides (optional)
+
+Any log control setting (`enableFunctionLogs`, `sendExtensionLogs`, `sendPlatformLogs`) can be overridden at the individual function level under a `newRelic` block. Inline overrides take highest precedence — they win over disable lists and global config.
+
+```yaml
+custom:
+  newRelic:
+    enableFunctionLogs: true        # global: all functions enabled
+    disableFunctionLogs:
+      - funcB                       # funcB disabled via list
+
+functions:
+  funcA:
+    handler: handler.handler
+    runtime: nodejs18.x
+    newRelic:
+      enableFunctionLogs: false     # inline override wins — funcA gets false
+  funcB:
+    handler: handler.handler
+    runtime: nodejs18.x             # funcB gets false from disable list
+  funcC:
+    handler: handler.handler
+    runtime: nodejs18.x             # funcC gets true from global boolean
+```
+
+**Precedence order (highest to lowest):**
+
+| Priority | Config shape | Example |
+|---|---|---|
+| 1 (highest) | Per-function inline override | `functions.<name>.newRelic.enableFunctionLogs` |
+| 2 | Disable list | `disableFunctionLogs`, `disableExtensionLogs`, `disablePlatformLogs` |
+| 3 (lowest) | Global enable list or boolean | `sendFunctionLogs: true` or `sendFunctionLogs: [myFunc]` |
+
+> **Note:** All log control configuration (lists, disable lists, and inline overrides) only applies to Lambda functions defined in the `functions` block of your `serverless.yml`. Functions deployed outside this file are not affected.
 
 #### `enableExtensionLogs` (optional)
 
