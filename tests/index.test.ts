@@ -1100,8 +1100,8 @@ describe("ruby4.0 support", () => {
     },
   });
 
-  const layerArn = "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicRuby40:1";
-  const layerArnArm64 = "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicRuby40ARM64:1";
+  const layerArn = "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicRuby40:2";
+  const layerArnArm64 = "arn:aws:lambda:us-east-1:451483290750:layer:NewRelicRuby40ARM64:2";
 
   const mockFetch = (arn: string) => {
     (global as any).fetch = jest.fn().mockResolvedValue({

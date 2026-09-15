@@ -611,6 +611,9 @@ or make sure that you already have Serverless 3.x installed in your project.
             funcNewRelic.enableFunctionLogs === "false"
               ? "false"
               : "true";
+          if (environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS === "true") {
+            this.config.disableAutoSubscription = true;
+          }
         }
       }
 
@@ -629,23 +632,27 @@ or make sure that you already have Serverless 3.x installed in your project.
           enableFunctionLogs.includes(funcName)
         ) {
           environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS = "true";
+          this.config.disableAutoSubscription = true;
         } else if (
           Array.isArray(sendFunctionLogs) &&
           sendFunctionLogs.includes(funcName)
         ) {
           environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS = "true";
+          this.config.disableAutoSubscription = true;
         } else if (
           enableFunctionLogs &&
           enableFunctionLogs !== "false" &&
           !Array.isArray(enableFunctionLogs)
         ) {
           environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS = "true";
+          this.config.disableAutoSubscription = true;
         } else if (
           sendFunctionLogs &&
           sendFunctionLogs !== "false" &&
           !Array.isArray(sendFunctionLogs)
         ) {
           environment.NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS = "true";
+          this.config.disableAutoSubscription = true;
         }
       }
 
@@ -661,6 +668,9 @@ or make sure that you already have Serverless 3.x installed in your project.
             funcNewRelic.sendExtensionLogs === "false"
               ? "false"
               : "true";
+          if (environment.NEW_RELIC_EXTENSION_SEND_EXTENSION_LOGS === "true") {
+            this.config.disableAutoSubscription = true;
+          }
         }
       }
 
@@ -701,6 +711,9 @@ or make sure that you already have Serverless 3.x installed in your project.
             funcNewRelic.sendPlatformLogs === "false"
               ? "false"
               : "true";
+          if (environment.NEW_RELIC_EXTENSION_SEND_PLATFORM_LOGS === "true") {
+            this.config.disableAutoSubscription = true;
+          }
         }
       }
 
