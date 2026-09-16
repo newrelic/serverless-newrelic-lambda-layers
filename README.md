@@ -630,10 +630,10 @@ This plugin currently supports the following AWS runtimes:
 
 | Runtime     | Versions               |
 |-------------|------------------------|
-| Python      | `python3.8`, `python3.9`, `python3.10`, `python3.11`, `python3.12`, `python3.13` , `python3.14`|
-| Node.js     | `nodejs16.x`, `nodejs18.x`, `nodejs20.x`, `nodejs22.x` , `nodejs24.x`|
-| .NET   | `dotnet3.1`, `dotnet6`, `dotnet8`, `dotnet10`              |
-| Java        | `java8.al2`, `java11`, `java17`, `java21`      |
+| Python      | `python3.9`, `python3.10`, `python3.11`, `python3.12`, `python3.13`, `python3.14`|
+| Node.js     | `nodejs22.x`, `nodejs24.x`|
+| .NET   | `dotnet6`, `dotnet8`, `dotnet10`              |
+| Java        | `java17`, `java21`, `java25`      |
 | Provided    | `provided.al2`, `provided.al2023`         |
 | Ruby        | `ruby3.2`, `ruby3.3`, `ruby3.4`, `ruby4.0`          |
 
