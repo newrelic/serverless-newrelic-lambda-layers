@@ -1,3 +1,10 @@
+### v5.16.2 (2026-09-24)
+
+#### Features
+
+* enhanced Lambda-Logs configuration for Lambda functions ([#640](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/640)) ([64a355f](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/64a355fb5258693507a3fd03c3fce9e5e0a7c121))
+* update supported runtime versions in README ([#641](https://github.com/newrelic/serverless-newrelic-lambda-layers/pull/641)) ([29b0b90](https://github.com/newrelic/serverless-newrelic-lambda-layers/commit/29b0b90f7b29566271f1d4f9258fa0cee71feb6e))
+
 ### v5.16.1 (2026-09-07)
 
 #### Features
