@@ -72,5 +72,13 @@
   ],
   "engines": {
     "node": ">=16.0.0"
+  },
+  "dependencies": {
+    "@aws-sdk/client-cloudformation": "^3.1147.0",
+    "@aws-sdk/client-cloudwatch-logs": "^3.1147.0",
+    "@aws-sdk/client-iam": "^3.1147.0",
+    "@aws-sdk/client-lambda": "^3.1147.0",
+    "@aws-sdk/client-serverlessapplicationrepository": "^3.1147.0",
+    "@aws-sdk/client-sts": "^3.1147.0"
   }
 }

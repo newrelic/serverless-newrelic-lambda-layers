@@ -1,6 +1,7 @@
 import { readFile } from "fs/promises";
 import * as _ from "lodash";
 import * as path from "path";
+import { awsRequest } from "./awsRequest";
 
 export const waitForStatus = async (
   requestParams: any,
@@ -11,7 +12,8 @@ export const waitForStatus = async (
   const { awsMethod, callbackMethod, methodParams, statusPath } = requestParams;
 
   try {
-    const resourceStatus = await awsProvider.request(
+    const resourceStatus = await awsRequest(
+      awsProvider,
       "CloudFormation",
       awsMethod,
       methodParams

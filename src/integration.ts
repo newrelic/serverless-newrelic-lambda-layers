@@ -5,6 +5,7 @@ import {
   fetchLinkedAccounts,
   nerdgraphFetch,
 } from "./api";
+import { awsRequest } from "./awsRequest";
 import { fetchPolicy, waitForStatus } from "./utils";
 
 const DEFAULT_FILTER_PATTERNS = [
@@ -117,7 +118,8 @@ export default class Integration {
   }
 
   public async makePaginatedRequest(params, regionFilter) {
-    const results = await this.awsProvider.request(
+    const results = await awsRequest(
+      this.awsProvider,
       "IAM",
       "listPolicies",
       params
@@ -186,7 +188,8 @@ export default class Integration {
         TemplateBody: policy,
       };
 
-      const { StackId } = await this.awsProvider.request(
+      const { StackId } = await awsRequest(
+        this.awsProvider,
         "CloudFormation",
         "createStack",
         params
@@ -287,7 +290,8 @@ export default class Integration {
 
   private async getCallerIdentity() {
     try {
-      const { Account } = await this.awsProvider.request(
+      const { Account } = await awsRequest(
+        this.awsProvider,
         "STS",
         "getCallerIdentity",
         {}
@@ -306,14 +310,24 @@ export default class Integration {
     };
 
     try {
-      const response = await this.awsProvider.request("IAM", "getRole", params);
+      const response = await awsRequest(
+        this.awsProvider,
+        "IAM",
+        "getRole",
+        params
+      );
       const {
         Role: { Arn },
       } = response;
 
       return Arn;
     } catch (e) {
-      if (e.code && e.code === "AWS_I_A_M_GET_ROLE_NO_SUCH_ENTITY") {
+      // SDK v2 reports NoSuchEntity, SDK v3 NoSuchEntityException
+      if (
+        e.code &&
+        (e.code === "AWS_I_A_M_GET_ROLE_NO_SUCH_ENTITY" ||
+          e.code === "AWS_I_A_M_GET_ROLE_NO_SUCH_ENTITY_EXCEPTION")
+      ) {
         return null;
       } else {
         // some other error; attempting creation will fail
@@ -384,7 +398,8 @@ export default class Integration {
         TemplateBody: policy,
       };
 
-      const { StackId } = await this.awsProvider.request(
+      const { StackId } = await awsRequest(
+        this.awsProvider,
         "CloudFormation",
         "createStack",
         params
@@ -463,7 +478,8 @@ export default class Integration {
   }
 
   private async paginatedListFunctions(params, ingestionFnFilter) {
-    const results = await this.awsProvider.request(
+    const results = await awsRequest(
+      this.awsProvider,
       "Lambda",
       "listFunctions",
       params
@@ -497,11 +513,14 @@ export default class Integration {
   }
 
   private async describeSubscriptionFilters(funcName: string) {
-    return this.awsProvider
-      .request("CloudWatchLogs", "describeSubscriptionFilters", {
+    return awsRequest(
+      this.awsProvider,
+      "CloudWatchLogs",
+      "describeSubscriptionFilters",
+      {
         logGroupName: `/aws/lambda/${funcName}`,
-      })
-      .then((res) => res.subscriptionFilters);
+      }
+    ).then((res) => res.subscriptionFilters);
   }
 
   private async addSubscriptionFilter(
@@ -509,31 +528,37 @@ export default class Integration {
     destinationArn: string,
     cloudWatchFilterString: string
   ) {
-    return this.awsProvider
-      .request("CloudWatchLogs", "putSubscriptionFilter", {
+    return awsRequest(
+      this.awsProvider,
+      "CloudWatchLogs",
+      "putSubscriptionFilter",
+      {
         destinationArn,
         filterName: "NewRelicLogStreaming",
         filterPattern: cloudWatchFilterString,
         logGroupName: `/aws/lambda/${funcName}`,
-      })
-      .catch((err) => {
-        if (err.providerError) {
-          this.log.error(err.providerError.message);
-        }
-      });
+      }
+    ).catch((err) => {
+      if (err.providerError) {
+        this.log.error(err.providerError.message);
+      }
+    });
   }
 
   private removeSubscriptionFilter(funcName: string) {
-    return this.awsProvider
-      .request("CloudWatchLogs", "DeleteSubscriptionFilter", {
+    return awsRequest(
+      this.awsProvider,
+      "CloudWatchLogs",
+      "DeleteSubscriptionFilter",
+      {
         filterName: "NewRelicLogStreaming",
         logGroupName: `/aws/lambda/${funcName}`,
-      })
-      .catch((err) => {
-        if (err.providerError) {
-          this.log.error(err.providerError.message);
-        }
-      });
+      }
+    ).catch((err) => {
+      if (err.providerError) {
+        this.log.error(err.providerError.message);
+      }
+    });
   }
 
   private async ensureLogSubscription(
@@ -541,7 +566,7 @@ export default class Integration {
     cloudWatchFilterString: string
   ) {
     try {
-      await this.awsProvider.request("Lambda", "getFunction", {
+      await awsRequest(this.awsProvider, "Lambda", "getFunction", {
         FunctionName: funcName,
       });
     } catch (err) {
@@ -661,7 +686,8 @@ export default class Integration {
 
       let cfResponse;
       try {
-        cfResponse = await this.awsProvider.request(
+        cfResponse = await awsRequest(
+          this.awsProvider,
           "CloudFormation",
           "createChangeSet",
           params
@@ -714,7 +740,8 @@ export default class Integration {
 
   private async getSarTemplate() {
     try {
-      const data = await this.awsProvider.request(
+      const data = await awsRequest(
+        this.awsProvider,
         "ServerlessApplicationRepository",
         "createCloudFormationTemplate",
         {
@@ -734,7 +761,7 @@ export default class Integration {
 
   private async executeChangeSet(changeSetName: string, stackId: string) {
     try {
-      await this.awsProvider.request("CloudFormation", "executeChangeSet", {
+      await awsRequest(this.awsProvider, "CloudFormation", "executeChangeSet", {
         ChangeSetName: changeSetName,
       });
       this.log.notice(
